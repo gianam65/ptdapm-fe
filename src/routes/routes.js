@@ -1,5 +1,12 @@
-const publicRoutes = []
+import config from '../config';
+import Home from '../pages/home/home';
+import ErrorPage from '../pages/error-page/error-page';
 
-const privateRoutes = []
+const publicRoutes = [
+  { path: config.routes.home, element: <Home /> },
+  { path: config.routes.error, element: <ErrorPage /> }
+];
 
-export { publicRoutes, privateRoutes }
+const privateRoutes = [];
+
+export { publicRoutes, privateRoutes };
