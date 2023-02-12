@@ -1,6 +1,6 @@
 # Getting Started
 
-RUN COMMAND BY FOLLOWING
+RUN COMMAND BY FOLLOWING.\
 #1. npm install || yarn install || npx install.\
 #2. npm start || yarn start || npx start.
 
