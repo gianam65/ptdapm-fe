@@ -1,5 +1,6 @@
 const routes = {
   home: '/',
+  employee: '/employee',
   error: '/*'
 };
 
