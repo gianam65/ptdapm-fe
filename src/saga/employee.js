@@ -1,5 +1,5 @@
 import { put, takeEvery } from 'redux-saga/effects';
-import * as types from '../actions/types/employeeType';
+import { getEmployeeAction } from '../actions/employeeAction';
 import { getEmployee } from '../store/reducer/employee';
 import { callAPI } from '../config/axios';
 
@@ -9,5 +9,5 @@ function* getEmployeeRequestSaga(action) {
 }
 
 export function* employeeSaga() {
-  yield takeEvery(types.GET_EMPLOYEE_REQUEST, getEmployeeRequestSaga);
+  yield takeEvery(getEmployeeAction.type, getEmployeeRequestSaga);
 }
