@@ -3,4 +3,4 @@ import * as types from './types/employeeType'
 
 
 
-export const employeeAction = createAction(types.GET_EMPLOYEE_REQUEST)
+export const getEmployeeAction = createAction(types.GET_EMPLOYEE_REQUEST)
