@@ -1,8 +1,20 @@
 # Getting Started
 
 RUN COMMAND BY FOLLOWING.\
-#1. npm install || yarn install || npx install.\
-#2. npm start || yarn start || npx start.
+#1. `npm install` || `yarn install` || `npx install`.\
+#2. `npm start` || `yarn start` || `npx start`.
+
+
+### WORK FLOW
+#1. Create new branch with the following convention name: feature/issue id_branch name.\
+COMMAND: `git checkout -b`.\
+EXAMPLE: `git checkout -b feature/9_implement_ui_dashboard`
+
+#2. Push commit with the following convention comment: "comment message #issue id".\
+COMMAND: `git commit -m "comment message #issue id"`.\
+EXAMPLE: `git commit -m "implement ui dashboard #9`.
+    
+
 
 ### `npm test`
 
