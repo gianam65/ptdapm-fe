@@ -1,7 +1,6 @@
 import config from '../config';
 import Home from '../pages/home/home';
 import Employee from '../pages/employees/listEmployee/listEmployee';
-
 import ErrorPage from '../pages/error-page/error-page';
 
 const publicRoutes = [

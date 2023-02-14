@@ -1,9 +1,7 @@
-import employeeReducer from './employee'
-
-console.log("employeeReducer", employeeReducer);
+import employeeReducer from './employee';
 
 const reducer = {
-    employee: employeeReducer
-}
+  employee: employeeReducer
+};
 
-export default reducer
+export default reducer;

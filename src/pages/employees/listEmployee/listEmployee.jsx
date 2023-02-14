@@ -3,12 +3,14 @@ import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import * as types from '../../../actions/types/employeeType';
 
-export default function () {
+export default function ListEmployee() {
   const dispatch = useDispatch();
   const employees = useSelector(state => state.employee.listEmployee);
 
   useEffect(() => {
     dispatch({ type: types.GET_EMPLOYEE_REQUEST });
+
+    // eslint-disable-next-line
   }, []);
 
   const renderList = () => {
