@@ -4,7 +4,7 @@ import { GET_EMPLOYEE_REQUEST } from '../../actions/types/employeeType'
 
 const initialState = {
     listEmployee: [],
-    status: 'idle'
+    isLoading: false
 };
 
 export const employeeReducer = createSlice({
@@ -13,6 +13,7 @@ export const employeeReducer = createSlice({
     reducers: {
         getEmployee: (state, action) => {
             state.listEmployee = action.payload;
+            state.isLoading = false
         },
         addEmployee: (state, action) => {
 
