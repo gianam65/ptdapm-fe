@@ -5,7 +5,6 @@ export default function Input({
   type,
   value,
   style,
-  className,
   onChange,
   disabled = false,
   ...props

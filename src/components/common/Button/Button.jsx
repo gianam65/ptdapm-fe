@@ -4,7 +4,6 @@ export default function Button({
   size = 'md',
   style,
   outline,
-  className,
   children,
   onClick,
   leftIcon,
