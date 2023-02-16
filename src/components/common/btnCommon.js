@@ -1,15 +1,8 @@
-export default function BtnCommon(props){
-    const {width,height,borderRadius,color,backgroundColor,handleClick,title} = props
-    const btnStyle = {
-        width: width,
-        height: height,
-        borderRadius:borderRadius,
-        color:color,
-        backgroundColor:backgroundColor
-    }
+export default function Button({size='md',className,children,onClick,icon}){
     return(
-        <button style={btnStyle} onClick={handleClick}>
-            {title}
+        <button className={className} onClick={onClick}>
+            {icon}
+            {children}
         </button>   
     )
 }
