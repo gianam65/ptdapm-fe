@@ -1,4 +1,5 @@
 import classNames from 'classnames';
+import './button.scss'
 export default function Button({
   size = 'md',
   style,
@@ -15,8 +16,8 @@ export default function Button({
     <button
       {...props}
       className={classNames({ btn__default: true, btn__disable: disabled, btn__outline: outline })}
+      style={style}
       onClick={onClick}
-      disable
     >
       {leftIcon}
       {children}
