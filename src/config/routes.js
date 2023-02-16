@@ -1,7 +1,8 @@
 const routes = {
   home: '/',
   employee: '/employee',
-  error: '/*'
+  error: '/*',
+  report: '/report'
 };
 
 export default routes;
