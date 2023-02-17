@@ -19,7 +19,7 @@ export default function Checkboxes({
   })
   return (
     <div>
-      <Checkbox style={style} disabled={disabled} checked={checked} className={classes}   {...props} onChange={onChange}/>
+      <Checkbox style={style} disabled={disabled} checked={checked} className={classes} {...props} onChange={onChange}/>
     </div>
   );
 }

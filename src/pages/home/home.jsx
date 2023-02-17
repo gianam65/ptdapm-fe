@@ -6,11 +6,9 @@ import Checkboxes from '../../components/common/checkbox/checkbox'
     <div className="home__container">
       This is home page
       <h1>hello</h1>
-      <Button   className="hehehe">Test btn</Button>
+      <Button className="hehehe">Test btn</Button>
       <Checkboxes large />
-      
     </div>
-    
   );
 };
 
