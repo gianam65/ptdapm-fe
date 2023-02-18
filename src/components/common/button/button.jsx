@@ -38,7 +38,7 @@ function Button({
     });
   }
 
-  const classes = classNames('button__default', {
+  const classes = classNames('button__default', { 
     [className]: className,
     button__default: primary,
     button__outline: outline,
