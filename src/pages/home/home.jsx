@@ -6,7 +6,7 @@ const Home = () => {
     <div className="home__container">
       This is home page
       <h1>hello</h1>
-      <Button onClick={test}>Test btn</Button>
+      <Button >Test btn</Button>
       <Input />
     </div>
   );
