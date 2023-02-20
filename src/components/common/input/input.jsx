@@ -15,8 +15,8 @@ function Input({
 }) {
   const classes = classNames('input__default', {
     [className]: className,
-    input__default: medium,
-    input__small: small,
+    input__default: small,
+    input__medium: medium,
     input__large: large
   });
 

@@ -13,7 +13,7 @@ const Home = () => {
       This is home page
       <h1>hello</h1>
       <Button onClick={()=>{setShowNotify(true)}}>Test btn</Button>
-      <Input />
+      <Input large/>
       <Notify showNotify={showNotify} closeNotify={handleClose} warning message={'add that bai'}/>
     </div>
   );
