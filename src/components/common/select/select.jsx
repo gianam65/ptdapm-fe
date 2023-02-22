@@ -30,7 +30,7 @@ export default function Selects({
                 <Select value={value} label={label} onChange={onChange} multiple={multiple} className={classes} {...props}>
                     {menuValue.map((item, idx) => {
                         return (
-                            <MenuItem value={item.name} key={idx}>{item.name}</MenuItem>
+                            <MenuItem value={item.id} key={idx}>{item.name}</MenuItem>
                         )
                     })}
                 </Select>

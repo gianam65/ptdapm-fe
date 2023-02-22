@@ -9,7 +9,7 @@ const Home = () => {
   const handleChange = (event) => {
     setAge(event.target.value);
   };
-
+console.log(age, "1212")
   const data = [
     {
       "id": 1,
