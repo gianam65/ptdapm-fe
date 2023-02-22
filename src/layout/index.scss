@@ -1,0 +1,11 @@
+.default__layout-container {
+    display: flex;
+
+    .menu__side {
+        width: 20%;
+    }
+
+    .page__content {
+        flex: 1;
+    }
+}
