@@ -2,6 +2,7 @@ import './home.scss';
 import Button from '../../components/common/button/button';
 import Checkboxes from '../../components/common/checkbox/checkbox'
 import Select from '../../components/common/select/select';
+import { MenuItem } from '@mui/material';
 import { useState } from "react"
 import DataSelect from "../../components/common/dateSelect/dateSelect"
 const Home = () => {
@@ -28,10 +29,6 @@ console.log(date, "123")
     {
       "id": 4,
       "name": "Nguyễn Thị Bích Hường"
-    },
-    {
-      "id": 5,
-      "name": "Nguyễn Thị Bích Hường"
     }
 
   ]
@@ -41,9 +38,9 @@ console.log(date, "123")
       <h1>hello</h1>
       <Button className="hehehe">Test btn</Button>
       <Checkboxes large />
-      <Select value={age} className="hahaha" inputValue={"Hoàng"} sx menuValue={data} onChange={handleChange} />
-      <br/>
-        <DataSelect className="" sx  />
+      <Select value={age} className="hahaha" inputValue={"Hoàng"} sx onChange={handleChange}>
+        {data.map(data => <MenuItem value={data.id} key={data.id}>{data.name}</MenuItem>)}
+      </Select>
     </div>
   );
 };
