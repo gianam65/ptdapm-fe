@@ -4,13 +4,15 @@ import Checkboxes from '../../components/common/checkbox/checkbox'
 import Select from '../../components/common/select/select';
 import { MenuItem } from '@mui/material';
 import { useState } from "react"
+import DataSelect from "../../components/common/dateSelect/dateSelect"
 const Home = () => {
   const [age, setAge] = useState('');
-
+  const [date, setDate] = useState('')
+console.log(date, "123")
   const handleChange = (event) => {
     setAge(event.target.value);
   };
-  console.log(age, "1212")
+  console.log(age)
   const data = [
     {
       "id": 1,
