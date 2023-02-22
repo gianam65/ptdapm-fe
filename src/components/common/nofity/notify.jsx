@@ -1,9 +1,10 @@
-import './notifyPopup.scss';
+import './notify.scss';
 import Snackbar from '@mui/material/Snackbar';
 import MuiAlert from '@mui/material/Alert';
-import React from 'react';
+import { forwardRef } from 'react';
+import classNames from 'classnames';
 
-const Alert = React.forwardRef(function Alert(props, ref) {
+const Alert = forwardRef(function Alert(props, ref) {
   return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
 });
 
@@ -12,23 +13,34 @@ function Notify({
   success = false,
   warning = false,
   showNotify,
-  onCloseNotify,
-  className,  
-  severity,
+  onClose,
+  className,
+  severity, // success || errorr || warning
   autoHideDuration,
+  position = 'top right',
   ...props
 }) {
-  const handleClose = (event, reason) => {
-    if (reason === 'clickaway') {
-      return
-    }
-    onCloseNotify && onCloseNotify()
+  const getPositionNotify = () => {
+    if (!position) return {};
+    const [vertical, horizontal] = position.split(' ');
+
+    return { vertical: vertical || 'top', horizontal: horizontal || 'right' };
   };
 
   return (
-   <div>
-      <Snackbar open={showNotify} autoHideDuration={autoHideDuration} onClose={handleClose}>
-        <Alert onClose={handleClose} severity={severity} sx={{ width: '100%' }}>
+    <div
+      className={classNames('notify__container', {
+        [className]: className
+      })}
+    >
+      <Snackbar
+        anchorOrigin={getPositionNotify()}
+        open={showNotify}
+        autoHideDuration={autoHideDuration}
+        onClose={onClose}
+        {...props}
+      >
+        <Alert onClose={onClose} severity={severity} sx={{ width: '100%' }}>
           {message}
         </Alert>
       </Snackbar>
