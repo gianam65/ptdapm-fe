@@ -1,48 +1,75 @@
 import './home.scss';
 import Button from '../../components/common/button/button';
-import Checkboxes from '../../components/common/checkbox/checkbox'
+import Checkboxes from '../../components/common/checkbox/checkbox';
+import Input from '../../components/common/input/input';
+import Notify from '../../components/common/nofity/notify';
+import { useState } from 'react';
+import DataSelect from '../../components/common/dateSelect/dateSelect';
 import Select from '../../components/common/select/select';
 import { MenuItem } from '@mui/material';
-import { useState } from "react"
-import DataSelect from "../../components/common/dateSelect/dateSelect"
+
 const Home = () => {
+  const [showNotify, setShowNotify] = useState(false);
+  const handleClose = () => {
+    setShowNotify(false);
+  };
   const [age, setAge] = useState('');
-  const [date, setDate] = useState('')
-  console.log(date, "123")
-  const handleChange = (event) => {
+
+  const handleChange = event => {
     setAge(event.target.value);
   };
-  console.log(age)
   const data = [
     {
-      "id": 1,
-      "name": "Nguyễn Đức Thắng"
+      id: 1,
+      name: 'Nguyễn Đức Thắng'
     },
     {
-      "id": 2,
-      "name": "Nguyễn Đức Phúc Anh"
+      id: 2,
+      name: 'Nguyễn Đức Phúc Anh'
     },
     {
-      "id": 3,
-      "name": "Đinh Thị Phương Dung"
+      id: 3,
+      name: 'Đinh Thị Phương Dung'
     },
     {
-      "id": 4,
-      "name": "Nguyễn Thị Bích Hường"
+      id: 4,
+      name: 'Nguyễn Thị Bích Hường'
+    },
+    {
+      id: 5,
+      name: 'Nguyễn Thị Bích Hường'
     }
-
-  ]
+  ];
   return (
     <div className="home__container">
       This is home page
       <h1>hello</h1>
-      <Button className="hehehe">Test btn</Button>
+      <Button
+        onClick={() => {
+          setShowNotify(true);
+        }}
+      >
+        Test btn
+      </Button>
       <Checkboxes large />
-      <Select value={age} className="hahaha" inputValue={"Hoàng"} sx onChange={handleChange}>
-        {data.map(data => <MenuItem value={data.id} key={data.id}>{data.name}</MenuItem>)}
+      <Input large />
+      <Notify
+        showNotify={showNotify}
+        onClose={handleClose}
+        autoHideDuration={3000}
+        severity={'success'}
+        message={'add thanh cong'}
+        position="top right"
+      />
+      <Select value={age} className="hahaha" inputValue={'Hoàng'} onChange={handleChange}>
+        {data.map(data => (
+          <MenuItem value={data.id} key={data.id}>
+            {data.name}
+          </MenuItem>
+        ))}
       </Select>
       <br />
-      <DataSelect sx />
+      <DataSelect />
     </div>
   );
 };

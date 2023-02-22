@@ -1,0 +1,12 @@
+.notify__container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: absolute;
+
+    .MuiSnackbar-root, .MuiPaper-root {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+}
