@@ -2,7 +2,6 @@ import Select from "@mui/material/Select"
 import classNames from "classnames"
 import InputLabel from '@mui/material/InputLabel';
 import FormControl from '@mui/material/FormControl';
-import MenuItem from "@mui/material/MenuItem";
 import "./select.scss"
 export default function Selects({
     className,
@@ -11,28 +10,25 @@ export default function Selects({
     onChange,
     label,
     value,
+    defaultOpen,
     sx,
     variant,
     fullWidth,
     inputValue,
-    menuValue = [],
+    children,
     ...props
 }) {
     const classes = classNames('select__default', {
         [className]: className,
-        sx: sx,
+        select__input_sx: sx,
 
     })
     return (
         <div>
             <FormControl>
                 <InputLabel sx={sx}>{inputValue}</InputLabel>
-                <Select value={value} label={label} onChange={onChange} multiple={multiple} className={classes} {...props}>
-                    {menuValue.map((item, idx) => {
-                        return (
-                            <MenuItem value={item.id} key={idx}>{item.name}</MenuItem>
-                        )
-                    })}
+                <Select value={value} label={label} onChange={onChange} multiple={multiple} defaultOpen={defaultOpen} className={classes} {...props}>
+                    {children}
                 </Select>
             </FormControl>
         </div>

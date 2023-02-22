@@ -6,6 +6,7 @@ import Notify from '../../components/common/nofity/notify';
 import { useState } from 'react';
 import DataSelect from '../../components/common/dateSelect/dateSelect';
 import Select from '../../components/common/select/select';
+import { MenuItem } from '@mui/material';
 
 const Home = () => {
   const [showNotify, setShowNotify] = useState(false);
@@ -13,7 +14,7 @@ const Home = () => {
     setShowNotify(false);
   };
   const [age, setAge] = useState('');
-  const [date, setDate] = useState('');
+
   const handleChange = event => {
     setAge(event.target.value);
   };
@@ -60,10 +61,15 @@ const Home = () => {
         message={'add thanh cong'}
         position="top right"
       />
-      <div>HEHEHE</div>
-      <Select value={age} className="hahaha" inputValue={'Hoàng'} sx menuValue={data} onChange={handleChange} />
+      <Select value={age} className="hahaha" inputValue={'Hoàng'} onChange={handleChange}>
+        {data.map(data => (
+          <MenuItem value={data.id} key={data.id}>
+            {data.name}
+          </MenuItem>
+        ))}
+      </Select>
       <br />
-      <DataSelect className="" sx />
+      <DataSelect />
     </div>
   );
 };
