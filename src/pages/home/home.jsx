@@ -8,7 +8,7 @@ import DataSelect from "../../components/common/dateSelect/dateSelect"
 const Home = () => {
   const [age, setAge] = useState('');
   const [date, setDate] = useState('')
-console.log(date, "123")
+  console.log(date, "123")
   const handleChange = (event) => {
     setAge(event.target.value);
   };
@@ -41,6 +41,8 @@ console.log(date, "123")
       <Select value={age} className="hahaha" inputValue={"Hoàng"} sx onChange={handleChange}>
         {data.map(data => <MenuItem value={data.id} key={data.id}>{data.name}</MenuItem>)}
       </Select>
+      <br />
+      <DataSelect sx />
     </div>
   );
 };
