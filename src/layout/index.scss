@@ -1,11 +1,20 @@
 .default__layout-container {
     display: flex;
+    height: 100vh;
 
     .menu__side {
         width: 20%;
+        height: 100%;
+        .side__menu-container {
+            height: 100%;
+            .ant-menu {
+                height: 100%;
+            }
+        }
     }
 
     .page__content {
         flex: 1;
+        height: 100%;
     }
 }
