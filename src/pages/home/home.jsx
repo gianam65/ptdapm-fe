@@ -3,13 +3,15 @@ import Button from '../../components/common/button/button';
 import Checkboxes from '../../components/common/checkbox/checkbox'
 import Select from '../../components/common/select/select';
 import { useState } from "react"
+import DataSelect from "../../components/common/dateSelect/dateSelect"
 const Home = () => {
   const [age, setAge] = useState('');
-
+  const [date, setDate] = useState('')
+console.log(date, "123")
   const handleChange = (event) => {
     setAge(event.target.value);
   };
-console.log(age, "1212")
+  console.log(age)
   const data = [
     {
       "id": 1,
@@ -40,6 +42,8 @@ console.log(age, "1212")
       <Button className="hehehe">Test btn</Button>
       <Checkboxes large />
       <Select value={age} className="hahaha" inputValue={"Hoàng"} sx menuValue={data} onChange={handleChange} />
+      <br/>
+        <DataSelect className="" sx  />
     </div>
   );
 };
