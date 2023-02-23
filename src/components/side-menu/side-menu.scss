@@ -1,0 +1,14 @@
+.side__menu-container {
+    border-right: 1px solid var(--text-color);
+
+    .ant-menu {
+        background-color: #fff;
+        color: var(--text-color);
+
+        .ant-menu-item {
+            &:hover {
+                background-color: var(--primary-color) !important;
+            }
+        }
+    }
+}

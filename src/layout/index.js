@@ -1,5 +1,5 @@
 import './index.scss';
-import SideMenu from '../components/menu/menu';
+import SideMenu from '../components/side-menu/side-menu';
 const PageLayout = ({ children }) => {
   return (
     <div className="default__layout-container">
