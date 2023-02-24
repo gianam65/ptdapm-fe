@@ -40,6 +40,6 @@ const publicRoutes = [
   }
 ];
 
-const privateRoutes = [];
+const privateRoutes = [config.routes.home, config.routes.report, config.routes.employee];
 
 export { publicRoutes, privateRoutes };

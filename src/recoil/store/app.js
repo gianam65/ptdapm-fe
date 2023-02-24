@@ -10,3 +10,8 @@ export const notificationState = atom({
   key: STORE.APP.NOTIFICATION,
   default: ''
 });
+
+export const pageErrorMessageState = atom({
+  key: STORE.APP.ERROR_MESSAGE,
+  default: ''
+});
