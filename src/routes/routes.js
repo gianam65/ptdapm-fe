@@ -1,6 +1,6 @@
 import config from '../config';
 import Home from '../pages/home/home';
-import Employee from '../pages/employees/listEmployee/listEmployee';
+import EmployeesPage from '../pages/employees/employees-page';
 import ErrorPage from '../pages/error-page/error-page';
 import ReportPage from '../pages/report/report-page';
 import LoginPage from '../pages/login/login';
@@ -15,7 +15,7 @@ const publicRoutes = [
   },
   {
     path: config.routes.employee,
-    element: <Employee />,
+    element: <EmployeesPage />,
     pageIcon: <UserOutlined />,
     label: 'Employees',
     needShowSideMenu: true
