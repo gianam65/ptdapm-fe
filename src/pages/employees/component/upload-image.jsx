@@ -9,7 +9,7 @@ const UploadImage = () => {
     const filename =
       file.name
         .split('.')[0]
-        .replace(/[&\/\\#,+()$~%'":*?<>{}]/g, '')
+        .replace(/[&\\#,+()$~%'":*?<>{}]/g, '')
         .toLowerCase() + `_${timestamp}`;
     const fileExtension = file.name.split('.').pop();
 

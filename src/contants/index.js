@@ -5,6 +5,8 @@ export const STORE = {
   },
   ACCOUNT: {
     ACCOUNT_ID: '@account/accountId',
-    ACCESS_TOKEN: '@account/accessToken'
+    ACCESS_TOKEN: '@account/accessToken',
+    ACCOUNT_NAME: '@account/accountName',
+    ACCOUNT_EMAIL: '@account/accountEmail'
   }
 };
