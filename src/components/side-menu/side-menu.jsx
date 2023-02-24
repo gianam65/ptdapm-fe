@@ -1,7 +1,6 @@
 import { Menu } from 'antd';
 import { useNavigate } from 'react-router-dom';
 import { publicRoutes } from '../../routes';
-
 import './side-menu.scss';
 
 const ROUTES_NEED_TO_SHOW = ['/', '/home', '/reports', '/employee'];

@@ -3,20 +3,19 @@ import ReactDOM from 'react-dom/client';
 import App from './App';
 import GlobalStyles from './components/global-styles/global-styles';
 import reportWebVitals from './reportWebVitals';
-import { store } from './store/index';
-import { Provider } from 'react-redux';
 import { BrowserRouter as Router } from 'react-router-dom';
+import { RecoilRoot } from 'recoil';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
-    <Router>
-      <GlobalStyles>
-        <Provider store={store}>
+    <RecoilRoot>
+      <Router>
+        <GlobalStyles>
           <App />
-        </Provider>
-      </GlobalStyles>
-    </Router>
+        </GlobalStyles>
+      </Router>
+    </RecoilRoot>
   </React.StrictMode>
 );
 
