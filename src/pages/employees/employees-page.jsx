@@ -1,9 +1,9 @@
-import UploadImage from './component/uploadImage';
+import UploadImage from './component/upload-image';
 
 const EmployeesPage = () => {
   return (
     <div>
-      <div className="employees__container">This is employees page</div>;
+      <div className="employees__container">This is employees page</div>
       <UploadImage />
       <img
         alt=""
