@@ -2,6 +2,7 @@ import { useRecoilValue } from 'recoil';
 import { useEffect, useState } from 'react';
 import { accessTokenState } from '../../recoil/store/account';
 import { useLocation, useNavigate } from 'react-router-dom';
+// import { privateRoutes } from '../../routes';
 
 const PUBLIC_ROUTES = ['/login'];
 const ProtectedComponents = ({ children }) => {

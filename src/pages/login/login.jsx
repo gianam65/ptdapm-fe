@@ -1,11 +1,12 @@
 import { Input } from 'antd';
 import { EyeTwoTone, EyeInvisibleOutlined } from '@ant-design/icons';
-import Button from '../../components/common/button/button';
+import Button from '../../components/button/button';
 import './login.scss';
 import loginBg from '../../assets/images/login_bg.jpg';
 import { useRef } from 'react';
 import { useSetRecoilState } from 'recoil';
 import { accessTokenState, accountIdState, accountNameState, accountEmailState } from '../../recoil/store/account';
+import { loadingState } from '../../recoil/store/app';
 import { getAPIHostName } from '../../utils/';
 import { httpPost } from '../../services/request';
 const LoginPage = () => {
@@ -15,12 +16,14 @@ const LoginPage = () => {
   const setAccountId = useSetRecoilState(accountIdState);
   const setAccountName = useSetRecoilState(accountNameState);
   const setAccountEmail = useSetRecoilState(accountEmailState);
+  const setPageLoading = useSetRecoilState(loadingState);
 
   const handleLogin = () => {
     const email = emailRef?.current.input.value;
     const password = passwordRef?.current.input.value;
     const url = `${getAPIHostName()}/auth/login`;
 
+    setPageLoading(true);
     httpPost(url, {
       email,
       password
@@ -31,9 +34,11 @@ const LoginPage = () => {
         setAccountId(_id);
         setAccountName(username);
         setAccountEmail(email);
+        setPageLoading(false);
       })
       .catch(err => {
         console.log('err :>> ', err);
+        setPageLoading(false);
       });
   };
 

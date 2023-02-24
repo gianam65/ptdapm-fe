@@ -6,12 +6,16 @@ import reportWebVitals from './reportWebVitals';
 import { BrowserRouter as Router } from 'react-router-dom';
 import { RecoilRoot } from 'recoil';
 import ProtectedComponents from './layout/protected-components/protected-components';
+import Loading from './components/loading/loading';
+import Notification from './components/nofity/notify';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
     <RecoilRoot>
       <Router>
+        <Loading />
+        <Notification />
         <ProtectedComponents>
           <GlobalStyles>
             <App />
