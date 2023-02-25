@@ -10,7 +10,7 @@ const publicRoutes = [
     path: config.routes.home,
     element: <Home />,
     pageIcon: <ContainerOutlined />,
-    label: 'Home',
+    label: 'Overview',
     needShowSideMenu: true
   },
   {

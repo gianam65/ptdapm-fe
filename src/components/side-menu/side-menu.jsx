@@ -4,7 +4,6 @@ import { publicRoutes } from '../../routes';
 import './side-menu.scss';
 import { useRecoilState } from 'recoil';
 import { accessTokenState } from '../../recoil/store/account';
-import { useMemo } from 'react';
 import { ExportOutlined } from '@ant-design/icons';
 
 const ROUTES_NEED_TO_SHOW = ['/', '/home', '/reports', '/employee'];
@@ -15,29 +14,31 @@ const DEFAULT_MENU_ITEMS = publicRoutes
 const SideMenu = () => {
   const navigation = useNavigate();
   const [accessToken, setAccessToken] = useRecoilState(accessTokenState);
-  const menusToRender = useMemo(() => {
-    return accessToken
-      ? [...DEFAULT_MENU_ITEMS, { key: '/logout', label: 'Logout', icon: <ExportOutlined /> }]
-      : DEFAULT_MENU_ITEMS;
-  }, [accessToken]);
 
   const handleNavigateToAnotherPage = e => {
     const redirectURL = `${e.key}`;
-    if (redirectURL === '/logout') {
-      setAccessToken('');
-      return;
-    }
+
     navigation(redirectURL);
+  };
+
+  const handleLogout = () => {
+    setAccessToken('');
   };
   return (
     <div className="side__menu-container">
       <Menu
-        defaultSelectedKeys={['home']}
+        defaultSelectedKeys={['/']}
         mode="inline"
         theme="dark"
-        items={menusToRender}
+        items={DEFAULT_MENU_ITEMS}
         onClick={handleNavigateToAnotherPage}
       />
+      {accessToken && (
+        <div className="log__out-section" onClick={handleLogout}>
+          <ExportOutlined />
+          Logout
+        </div>
+      )}
     </div>
   );
 };

@@ -1,4 +1,4 @@
-import { Input } from 'antd';
+import { Input, notification } from 'antd';
 import { EyeTwoTone, EyeInvisibleOutlined } from '@ant-design/icons';
 import Button from '../../components/button/button';
 import './login.scss';
@@ -37,7 +37,10 @@ const LoginPage = () => {
         setPageLoading(false);
       })
       .catch(err => {
-        console.log('err :>> ', err);
+        notification.error({
+          message: err.response.data,
+          placement: 'topRight'
+        });
         setPageLoading(false);
       });
   };
