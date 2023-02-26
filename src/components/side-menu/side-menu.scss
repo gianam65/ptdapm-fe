@@ -1,7 +1,7 @@
 .side__menu-container {
-    border-right: 1px solid var(--text-color);
     display: flex;
     flex-direction: column;
+    box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.05);
 
     .ant-menu {
         background-color: #fff;

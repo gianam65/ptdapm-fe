@@ -1,10 +1,11 @@
 import { Menu } from 'antd';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { publicRoutes } from '../../routes';
 import './side-menu.scss';
 import { useRecoilState } from 'recoil';
 import { accessTokenState } from '../../recoil/store/account';
 import { ExportOutlined } from '@ant-design/icons';
+import { useMemo } from 'react';
 
 const ROUTES_NEED_TO_SHOW = ['/', '/home', '/reports', '/employee'];
 const DEFAULT_MENU_ITEMS = publicRoutes
@@ -12,6 +13,8 @@ const DEFAULT_MENU_ITEMS = publicRoutes
   .map(filteredRoute => ({ key: filteredRoute.path, icon: filteredRoute.pageIcon, label: filteredRoute.label }));
 
 const SideMenu = () => {
+  const location = useLocation();
+  const { pathname } = location;
   const navigation = useNavigate();
   const [accessToken, setAccessToken] = useRecoilState(accessTokenState);
 
@@ -21,13 +24,18 @@ const SideMenu = () => {
     navigation(redirectURL);
   };
 
+  const defaultActiveMenu = useMemo(() => {
+    return pathname ? pathname : '/';
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [pathname]);
+
   const handleLogout = () => {
     setAccessToken('');
   };
   return (
     <div className="side__menu-container">
       <Menu
-        defaultSelectedKeys={['/']}
+        defaultSelectedKeys={[defaultActiveMenu]}
         mode="inline"
         theme="dark"
         items={DEFAULT_MENU_ITEMS}
