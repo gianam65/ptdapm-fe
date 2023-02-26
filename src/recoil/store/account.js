@@ -25,3 +25,21 @@ export const accountEmailState = atom({
   default: '',
   effects_UNSTABLE: [persistAtom]
 });
+
+export const accountRoleState = atom({
+  key: STORE.ACCOUNT.ACCOUNT_ROLE,
+  default: [],
+  effects_UNSTABLE: [persistAtom]
+});
+
+export const accountStatusState = atom({
+  key: STORE.ACCOUNT.ACCOUNT_STATUS,
+  default: '',
+  effects_UNSTABLE: [persistAtom]
+});
+
+export const accountAvatarState = atom({
+  key: STORE.ACCOUNT.ACCOUNT_AVATAR,
+  default: '',
+  effects_UNSTABLE: [persistAtom]
+});

@@ -1,0 +1,100 @@
+.page__content-header {
+    width: 100%;
+    border-radius: 6px;
+    height: var(--header-height);
+    background-color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0px 20px;
+    margin-bottom: 28px;
+
+    .header__bread-cum {
+        display: flex;
+        justify-content: center;
+        .bread__cum-path {
+            font-size: 14px;
+            margin: 2px 0 0 3px;
+            text-transform: capitalize;
+        }
+    }
+
+    .header__user-info {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+
+        .header__user-ava {
+            width: 42px;
+            height: 42px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--primary-color);
+            border-radius: 50%;
+            color: #fff;
+        }
+        .header__user-img {
+            width: 42px;
+            height: 42px;
+            object-fit: cover;
+            border-radius: 50%;
+        }
+
+        .name_and_status {
+            text-align: right;
+        }
+        
+        .header__user-name {
+            font-weight: 500;
+        }
+    }
+
+    .header__action {
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 100%;
+
+        .anticon-ellipsis {
+            transform: rotate(90deg);
+        }
+
+        
+    }
+}
+
+.header__action-dropdown {
+    .dropdown__item {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        font-weight: 300;
+        .anticon {
+            font-size: 16px;
+        }
+    }
+}
+
+.change__password-container {
+    margin-top: 30px;
+    
+
+    .change__password-label {
+        margin-bottom: 6px;
+        font-weight: 500;
+    }
+
+    .change__password-inp {
+        margin-bottom: 16px;
+    }
+}
+
+.change__password-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  border-bottom: 1px solid var(--text-color);
+  padding-bottom: 6px;
+} 

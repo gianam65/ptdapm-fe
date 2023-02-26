@@ -14,6 +14,12 @@ const publicRoutes = [
     needShowSideMenu: true
   },
   {
+    path: config.routes.overview,
+    element: <Home />,
+    pageIcon: <ContainerOutlined />,
+    needShowSideMenu: true
+  },
+  {
     path: config.routes.employee,
     element: <EmployeesPage />,
     pageIcon: <UserOutlined />,

@@ -50,16 +50,6 @@
             display: block;
         }
 
-        .login__right-inp, #login__password {
-            border-color: #555;
-            font-family: inherit;
-
-            &::placeholder {
-                font-family: inherit;
-                font-size: 14px;
-            }
-        }
-
         .login__right-btn {
             margin-top: 40px;
             width: 100%;

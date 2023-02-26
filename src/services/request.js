@@ -1,5 +1,3 @@
-import axios from 'axios';
-
 export function objectToFormData(obj, form, namespace) {
   var fd = form || new FormData();
   var formKey;
@@ -26,15 +24,15 @@ const headers = {
   Accept: 'application/json'
 };
 
-export function checkHttpStatus(response) {
+export function checkHttpStatus(response, requestOptions) {
   if (response.status >= 200 && response.status < 300) {
-    return response?.data;
+    return response.json();
   } else {
     var isJSON = true;
     var result;
 
     try {
-      result = response.then(data => {
+      result = response.json().then(data => {
         if (typeof data == 'object') {
           data.status = response.status;
           return data;
@@ -51,7 +49,7 @@ export function checkHttpStatus(response) {
       return result;
     } else {
       var error = new Error(response.statusText);
-      error.response = response.then(data => {
+      error.response = response.json().then(data => {
         data.status = response.status;
         return data;
       });
@@ -60,19 +58,30 @@ export function checkHttpStatus(response) {
   }
 }
 
-export function httpGet(url) {
-  const options = { headers: headers };
-  return fetch(url, options).then(res => checkHttpStatus(res));
+export function httpPost(url, body) {
+  const options = {
+    method: 'post',
+    headers: headers,
+    body: objectToFormData(body)
+  };
+  return fetch(url, options).then(res => checkHttpStatus(res, { ...options, url }));
+  // .then(parseJSON)
 }
 
-export function httpPost(url, body = {}) {
-  return axios.post(url, body).then(res => checkHttpStatus(res));
+export function httpPut(url, body) {
+  const options = {
+    method: 'put',
+    headers: headers,
+    body: objectToFormData(body)
+  };
+  return fetch(url, options).then(res => checkHttpStatus(res, { ...options, url }));
 }
 
-export function httpPut(url, body = {}) {
-  return axios.put(url, body).then(res => checkHttpStatus(res));
-}
-
-export function httpDelete(url, body = {}) {
-  return axios.delete(url, body).then(res => checkHttpStatus(res));
+export function httpDelete(url) {
+  const options = {
+    method: 'delete',
+    headers: headers
+  };
+  return fetch(url, options).then(res => checkHttpStatus(res, { ...options, url }));
+  // .then(parseJSON)
 }
