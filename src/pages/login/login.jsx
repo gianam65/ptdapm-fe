@@ -1,5 +1,4 @@
 import { notification } from 'antd';
-import { EyeTwoTone, EyeInvisibleOutlined } from '@ant-design/icons';
 import Button from '../../components/button/button';
 import './login.scss';
 import loginBg from '../../assets/images/login_bg.jpg';
@@ -92,7 +91,6 @@ const LoginPage = () => {
               className="login__right-inp"
               id="login__password"
               placeholder="Please enter your password"
-              iconRender={visible => (visible ? <EyeTwoTone /> : <EyeInvisibleOutlined />)}
               ref={passwordRef}
               onPressEnter={handleLogin}
             />
