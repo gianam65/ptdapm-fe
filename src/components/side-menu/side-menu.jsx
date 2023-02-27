@@ -6,8 +6,9 @@ import { useRecoilState } from 'recoil';
 import { accessTokenState } from '../../recoil/store/account';
 import { ExportOutlined } from '@ant-design/icons';
 import { useMemo } from 'react';
+import mainLogo from '../../assets/images/dthl_logo.png';
 
-const ROUTES_NEED_TO_SHOW = ['/', '/home', '/reports', '/employee'];
+const ROUTES_NEED_TO_SHOW = ['/', '/home', '/reports', '/employee', '/department', '/salary'];
 const DEFAULT_MENU_ITEMS = publicRoutes
   .filter(route => ROUTES_NEED_TO_SHOW.includes(route.path))
   .map(filteredRoute => ({ key: filteredRoute.path, icon: filteredRoute.pageIcon, label: filteredRoute.label }));
@@ -34,6 +35,7 @@ const SideMenu = () => {
   };
   return (
     <div className="side__menu-container">
+      <img src={mainLogo} alt="TLU LOGO" className="side__menu-logo" />
       <Menu
         defaultSelectedKeys={[defaultActiveMenu]}
         mode="inline"

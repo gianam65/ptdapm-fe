@@ -4,19 +4,30 @@ import EmployeesPage from '../pages/employees/employees-page';
 import ErrorPage from '../pages/error-page/error-page';
 import ReportPage from '../pages/report/report-page';
 import LoginPage from '../pages/login/login';
-import { ContainerOutlined, PieChartOutlined, DesktopOutlined, UserOutlined } from '@ant-design/icons';
+import SalaryPage from '../pages/salary/salary';
+import DepartmentPage from '../pages/department/department';
+import {
+  ContainerOutlined,
+  PieChartOutlined,
+  AppstoreOutlined,
+  BarChartOutlined,
+  UserOutlined,
+  DollarOutlined,
+  ClusterOutlined
+} from '@ant-design/icons';
 const publicRoutes = [
   {
     path: config.routes.home,
     element: <Home />,
-    pageIcon: <ContainerOutlined />,
-    label: 'Overview',
+    pageIcon: <AppstoreOutlined />,
+    label: 'Dashboard',
     needShowSideMenu: true
   },
   {
     path: config.routes.overview,
     element: <Home />,
     pageIcon: <ContainerOutlined />,
+    label: 'Overview',
     needShowSideMenu: true
   },
   {
@@ -35,8 +46,22 @@ const publicRoutes = [
   {
     path: config.routes.report,
     element: <ReportPage />,
-    pageIcon: <DesktopOutlined />,
+    pageIcon: <BarChartOutlined />,
     label: 'Reports',
+    needShowSideMenu: true
+  },
+  {
+    path: config.routes.department,
+    element: <DepartmentPage />,
+    pageIcon: <ClusterOutlined />,
+    label: 'Department',
+    needShowSideMenu: true
+  },
+  {
+    path: config.routes.salary_rank,
+    element: <SalaryPage />,
+    pageIcon: <DollarOutlined />,
+    label: 'Salary',
     needShowSideMenu: true
   },
   {
@@ -46,6 +71,12 @@ const publicRoutes = [
   }
 ];
 
-const privateRoutes = [config.routes.home, config.routes.report, config.routes.employee];
+const privateRoutes = [
+  config.routes.home,
+  config.routes.report,
+  config.routes.employee,
+  config.routes.salary_rank,
+  config.routes.department
+];
 
 export { publicRoutes, privateRoutes };
