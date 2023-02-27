@@ -58,6 +58,12 @@ export function checkHttpStatus(response, requestOptions) {
   }
 }
 
+export function httpGet(url) {
+  const options = { headers: headers };
+  return fetch(url, options).then(res => checkHttpStatus(res, { ...options, url }));
+  // .then(parseJSON)
+}
+
 export function httpPost(url, body) {
   const options = {
     method: 'post',

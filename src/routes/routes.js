@@ -6,6 +6,7 @@ import ReportPage from '../pages/report/report-page';
 import LoginPage from '../pages/login/login';
 import SalaryPage from '../pages/salary/salary';
 import DepartmentPage from '../pages/department/department';
+import SettingsPage from '../pages/settings/settings';
 import {
   ContainerOutlined,
   PieChartOutlined,
@@ -13,7 +14,8 @@ import {
   BarChartOutlined,
   UserOutlined,
   DollarOutlined,
-  ClusterOutlined
+  ClusterOutlined,
+  SettingOutlined
 } from '@ant-design/icons';
 const publicRoutes = [
   {
@@ -62,6 +64,13 @@ const publicRoutes = [
     element: <SalaryPage />,
     pageIcon: <DollarOutlined />,
     label: 'Salary',
+    needShowSideMenu: true
+  },
+  {
+    path: config.routes.settings,
+    element: <SettingsPage />,
+    pageIcon: <SettingOutlined />,
+    label: 'Settings',
     needShowSideMenu: true
   },
   {
