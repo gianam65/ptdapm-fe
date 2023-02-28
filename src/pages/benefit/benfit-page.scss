@@ -1,0 +1,108 @@
+.benefit__container{
+    background: #FFFFFF;
+border-radius: 6px;
+margin: 15px;
+// padding: 0 10px;
+box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+}
+.benefit__center{
+    // min-height: 750px ;
+}
+.benefit__center .ant-table-content .ant-table-thead tr th{
+    font-weight: 700;
+font-size: 12px;
+text-transform: uppercase;
+line-height: 15px;
+background: #F3F2F7;
+color: #5E5873;
+width: 20%;
+}
+.benefit__center .ant-table-content .ant-table-thead tr th:last-child{
+    text-align: center;
+}
+.benefit__center .ant-table-content table .ant-table-tbody tr td{
+font-weight: 400;
+font-size: 14px;
+line-height: 21px;
+color: #6E6B7B;
+padding: 25px 16px;
+border-bottom: 2px solid #efefef;
+}
+.benefit__top{
+    padding: 20px 16px;
+}
+.benefit__top-breadcrum{
+font-weight: 400;
+font-size: 11px;
+line-height: 20px;
+}
+.benefit__action{
+    position: relative;
+    text-align: center;
+    cursor: pointer;
+}
+.benefit__action-menu{
+    display: flex;
+    z-index: 9999;
+    right: -16px;
+    top: 0;
+    flex-direction: column;
+}
+.benefit__action-menu {
+
+    .benefit__button{
+        margin-bottom: 15px;
+        margin-left: 15px;
+        margin-right: 15px;
+    }
+    .benefit__button:first-child{
+        margin-top: 15px;
+    }
+}
+.benefit__action-toggle{
+    width: fit-content;
+    margin: 0 auto;
+    cursor: pointer;
+}
+.ant-popover-inner{
+    padding: 0 !important;
+}
+.benefit__action-menu .ant-radio-button-wrapper , .benefit__action-menu .ant-radio-button{
+border-radius: none !important;
+border: unset;
+}
+
+
+.benefit__top-search-input{
+    border: 1px solid #B9B9C3 ;
+    border-radius: 5px;
+    height: 38px;
+    font-size: 14px;
+    line-height: 24px;
+    padding-left: 15px;
+    color: #B9B9C3;
+}
+.benefit__top-search-input::placeholder{
+    font-weight: 400;
+    font-size: 14px;
+    line-height: 24px;
+    color: #B9B9C3;
+}
+.benefit__top-modal-btn{
+    font-weight: 400;
+    font-size: 14px;
+    line-height: 38px;
+    border-radius: 5px;
+    color: #FFFFFF;
+    text-align: center;
+    height: 38px;
+    padding: 0 22px;
+    margin-left: 15px;
+}
+.benefit__top-right{
+    display: flex;
+}
+.benefit__top{
+    display: flex;
+    justify-content:space-between;
+}
