@@ -12,8 +12,5 @@ export const STORE = {
     ACCOUNT_ROLE: '@account/accountRole',
     ACCOUNT_STATUS: '@account/accountStatus',
     ACCOUNT_AVATAR: '@account/accountAvatar'
-  },
-  DEPARTMENT:{
-    DEPARTMENT_LIST: '@department/departmentList',
   }
 };

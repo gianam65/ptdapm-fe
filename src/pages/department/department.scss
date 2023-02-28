@@ -1,19 +1,23 @@
-.department__action{
-    display: flex;
-    justify-content: flex-end;
-    margin-bottom: 20px;
+.department__action {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 20px;
 }
-.action__edit{
-    margin-bottom: 13px;
-    div{
-        display: inline-block;
-       margin-left: 8px;
-    }
+.action__edit {
+  margin-bottom: 13px;
+  div {
+    display: inline-block;
+    margin-left: 8px;
+  }
 }
-.action__delete{
-    margin-bottom: 13px 0;
-    div{
-        display: inline-block;
-        margin-left: 8px;
-    }
+.action__delete {
+  margin-bottom: 13px 0;
+  div {
+    display: inline-block;
+    margin-left: 8px;
+  }
+}
+
+.department__row-action {
+  text-align: right;
 }

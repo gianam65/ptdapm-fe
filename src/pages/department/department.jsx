@@ -97,7 +97,7 @@ export default function DepartmentPage() {
     {
       title: 'ACTION',
       render: (_, item) => (
-        <div>
+        <div className="department__row-action">
           <Popover content={content(item._id)} trigger="click">
             <MoreOutlined />
           </Popover>
@@ -132,7 +132,7 @@ export default function DepartmentPage() {
         />
         <Button leftIcon={<PlusOutlined />}>ADD</Button>
       </div>
-      <Table columns={columns} rowKey={record => record._id} dataSource={_deparmentList()} />
+      <Table pagination={false} columns={columns} rowKey={record => record._id} dataSource={_deparmentList()} />
     </div>
   );
 }
