@@ -4,7 +4,8 @@ import EmployeesPage from '../pages/employees/employees-page';
 import ErrorPage from '../pages/error-page/error-page';
 import ReportPage from '../pages/report/report-page';
 import LoginPage from '../pages/login/login';
-import { ContainerOutlined, PieChartOutlined, DesktopOutlined, UserOutlined } from '@ant-design/icons';
+import Department from '../pages/department/department';
+import { ContainerOutlined, PieChartOutlined,DesktopOutlined,  HddOutlined, UserOutlined } from '@ant-design/icons';
 const publicRoutes = [
   {
     path: config.routes.home,
@@ -43,7 +44,14 @@ const publicRoutes = [
     path: config.routes.login,
     element: <LoginPage />,
     needShowSideMenu: false
-  }
+  },
+  {
+    path: config.routes.department,
+    element: <Department />,
+    pageIcon: <HddOutlined />,
+    label:"Department",
+    needShowSideMenu: true
+  },
 ];
 
 const privateRoutes = [config.routes.home, config.routes.report, config.routes.employee];

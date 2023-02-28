@@ -4,6 +4,7 @@ const routes = {
   error: '/*',
   report: '/reports',
   login: '/login',
+  department: '/department',
   benefit: '/benefit',
   salary_rank: '/salary_rank',
   overview: '/overview'
