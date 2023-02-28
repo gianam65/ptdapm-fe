@@ -3,14 +3,27 @@ import { Input } from 'antd';
 import { forwardRef } from 'react';
 import classNames from 'classnames';
 
-const CustomInput = ({ type = 'text', customClass, ...props }, ref) => {
+const CustomInput = (
+  {
+    type = 'text', // password || search
+    customClass,
+    ...props
+  },
+  ref
+) => {
   return (
     <div
-      className={classNames('custom__input-container', {
+      className={classNames('custom__input-container', 'input__search', {
         [customClass]: customClass
       })}
     >
-      {type === 'password' ? <Input.Password {...props} ref={ref} /> : <Input ref={ref} {...props} />}
+      {type === 'password' ? (
+        <Input.Password ref={ref} {...props} />
+      ) : type === 'search' ? (
+        <Input.Search ref={ref} {...props} />
+      ) : (
+        <Input ref={ref} {...props} />
+      )}
     </div>
   );
 };

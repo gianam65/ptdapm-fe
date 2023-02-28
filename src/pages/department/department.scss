@@ -1,7 +1,14 @@
 .department__action {
   display: flex;
   justify-content: flex-end;
+  gap: 12px;
   margin-bottom: 20px;
+
+  .department__search-btn {
+    .button__text {
+      margin-right: 4px;
+    }
+  }
 }
 .action__edit {
   margin-bottom: 13px;
@@ -20,4 +27,18 @@
 
 .department__row-action {
   text-align: right;
+}
+
+.action__delete, .action__edit {
+  transition: 0.12s all ease-in-out;
+  cursor: pointer;
+
+  &:hover {
+    color: var(--primary-color);
+  }
+}
+
+.department__total-emp {
+  color: var(--primary-color);
+  font-weight: 500;
 }

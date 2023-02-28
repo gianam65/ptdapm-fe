@@ -1,19 +1,21 @@
 import './department.scss';
 import { PlusOutlined, MoreOutlined, EditOutlined, DeleteOutlined, ExclamationCircleFilled } from '@ant-design/icons';
 import Button from '../../components/button/button';
-import { Input, Modal, Table, Popover, notification } from 'antd';
+import { Modal, Table, Popover, notification } from 'antd';
 import { getAPIHostName } from '../../utils/';
-import { httpDeleteDepartment, httpGet } from '../../services/request';
+import { httpGet, httpDelete } from '../../services/request';
 import { useEffect, useState } from 'react';
 import { useRecoilValue, useSetRecoilState } from 'recoil';
 import { accessTokenState } from '../../recoil/store/account';
 import { loadingState } from '../../recoil/store/app';
+import CustomInput from '../../components/custom-input/custom-input';
 
 const { confirm } = Modal;
-const { Search } = Input;
 export default function DepartmentPage() {
   const accessToken = useRecoilValue(accessTokenState);
   const [departmentList, setDepartmentList] = useState([]);
+  const [searchValue, setSearchValue] = useState('');
+  const [isLoadingTable, setIsLoadingTable] = useState(false);
   const setPageLoading = useSetRecoilState(loadingState);
   useEffect(() => {
     const getDepartment = () => {
@@ -22,7 +24,7 @@ export default function DepartmentPage() {
       httpGet(url)
         .then(res => {
           if (res.success) {
-            const { departmentList } = res.data[0];
+            const { departmentList } = res.data;
             setDepartmentList(departmentList);
           }
           setPageLoading(false);
@@ -36,6 +38,8 @@ export default function DepartmentPage() {
         });
     };
     getDepartment();
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const content = id => {
@@ -63,36 +67,49 @@ export default function DepartmentPage() {
       title: 'Do you want to delete this department?',
       icon: <ExclamationCircleFilled />,
       onOk() {
-        const deleteUrl = `${getAPIHostName()}/departments/${idDelete}`;
-        httpDeleteDepartment(deleteUrl, accessToken)
+        setIsLoadingTable(true);
+        const url = `${getAPIHostName()}/departments/${idDelete}`;
+        httpDelete(url, accessToken)
           .then(res => {
-            console.log(res);
+            if (res.success) {
+              setDepartmentList(oldDepartments => oldDepartments.filter(deparment => deparment._id !== idDelete));
+              notification.success({
+                title: 'Success',
+                message: res.message || 'Delete deparment success'
+              });
+            }
+            setIsLoadingTable(false);
           })
-          .catch(err => {
-            console.log(err);
+          .catch(() => {
+            notification.error({
+              title: 'Error',
+              message: 'Delete deparment failed'
+            });
+            setIsLoadingTable(false);
           });
       },
       onCancel() {
-        console.log('Cancel');
+        return;
       }
     });
   };
 
   const columns = [
     {
-      title: 'CODE',
+      title: 'Code',
       dataIndex: 'code',
       key: 'code'
     },
     {
-      title: 'NAME',
+      title: 'Department name',
       dataIndex: 'name',
       key: 'name'
     },
     {
-      title: 'EMPLOYEESID ',
+      title: 'Total employees ',
       key: 'employeesId',
-      dataIndex: 'employeesId'
+      dataIndex: 'employeesId',
+      render: (_, record) => <span className="department__total-emp">{record.employeesId?.length || 0} employees</span>
     },
     {
       title: 'ACTION',
@@ -106,33 +123,34 @@ export default function DepartmentPage() {
     }
   ];
 
-  const _deparmentList = () => {
-    return departmentList.filter(item => item.is_deleted);
+  const getDataSource = () => {
+    let departmentToRender = departmentList.filter(item => item.is_deleted);
+
+    return departmentToRender.filter(
+      item => item.name?.indexOf(searchValue) >= 0 || item.code?.indexOf(searchValue) >= 0
+    );
   };
-
-  // const handleSearchDepartment = e => {
-  //   const searchValue = e.target.value || '';
-
-  //   const searchResult = departmentList.filter(
-  //     item => item.name?.includes(searchValue) || item.code?.includes(searchValue)
-  //   );
-
-  //   setDepartmentList(searchResult);
-  // };
 
   return (
     <div>
       <div className="department__action">
-        <Search
+        <CustomInput
+          type="search"
           placeholder="Type here to search"
-          // onChange={handleSearchDepartment}
-          style={{
-            width: 200
-          }}
+          onChange={e => setSearchValue(e.target.value)}
+          className="department__search-inp"
         />
-        <Button leftIcon={<PlusOutlined />}>ADD</Button>
+        <Button className="department__search-btn" rightIcon={<PlusOutlined />}>
+          Add department
+        </Button>
       </div>
-      <Table pagination={false} columns={columns} rowKey={record => record._id} dataSource={_deparmentList()} />
+      <Table
+        pagination={false}
+        loading={isLoadingTable}
+        columns={columns}
+        rowKey={record => record._id}
+        dataSource={getDataSource()}
+      />
     </div>
   );
 }

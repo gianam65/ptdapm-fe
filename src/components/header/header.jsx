@@ -86,7 +86,7 @@ const Header = () => {
     <div className="page__content-header">
       <div className="header__bread-cum">
         <HomeIcon size={20} />
-        <span className="bread__cum-path">{pathname === '/' ? '/Dashboard' : pathname}</span>
+        <span className="bread__cum-path">{pathname === '/' ? ' >> Dashboard' : pathname.replace('/', ' >> ')}</span>
       </div>
       <div className="header__user-info">
         <div className="name_and_status">
