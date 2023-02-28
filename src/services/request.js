@@ -58,6 +58,12 @@ export function checkHttpStatus(response, requestOptions) {
   }
 }
 
+export function httpGet(url) {
+  const options = { headers: headers };
+  return fetch(url, options).then(res => checkHttpStatus(res, { ...options, url }));
+  // .then(parseJSON)
+}
+
 export function httpPost(url, body) {
   const options = {
     method: 'post',
@@ -86,18 +92,10 @@ export function httpDelete(url) {
   // .then(parseJSON)
 }
 
-export function httpGet(url){
-  const options = {
-    method:'get'
-  };
-  return fetch(url, options).then(res => checkHttpStatus(res, { ...options, url }));
-}
-
-
-export function httpDeleteDepartment(url,token) {
+export function httpDeleteDepartment(url, token) {
   const options = {
     method: 'DELETE',
-    headers: {"authorization":`Bearer ${token}`}
-  }
+    headers: { authorization: `Bearer ${token}` }
+  };
   return fetch(url, options).then(res => checkHttpStatus(res, { ...options, url }));
 }

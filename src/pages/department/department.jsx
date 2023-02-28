@@ -1,30 +1,38 @@
 import './department.scss';
 import { PlusOutlined, MoreOutlined, EditOutlined, DeleteOutlined, ExclamationCircleFilled } from '@ant-design/icons';
 import Button from '../../components/button/button';
-import { Input, Modal, Table, Popover } from 'antd';
+import { Input, Modal, Table, Popover, notification } from 'antd';
 import { getAPIHostName } from '../../utils/';
 import { httpDeleteDepartment, httpGet } from '../../services/request';
 import { useEffect, useState } from 'react';
-import { useRecoilValue } from 'recoil';
+import { useRecoilValue, useSetRecoilState } from 'recoil';
 import { accessTokenState } from '../../recoil/store/account';
+import { loadingState } from '../../recoil/store/app';
 
 const { confirm } = Modal;
 const { Search } = Input;
-export default function Department() {
+export default function DepartmentPage() {
   const accessToken = useRecoilValue(accessTokenState);
   const [departmentList, setDepartmentList] = useState([]);
+  const setPageLoading = useSetRecoilState(loadingState);
   useEffect(() => {
     const getDepartment = () => {
       const url = `${getAPIHostName()}/departments`;
+      setPageLoading(true);
       httpGet(url)
         .then(res => {
           if (res.success) {
             const { departmentList } = res.data[0];
             setDepartmentList(departmentList);
           }
+          setPageLoading(false);
         })
-        .catch(err => {
-          console.log(err);
+        .catch(() => {
+          notification.error({
+            title: 'Error',
+            message: 'Can not get deparment data'
+          });
+          setPageLoading(false);
         });
     };
     getDepartment();

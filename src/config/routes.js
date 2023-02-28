@@ -6,8 +6,10 @@ const routes = {
   login: '/login',
   department: '/department',
   benefit: '/benefit',
-  salary_rank: '/salary_rank',
-  overview: '/overview'
+  salary_rank: '/salary',
+  overview: '/overview',
+  department: '/department',
+  settings: '/settings'
 };
 
 export default routes;
