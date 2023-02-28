@@ -42,3 +42,13 @@
   color: var(--primary-color);
   font-weight: 500;
 }
+
+.add__department-modal {
+  .add__department-label {
+    margin-bottom: 6px;
+    font-weight: 500;
+  }
+  .custom__input-container {
+    margin-bottom: 20px;
+  }
+}
