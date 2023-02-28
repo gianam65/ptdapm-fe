@@ -1,13 +1,15 @@
-import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import { publicRoutes } from './routes';
 import PageLayout from './layout';
-
+import { Routes, Route } from 'react-router-dom';
+import { Fragment } from 'react';
 function App() {
-  const publicRouter = createBrowserRouter(publicRoutes);
   return (
-    <PageLayout>
-      <RouterProvider router={publicRouter} />
-    </PageLayout>
+    <Routes>
+      {publicRoutes.map((route, index) => {
+        const Layout = route.needShowSideMenu ? PageLayout : Fragment;
+        return <Route path={route.path} key={index} element={<Layout>{route.element}</Layout>} />;
+      })}
+    </Routes>
   );
 }
 
