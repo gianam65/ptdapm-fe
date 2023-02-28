@@ -91,3 +91,11 @@ export function httpDelete(url) {
   return fetch(url, options).then(res => checkHttpStatus(res, { ...options, url }));
   // .then(parseJSON)
 }
+
+export function httpDeleteDepartment(url, token) {
+  const options = {
+    method: 'DELETE',
+    headers: { authorization: `Bearer ${token}` }
+  };
+  return fetch(url, options).then(res => checkHttpStatus(res, { ...options, url }));
+}
