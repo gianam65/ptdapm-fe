@@ -59,13 +59,18 @@ export default function DepartmentPage() {
     httpPut(url, { name, code }, accessToken)
       .then(res => {
         if (res.success) {
-          console.log('res :>> ', res);
-          // setDepartmentList(oldDepartmentList => [res.data, ...oldDepartmentList]);
+          setDepartmentList(oldDepartmentList => {
+            const updatedDepartmentIdx = oldDepartmentList.findIndex(dep => dep._id === id);
+            oldDepartmentList[updatedDepartmentIdx].name = name;
+            oldDepartmentList[updatedDepartmentIdx].code = code;
+
+            return oldDepartmentList;
+          });
           notification.success({
             title: 'Success',
             message: 'Successfully updated department'
           });
-          // setOpenUpSertDepartment(false);
+          setOpenUpSertDepartment(false);
         }
       })
       .catch(() => {
@@ -73,7 +78,7 @@ export default function DepartmentPage() {
           title: 'Error',
           message: 'Failed to update department'
         });
-        // setOpenUpSertDepartment(false);
+        setOpenUpSertDepartment(false);
       });
   };
 
@@ -172,20 +177,24 @@ export default function DepartmentPage() {
             message: 'Successfully created a new department'
           });
           setOpenUpSertDepartment(false);
+        } else {
+          notification.error({
+            title: 'Error',
+            message: res.message || 'Failed to create new department'
+          });
         }
       })
       .catch(err => {
         notification.error({
           title: 'Error',
-          message: 'Failed to create new department'
+          message: err || 'Failed to create new department'
         });
-        console.log('err :>> ', err);
         setOpenUpSertDepartment(false);
       });
   };
 
   const getDataSource = () => {
-    let departmentToRender = departmentList.filter(item => item.is_deleted);
+    let departmentToRender = departmentList.filter(item => !item.is_deleted);
 
     return departmentToRender.filter(
       item => item.name?.indexOf(searchValue) >= 0 || item.code?.indexOf(searchValue) >= 0
