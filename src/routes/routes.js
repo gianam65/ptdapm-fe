@@ -7,6 +7,7 @@ import LoginPage from '../pages/login/login';
 import SalaryPage from '../pages/salary/salary';
 import DepartmentPage from '../pages/department/department';
 import SettingsPage from '../pages/settings/settings';
+import BenefitPage from '../pages/benefit/benefit-page';
 import {
   PieChartOutlined,
   AppstoreOutlined,
@@ -14,7 +15,8 @@ import {
   UserOutlined,
   DollarOutlined,
   ClusterOutlined,
-  SettingOutlined
+  SettingOutlined,
+  SolutionOutlined
 } from '@ant-design/icons';
 const publicRoutes = [
   {
@@ -59,6 +61,13 @@ const publicRoutes = [
     needShowSideMenu: true
   },
   {
+    path: config.routes.benefit,
+    pageIcon: <SolutionOutlined />,
+    element: <BenefitPage/>,
+    label: 'Benefit',
+    needShowSideMenu: true
+  },
+  {
     path: config.routes.settings,
     element: <SettingsPage />,
     pageIcon: <SettingOutlined />,
@@ -77,6 +86,7 @@ const privateRoutes = [
   config.routes.report,
   config.routes.employee,
   config.routes.salary_rank,
+  config.routes.benefit,
   config.routes.department
 ];
 

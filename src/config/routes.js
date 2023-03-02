@@ -7,6 +7,7 @@ const routes = {
   department: '/department',
   benefit: '/benefit',
   salary_rank: '/salary',
+  overview: '/overview',
   settings: '/settings'
 };
 
