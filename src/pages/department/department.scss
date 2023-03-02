@@ -1,0 +1,54 @@
+.department__action {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-bottom: 20px;
+
+  .department__search-btn {
+    .button__text {
+      margin-right: 4px;
+    }
+  }
+}
+.action__edit {
+  margin-bottom: 13px;
+  div {
+    display: inline-block;
+    margin-left: 8px;
+  }
+}
+.action__delete {
+  margin-bottom: 13px 0;
+  div {
+    display: inline-block;
+    margin-left: 8px;
+  }
+}
+
+.department__row-action {
+  text-align: right;
+}
+
+.action__delete, .action__edit {
+  transition: 0.12s all ease-in-out;
+  cursor: pointer;
+
+  &:hover {
+    color: var(--primary-color);
+  }
+}
+
+.department__total-emp {
+  color: var(--primary-color);
+  font-weight: 500;
+}
+
+.add__department-modal {
+  .add__department-label {
+    margin-bottom: 6px;
+    font-weight: 500;
+  }
+  .custom__input-container {
+    margin-bottom: 20px;
+  }
+}

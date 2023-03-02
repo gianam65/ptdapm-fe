@@ -4,11 +4,10 @@ const routes = {
   error: '/*',
   report: '/reports',
   login: '/login',
+  department: '/department',
   benefit: '/benefit',
   salary_rank: '/salary',
-  benefit: '/benefit',
   overview: '/overview',
-  department: '/department',
   settings: '/settings'
 };
 

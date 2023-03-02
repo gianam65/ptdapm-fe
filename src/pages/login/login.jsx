@@ -51,7 +51,7 @@ const LoginPage = () => {
           setAccountAvatar(user_avatar);
         } else {
           notification.error({
-            message: res.message,
+            message: res.message || 'Failed to login, please retry later',
             placement: 'topRight'
           });
         }
@@ -59,7 +59,7 @@ const LoginPage = () => {
       })
       .catch(err => {
         notification.error({
-          message: err.message.data,
+          message: err.message.data || err,
           placement: 'topRight'
         });
         setPageLoading(false);

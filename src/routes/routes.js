@@ -9,7 +9,6 @@ import DepartmentPage from '../pages/department/department';
 import SettingsPage from '../pages/settings/settings';
 import BenefitPage from '../pages/benefit/benefit-page';
 import {
-  ContainerOutlined,
   PieChartOutlined,
   AppstoreOutlined,
   BarChartOutlined,
@@ -25,13 +24,6 @@ const publicRoutes = [
     element: <Home />,
     pageIcon: <AppstoreOutlined />,
     label: 'Dashboard',
-    needShowSideMenu: true
-  },
-  {
-    path: config.routes.overview,
-    element: <Home />,
-    pageIcon: <ContainerOutlined />,
-    label: 'Overview',
     needShowSideMenu: true
   },
   {

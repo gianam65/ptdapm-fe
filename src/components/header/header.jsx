@@ -1,5 +1,5 @@
 import './header.scss';
-import { Dropdown, Modal } from 'antd';
+import { Dropdown, Modal, notification } from 'antd';
 import {
   UserOutlined,
   EllipsisOutlined,
@@ -8,16 +8,20 @@ import {
   SafetyCertificateOutlined
 } from '@ant-design/icons';
 import HomeIcon from '../svg/homeIcon';
-import { useRecoilValue } from 'recoil';
+import { useRecoilValue, useRecoilState } from 'recoil';
 import {
   accountNameState,
   accountStatusState,
   // accountRoleState,
-  accountAvatarState
+  accountAvatarState,
+  accountIdState,
+  accessTokenState
 } from '../../recoil/store/account';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useState, useRef } from 'react';
 import CustomInput from '../custom-input/custom-input';
+import { getAPIHostName } from '../../utils';
+import { httpPut } from '../../services/request';
 
 const items = [
   {
@@ -25,7 +29,7 @@ const items = [
     label: (
       <span className="dropdown__item">
         <FormOutlined />
-        Edit information
+        Edit info
       </span>
     )
   },
@@ -45,6 +49,8 @@ const Header = () => {
   const accountStatus = useRecoilValue(accountStatusState);
   // const accountRole = useRecoilValue(accountRoleState);
   const accountAvatar = useRecoilValue(accountAvatarState);
+  const accountId = useRecoilValue(accountIdState);
+  const [accessToken, setAccessToken] = useRecoilState(accessTokenState);
   const navigation = useNavigate();
   const location = useLocation();
   const { pathname } = location;
@@ -65,17 +71,58 @@ const Header = () => {
     }
   };
 
-  const validatePassword = () => {
-    const oldPassword = oldPasswordRef.current.input.value;
-    const newPassword = newPasswordRef.current.input.value;
-    const confirmPassword = confirmPasswordRef.current.input.value;
-    console.log('oldPasswordref :>> ', oldPassword);
-    console.log('newPasswordRef :>> ', newPassword);
-    console.log('confirmPasswordRef :>> ', confirmPassword);
+  const validatePassword = (oldPassword, newPassword, confirmPassword) => {
+    if (oldPassword === newPassword)
+      return {
+        valid: false,
+        errorMessage: 'New password must difference from the old password'
+      };
+    if (newPassword !== confirmPassword)
+      return {
+        valid: false,
+        errorMessage: 'New password and old password do not match'
+      };
+
+    return { valid: true };
   };
 
   const handleChangePassword = () => {
-    validatePassword();
+    const oldPassword = oldPasswordRef.current.input.value;
+    const newPassword = newPasswordRef.current.input.value;
+    const confirmPassword = confirmPasswordRef.current.input.value;
+    const { valid, errorMessage } = validatePassword(oldPassword, newPassword, confirmPassword);
+    if (!valid) {
+      notification.error({
+        title: 'Error',
+        message: errorMessage
+      });
+      return;
+    }
+
+    const url = `${getAPIHostName()}/users/${accountId}?changePassword=${true}`;
+    httpPut(
+      url,
+      {
+        oldPassword,
+        newPassword
+      },
+      accessToken
+    )
+      .then(res => {
+        if (res.success) {
+          notification.success({
+            title: 'Success',
+            message: res.message || 'Change password success'
+          });
+          setAccessToken('');
+        }
+      })
+      .catch(err => {
+        notification.error({
+          title: 'Failed',
+          message: err || 'Change password failed'
+        });
+      });
   };
 
   const handleCloseModal = () => {
@@ -86,7 +133,7 @@ const Header = () => {
     <div className="page__content-header">
       <div className="header__bread-cum">
         <HomeIcon size={20} />
-        <span className="bread__cum-path">{pathname === '/' ? '/Dashboard' : pathname}</span>
+        <span className="bread__cum-path">{pathname === '/' ? ' >> Dashboard' : pathname.replace('/', ' >> ')}</span>
       </div>
       <div className="header__user-info">
         <div className="name_and_status">

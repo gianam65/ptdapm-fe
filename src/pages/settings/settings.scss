@@ -1,1 +1,33 @@
-.settings__page-container {}
+.settings__page-container {
+    .settings__user-avatar {
+        width: 50px;
+        height: 50px;
+        object-fit: cover;
+        border-radius: 50%;
+    }
+
+    .settings__username {
+        font-weight: 500;
+        color: var(--primary-color);
+    }
+
+    .settings__action {
+        cursor: pointer;
+        display: block;
+        width: 100%;
+        &:hover {
+            .settings__down, .settings__up {
+                transition: 0.12s all ease-in-out;
+                color: var(--primary-color);
+            }
+        }
+    }
+
+    .settings__down {
+        transform: rotate(90deg);
+    }
+
+    .settings__up {
+        transform: rotate(-90deg);
+    }
+}

@@ -20,11 +20,7 @@ export function objectToFormData(obj, form, namespace) {
   return fd;
 }
 
-const headers = {
-  Accept: 'application/json'
-};
-
-export function checkHttpStatus(response, requestOptions) {
+export function checkHttpStatus(response) {
   if (response.status >= 200 && response.status < 300) {
     return response.json();
   } else {
@@ -58,23 +54,33 @@ export function checkHttpStatus(response, requestOptions) {
   }
 }
 
+const headers = {
+  Accept: 'application/json'
+};
+
 export function httpGet(url) {
   const options = { headers: headers };
   return fetch(url, options).then(res => checkHttpStatus(res, { ...options, url }));
-  // .then(parseJSON)
 }
 
-export function httpPost(url, body) {
+export function httpPost(url, body = {}, token) {
+  if (token) {
+    headers.authorization = `Bearer ${token}`;
+  }
+
   const options = {
     method: 'post',
     headers: headers,
     body: objectToFormData(body)
   };
   return fetch(url, options).then(res => checkHttpStatus(res, { ...options, url }));
-  // .then(parseJSON)
 }
 
-export function httpPut(url, body) {
+export function httpPut(url, body = {}, token) {
+  if (token) {
+    headers.authorization = `Bearer ${token}`;
+  }
+
   const options = {
     method: 'put',
     headers: headers,
@@ -83,11 +89,14 @@ export function httpPut(url, body) {
   return fetch(url, options).then(res => checkHttpStatus(res, { ...options, url }));
 }
 
-export function httpDelete(url) {
+export function httpDelete(url, token) {
+  if (token) {
+    headers.authorization = `Bearer ${token}`;
+  }
+
   const options = {
     method: 'delete',
     headers: headers
   };
   return fetch(url, options).then(res => checkHttpStatus(res, { ...options, url }));
-  // .then(parseJSON)
 }
