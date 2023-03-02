@@ -1,15 +1,17 @@
 import './settings.scss';
-import { httpGet } from '../../services/request';
+import { httpGet, httpPut } from '../../services/request';
 import { getAPIHostName, normalizeDate, getPriorityRole, fallbackToDefaultAvatar } from '../../utils';
 import { useEffect, useState } from 'react';
 import { loadingState } from '../../recoil/store/app';
-import { useSetRecoilState } from 'recoil';
-import { Table } from 'antd';
+import { accessTokenState } from '../../recoil/store/account';
+import { useSetRecoilState, useRecoilValue } from 'recoil';
+import { Table, Tooltip, Modal, notification } from 'antd';
 import { DoubleRightOutlined } from '@ant-design/icons';
 
 const SettingsPage = () => {
   const [users, setUsers] = useState([]);
   const setPageLoading = useSetRecoilState(loadingState);
+  const accessToken = useRecoilValue(accessTokenState);
   useEffect(() => {
     const getUsers = () => {
       const url = `${getAPIHostName()}/users`;
@@ -69,13 +71,56 @@ const SettingsPage = () => {
       render: (_, record) => {
         const userRole = getPriorityRole(record.role);
         return (
-          <span className="settings__action">
-            <DoubleRightOutlined className={userRole === 'Admin' ? 'settings__down' : 'settings__up'} />
+          <span className="settings__action" onClick={() => handleToggleUserRole(record, userRole !== 'Admin')}>
+            {
+              <Tooltip placement="top" title={userRole === 'Admin' ? 'Downgrade role' : 'Upgrade role'}>
+                <DoubleRightOutlined className={userRole === 'Admin' ? 'settings__down' : 'settings__up'} />
+              </Tooltip>
+            }
           </span>
         );
       }
     }
   ];
+
+  const handleToggleUserRole = (user, upgradeRole) => {
+    const { username, _id, role } = user;
+    const updateMessage = `Do you want to ${
+      upgradeRole ? 'upgrade' : 'downgrade'
+    } <span class="bolder__name">${username}</span> role to admin ?`;
+    Modal.confirm({
+      title: <div dangerouslySetInnerHTML={{ __html: updateMessage }} />,
+      onCancel: () => {
+        return;
+      },
+      onOk: () => {
+        const url = `${getAPIHostName()}/users/${_id}`;
+        const buildRoleToBody = upgradeRole ? [...role, 'Admin'] : ['HR'];
+        const body = { ...user, role: buildRoleToBody };
+        httpPut(url, body, accessToken)
+          .then(res => {
+            if (res.status) {
+              setUsers(listUsers => {
+                const updatedUserIdx = listUsers.findIndex(lU => lU._id === _id);
+                listUsers[updatedUserIdx] = { ...listUsers[updatedUserIdx], role: buildRoleToBody };
+
+                return listUsers;
+              });
+              notification.success({
+                title: 'Success',
+                message: res.message || 'Update user success'
+              });
+            }
+          })
+          .catch(err => {
+            notification.error({
+              title: 'Failed',
+              message: err || 'Failed to update user'
+            });
+          });
+      }
+    });
+  };
 
   return (
     <div className="settings__page-container">
