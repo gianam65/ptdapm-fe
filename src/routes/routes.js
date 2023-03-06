@@ -63,7 +63,7 @@ const publicRoutes = [
   {
     path: config.routes.benefit,
     pageIcon: <SolutionOutlined />,
-    element: <BenefitPage/>,
+    element: <BenefitPage />,
     label: 'Benefit',
     needShowSideMenu: true
   },
@@ -71,7 +71,7 @@ const publicRoutes = [
     path: config.routes.settings,
     element: <SettingsPage />,
     pageIcon: <SettingOutlined />,
-    label: 'Settings',
+    label: 'Settings role',
     needShowSideMenu: true
   },
   {
