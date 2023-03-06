@@ -84,7 +84,7 @@ export default function DepartmentPage() {
 
   const content = id => {
     return (
-      <div className="action">
+      <div className="action manipulated__action">
         <div className="action__edit">
           <EditOutlined />
           <div onClick={() => openModalUpSertDepartment(id)}>Edit</div>
