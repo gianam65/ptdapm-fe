@@ -7,6 +7,7 @@ import { accessTokenState } from '../../recoil/store/account';
 import { useSetRecoilState, useRecoilValue } from 'recoil';
 import { Table, Tooltip, Modal, notification } from 'antd';
 import { DoubleRightOutlined } from '@ant-design/icons';
+import classNames from 'classnames';
 
 const SettingsPage = () => {
   const [users, setUsers] = useState([]);
@@ -55,7 +56,11 @@ const SettingsPage = () => {
       title: 'Role',
       dataIndex: 'role',
       key: 'role',
-      render: role => <span className="settings__role">{getPriorityRole(role)}</span>
+      render: role => (
+        <span className={classNames('settings__role', { admin__role: getPriorityRole(role) === 'Admin' })}>
+          {getPriorityRole(role)}
+        </span>
+      )
     },
     {
       title: 'User avatar',
@@ -87,7 +92,7 @@ const SettingsPage = () => {
     const { username, _id, role } = user;
     const updateMessage = `Do you want to ${
       upgradeRole ? 'upgrade' : 'downgrade'
-    } <span class="bolder__name">${username}</span> role to admin ?`;
+    } <span class="bolder__name">${username}</span> role ?`;
     Modal.confirm({
       title: <div dangerouslySetInnerHTML={{ __html: updateMessage }} />,
       onCancel: () => {
@@ -99,13 +104,11 @@ const SettingsPage = () => {
         const body = { ...user, role: buildRoleToBody };
         httpPut(url, body, accessToken)
           .then(res => {
-            if (res.status) {
-              setUsers(listUsers => {
-                const updatedUserIdx = listUsers.findIndex(lU => lU._id === _id);
-                listUsers[updatedUserIdx] = { ...listUsers[updatedUserIdx], role: buildRoleToBody };
-
-                return listUsers;
-              });
+            if (res.success) {
+              const copyListUsers = [...users];
+              const updatedIdx = copyListUsers.findIndex(u => u._id === _id);
+              copyListUsers.splice(updatedIdx, 1, res.data);
+              setUsers(copyListUsers || []);
               notification.success({
                 title: 'Success',
                 message: res.message || 'Update user success'
