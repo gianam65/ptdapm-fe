@@ -5,7 +5,7 @@ import { httpGet } from '../../services/request';
 import { getAPIHostName } from '../../utils';
 import { loadingState } from '../../recoil/store/app';
 import { useSetRecoilState } from 'recoil';
-import { fallbackToDefaultAvatar } from '../../utils/';
+import { fallbackToDefaultAvatar, removeTimeFromDate } from '../../utils/';
 const EmployeesPage = () => {
   const [listEmployees, setListEmployees] = useState([]);
   const setPageLoading = useSetRecoilState(loadingState);
@@ -61,16 +61,16 @@ const EmployeesPage = () => {
       render: gender => <span className="employee__gender">{gender}</span>
     },
     {
-      title: 'Position',
-      key: 'position',
-      dataIndex: 'position',
-      render: position => <span className="employee__position">{position}</span>
+      title: 'Code employee',
+      key: 'codeEmployee',
+      dataIndex: 'codeEmployee',
+      render: codeEmployee => <span className="employee__position">{codeEmployee}</span>
     },
     {
       title: 'Birth day',
       key: 'BirthOfDate',
       dataIndex: 'BirthOfDate',
-      render: BirthOfDate => <span className="employee__birthday">{BirthOfDate}</span>
+      render: BirthOfDate => <span className="employee__birthday">{removeTimeFromDate(BirthOfDate)}</span>
     },
     {
       title: 'Avatar',
