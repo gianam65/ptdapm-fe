@@ -1,6 +1,6 @@
 import React, { useRef, useState } from 'react';
 import { useEffect } from 'react';
-import { Table, Popover, notification, Modal, Input, InputNumber, Select, } from 'antd';
+import { Table, Popover, notification, Modal, Input, InputNumber, Select } from 'antd';
 import Button from '../../components/button/button';
 import './benefit-page.scss';
 import { httpGet, httpDelete, httpPost, httpPut } from '../../services/request';
@@ -9,7 +9,7 @@ import { useSetRecoilState, useRecoilValue } from 'recoil';
 import { loadingState } from '../../recoil/store/app';
 import CustomInput from '../../components/custom-input/custom-input';
 import { accessTokenState } from '../../recoil/store/account';
-import { PlusOutlined, MoreOutlined, EditOutlined, DeleteOutlined, ExclamationCircleFilled } from '@ant-design/icons';
+import { ExclamationCircleFilled } from '@ant-design/icons';
 
 const { Search } = Input;
 const BenefitPage = () => {
@@ -26,7 +26,6 @@ const BenefitPage = () => {
   const accessToken = useRecoilValue(accessTokenState);
   const [searchValue, setSearchValue] = useState('');
 
-  // console.log(accessToken)
   const { Option } = Select;
   function handleChange(value) {
     // console.log(`Selected ${value}`);
@@ -69,24 +68,23 @@ const BenefitPage = () => {
     setUpdateId(id);
     setOpenUpSertBenefit(true);
   };
-  const showConfirm = (iDelete) => {
+  const showConfirm = iDelete => {
     Modal.confirm({
       title: 'Do you want to delete this department?',
       icon: <ExclamationCircleFilled />,
       onOk() {
-        setIsLoadingTable(true)
+        setIsLoadingTable(true);
         const url = `${getAPIHostName()}/benefits/${iDelete}`;
-        console.log(url);
         httpDelete(url, accessToken)
           .then(res => {
             if (res.success) {
-              setBenefitList(oldBenefitList => oldBenefitList.filter(benefit => benefit._id != iDelete))
+              setBenefitList(oldBenefitList => oldBenefitList.filter(benefit => benefit._id != iDelete));
               notification.success({
                 title: 'Success',
                 message: res.message || 'Delete deparment success'
               });
             }
-            setIsLoadingTable(false)
+            setIsLoadingTable(false);
           })
           .catch(() => {
             notification.error({
@@ -94,22 +92,22 @@ const BenefitPage = () => {
               message: 'Delete deparment failed'
             });
             setIsLoadingTable(false);
-          })
+          });
       },
       onCancel() {
         return;
       }
-    })
-  }
+    });
+  };
   const handleUpdateBenefit = id => {
     const name = benefitNameRef.current.input.value;
     const description = benefitDescriptionRef.current.input.value;
     const standard = benefitStandardRef.current.value;
     const month = benefitMonthRef.current.value;
     const status = benefitStatusRef.current;
-    console.log('status', status)
+    console.log('status', status);
   };
-  const content = (id) => {
+  const content = id => {
     return (
       <div className="benefit__action-menu">
         <Button className={'benefit__button'} onClick={() => openModalUpSertBenefit(id)}>
@@ -119,7 +117,7 @@ const BenefitPage = () => {
           Delete
         </Button>
       </div>
-    )
+    );
   };
   const columns = [
     {
@@ -152,9 +150,7 @@ const BenefitPage = () => {
       render: (_, item) => {
         return (
           <div className="benefit__action">
-            <Popover placement="topLeft" content={content(item._id)} trigger="click" onClick={() => {
-
-            }}>
+            <Popover placement="topLeft" content={content(item._id)} trigger="click" onClick={() => {}}>
               ...
             </Popover>
           </div>
@@ -163,10 +159,8 @@ const BenefitPage = () => {
     }
   ];
   const getDataSource = () => {
-    const benefitData = benefitList.filter(item => item.is_deleted === false)
-    return benefitData.filter(
-      item => item.name?.indexOf(searchValue) >= 0 || item.code?.indexOf(searchValue) >= 0
-    )
+    const benefitData = benefitList.filter(item => item.is_deleted === false);
+    return benefitData.filter(item => item.name?.indexOf(searchValue) >= 0 || item.code?.indexOf(searchValue) >= 0);
   };
 
   return (
@@ -191,7 +185,13 @@ const BenefitPage = () => {
         </div>
       </div>
       <div className="benefit__center">
-        <Table columns={columns} dataSource={getDataSource()} pagination={false} rowKey={record => record._id}></Table>
+        <Table
+          columns={columns}
+          loading={isLoadingTable}
+          dataSource={getDataSource()}
+          pagination={false}
+          rowKey={record => record._id}
+        ></Table>
         <Modal
           title="Add benefit"
           open={openUpSertBenefit}
