@@ -25,9 +25,10 @@
   },
   "scripts": {
     "start": "react-scripts start",
-    "build": "react-scripts build",
+    "build": "react-scripts build &&  zip -r build.zip build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "serve":" unzip -o build.zip && npx pm2 serve ./build 3000 --name 'dashboard' --spa"
   },
   "eslintConfig": {
     "extends": [
