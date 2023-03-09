@@ -88,7 +88,7 @@ const Home = () => {
 
   return (
     <div className="overview-wrapper">
-      <div className="overview__heading">Employees detail </div>
+      <div className="overview__heading">Home Page detail </div>
       <div className="overview__content">
         <div className="overview__content-avatar">
           {isEdit || <input type="file" onChange={e => handlePreview(e.target.files)}></input>}
