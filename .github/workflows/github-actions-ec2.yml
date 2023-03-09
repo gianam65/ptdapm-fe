@@ -19,5 +19,9 @@ jobs:
           REMOTE_PORT: 22
           TARGET: /home/ec2-user/ptdapm-fe
           SOURCE: "build.zip"
+          SCRIPT_BEFORE: |
+           whoami
           SCRIPT_AFTER: |
+            ls -al
             npm run serve
+            
