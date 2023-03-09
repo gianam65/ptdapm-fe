@@ -13,6 +13,7 @@ jobs:
           key: ${{ vars.DEPLOY_KEY }}
           script: |
             cd ptdapm-fe
+            pwd
             ls -a
             cat package.json
             npm run serve
