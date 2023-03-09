@@ -1,0 +1,16 @@
+name: Remote ssh command
+on: [push]
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Executing remote ssh commands using ssh key
+        uses: appleboy/ssh-action@master
+        with:
+          host: 18.210.233.30
+          username: ec2-user
+          key: ${{ vars.DEPLOY_KEY }}
+          script: |
+            cd ~/home/ec2-user/ptdapm-fe
+            npm run serve
