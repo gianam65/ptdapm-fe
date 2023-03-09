@@ -8,7 +8,7 @@ import { loadingState } from '../../recoil/store/app';
 import { notification, Input } from 'antd';
 import { EditOutlined } from '@ant-design/icons';
 import Button from '../../components/button/button';
-
+import { uploadImage } from '../../config/aws'
 const Home = () => {
   const accessToken = useRecoilValue(accessTokenState);
   const userId = useRecoilValue(accountIdState);
@@ -23,9 +23,11 @@ const Home = () => {
   const [img, setImg] = useState([]);
   const [previewImg, setPreviewImg] = useState();
 
-  const handleUpdateUser = id => {
+  const handleUpdateUser = async (id) => {
     const url = `${getAPIHostName()}/users/${id}`;
-    httpPut(url, { username: userName, image: img[0] }, accessToken)
+    const fileNameRandom = `${img[0].name}-${Date.now()}`
+    const publicUrl = await uploadImage(fileNameRandom,img[0]);
+    httpPut(url, { username: userName, user_avatar: publicUrl }, accessToken)
       .then(res => {
         if (res.status) {
           
