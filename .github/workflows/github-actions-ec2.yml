@@ -13,7 +13,7 @@ jobs:
           key: ${{ vars.DEPLOY_KEY }}
           script: |
             pwd
-            cd /home/ec2-user/ptdapm-be
+            cd /home/ec2-user/ptdapm-fe
             pwd
             cat package.json
             npm run serve
