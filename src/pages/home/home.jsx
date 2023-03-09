@@ -25,7 +25,8 @@ const Home = () => {
 
   const handleUpdateUser = async (id) => {
     const url = `${getAPIHostName()}/users/${id}`;
-    const fileNameRandom = `${img[0].name}-${Date.now()}`
+    const imageName = img[0].name?.split(".")
+    const fileNameRandom = `${imageName[0]}-${Date.now()}.${imageName[1]}`
     const publicUrl = await uploadImage(fileNameRandom,img[0]);
     httpPut(url, { username: userName, user_avatar: publicUrl }, accessToken)
       .then(res => {
