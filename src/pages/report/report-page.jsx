@@ -1,4 +1,4 @@
-import { Line, Bar } from "react-chartjs-2"
+import { Line, Bar, Doughnut } from "react-chartjs-2"
 import {
   BarElement,
   Chart as ChartJS,
@@ -9,6 +9,7 @@ import {
   Title,
   Tooltip,
   Legend,
+  ArcElement
 } from 'chart.js';
 import { getAPIHostName } from '../../utils';
 import React, { useState } from 'react';
@@ -20,6 +21,7 @@ import { loadingState } from '../../recoil/store/app';
 
 
 ChartJS.register(
+  ArcElement,
   BarElement,
   CategoryScale,
   LinearScale,
@@ -92,7 +94,24 @@ export default function ReportPage() {
     }
     getUsers()
   }, [])
-  const data = {
+  const LineChartdata = {
+    labels,
+    datasets: [
+      {
+        label: 'Employees',
+        data: reportList.map((item, key) => key),
+        borderColor: 'rgb(255, 99, 132)',
+        backgroundColor: 'rgba(255, 99, 132, 0.5)',
+      },
+      {
+        label: 'Users',
+        data: usersList.map((item, key) => key),
+        borderColor: 'rgb(75,192,192)',
+        backgroundColor: 'rgb(75,192,192)',
+      }
+    ],
+  };
+  const barChartdata = {
     labels,
     datasets: [
       {
@@ -109,12 +128,44 @@ export default function ReportPage() {
       }
     ],
   };
+  const doughnutData = {
+    labels: ['Red', 'Blue', 'Yellow', 'Green', 'Purple', 'Orange'],
+    datasets: [
+      {
+        label: '# of Votes',
+        data: [12, 19, 3, 5, 2, 3],
+        backgroundColor: [
+          'rgba(255, 99, 132, 0.2)',
+          'rgba(54, 162, 235, 0.2)',
+          'rgba(255, 206, 86, 0.2)',
+          'rgba(75, 192, 192, 0.2)',
+          'rgba(153, 102, 255, 0.2)',
+          'rgba(255, 159, 64, 0.2)',
+        ],
+        borderColor: [
+          'rgba(255, 99, 132, 1)',
+          'rgba(54, 162, 235, 1)',
+          'rgba(255, 206, 86, 1)',
+          'rgba(75, 192, 192, 1)',
+          'rgba(153, 102, 255, 1)',
+          'rgba(255, 159, 64, 1)',
+        ],
+        borderWidth: 1,
+      },
+    ],
+  };
   return <div className="reports__container">
-    <div style={{ width: 600 }}>
-      <Line data={data} options={options} />
+    <div style={{ display: "flex", justifyContent: "space-between", flexWrap: "wrap" }}>
+      <div style={{ width: 600 }}>
+        <Line data={LineChartdata} options={options} />
+      </div>
+      <div style={{ width: 300 }}>
+        <Doughnut data={doughnutData} options={options} />
+      </div>
+      <div style={{ width: 600 }}>
+        <Bar data={barChartdata} options={options} />
+      </div>
     </div>
-    <div style={{ width: 600 }}>
-      <Bar data={data} options={options} />
-    </div>
+
   </div>;
 }
