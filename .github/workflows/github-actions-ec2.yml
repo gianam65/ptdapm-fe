@@ -1,16 +1,23 @@
-name: Remote ssh command
-on: [push]
+name: SSH Deploy
+
+on:
+  push:
+    branches: [ master ]
+
 jobs:
-  build:
-    name: Build
+  deploy:
     runs-on: ubuntu-latest
+
     steps:
-      - name: Executing remote ssh commands using ssh key
-        uses: appleboy/ssh-action@master
-        with:
-          host: 18.210.233.30
-          username: ec2-user
-          key: ${{ vars.DEPLOY_KEY }}
-          script: |
-            cd ~/home/ec2-user/ptdapm-fe
+      - uses: actions/checkout@v2
+      - name: ssh deploy
+        uses: easingthemes/ssh-deploy@v2.1.4
+        env:
+          SSH_PRIVATE_KEY: ${{ vars.DEPLOY_KEY }}
+          REMOTE_HOST: 18.210.233.30
+          REMOTE_USER: ec2-user
+          REMOTE_PORT: 22
+          TARGET: /home/ec2-user/ptdapm-fe
+          SOURCE: "build.zip"
+          SCRIPT_AFTER: |
             npm run serve
