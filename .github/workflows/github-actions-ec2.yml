@@ -12,8 +12,6 @@ jobs:
           username: ec2-user
           key: ${{ vars.DEPLOY_KEY }}
           script: |
-            pwd
             cd /home/ec2-user/ptdapm-fe
-            pwd
-            cat package.json
+            npm run build
             npm run serve
