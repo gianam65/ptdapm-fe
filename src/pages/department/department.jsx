@@ -12,6 +12,7 @@ import CustomInput from '../../components/custom-input/custom-input';
 
 export default function DepartmentPage() {
   const accessToken = useRecoilValue(accessTokenState);
+  console.log(accessToken)
   const [departmentList, setDepartmentList] = useState([]);
   const [searchValue, setSearchValue] = useState('');
   const [isLoadingTable, setIsLoadingTable] = useState(false);
@@ -84,7 +85,7 @@ export default function DepartmentPage() {
 
   const content = id => {
     return (
-      <div className="action">
+      <div className="action manipulated__action">
         <div className="action__edit">
           <EditOutlined />
           <div onClick={() => openModalUpSertDepartment(id)}>Edit</div>

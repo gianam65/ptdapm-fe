@@ -16,3 +16,7 @@ export const getPriorityRole = roles => {
 export const fallbackToDefaultAvatar = avatarUrl => {
   return avatarUrl ? avatarUrl : defaultAvatar;
 };
+
+export const removeTimeFromDate = timeStamp => {
+  return timeStamp?.split('T')[0] || timeStamp;
+};

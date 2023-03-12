@@ -50,3 +50,13 @@
         opacity: 0.8;
     }
 }
+.overview__edit-cancel{
+    background-color: #fff;
+    color:#000;
+    border-color: #000;
+    &:hover{
+        border-color: #f0e2d5;
+        color:#fff;
+        background-color: #8f867e;
+    }
+}
