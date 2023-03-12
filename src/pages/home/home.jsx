@@ -1,6 +1,6 @@
 import './home.scss';
 import { useRecoilValue, useSetRecoilState } from 'recoil';
-import { accessTokenState, accountIdState, accountNameState } from '../../recoil/store/account';
+import { accessTokenState, accountAvatarState, accountIdState, accountNameState } from '../../recoil/store/account';
 import { useEffect, useState } from 'react';
 import { httpGet, httpPut } from '../../services/request';
 import { getAPIHostName } from '../../utils';
@@ -22,7 +22,7 @@ const Home = () => {
   const [id, setId] = useState('');
   const [img, setImg] = useState([]);
   const [previewImg, setPreviewImg] = useState();
-
+  const accountAvatar = useSetRecoilState(accountAvatarState)
   const handleUpdateUser = async (id) => {
     const url = `${getAPIHostName()}/users/${id}`;
     const imageName = img[0].name?.split(".")
@@ -31,7 +31,7 @@ const Home = () => {
     httpPut(url, { username: userName, user_avatar: publicUrl }, accessToken)
       .then(res => {
         if (res.status) {
-          
+          accountAvatar(publicUrl)
           accountName(userName);
           notification.success({
             title: 'Success',
