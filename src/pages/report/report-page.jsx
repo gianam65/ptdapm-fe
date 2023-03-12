@@ -1,4 +1,5 @@
-import { Line, Bar, Doughnut } from "react-chartjs-2"
+import { Chart } from "react-chartjs-2"
+import { Button } from "antd/es/radio";
 import {
   BarElement,
   Chart as ChartJS,
@@ -33,8 +34,9 @@ ChartJS.register(
 );
 export default function ReportPage() {
   const [reportList, setreportList] = useState([]);
-  const [usersList, setUserList] = useState([])
   const setPageLoading = useSetRecoilState(loadingState);
+  const [type, setType] = useState('bar')
+
 
   const options = {
     responsive: true,
@@ -57,6 +59,7 @@ export default function ReportPage() {
       setPageLoading(true)
       httpGet(url)
         .then(res => {
+          console.log(res, "11111111")
           console.log(res.data)
           if (res.success) {
             const { employeeList } = res.data
@@ -73,97 +76,33 @@ export default function ReportPage() {
         })
     }
     getEmployee()
-    const getUsers = () => {
-      const url = `${getAPIHostName()}/users`;
-      setPageLoading(true)
-      httpGet(url)
-        .then(res => {
-          if (res.success) {
-            const { userList } = res.data
-            setUserList(userList)
-          }
-          setPageLoading(false)
-        })
-        .catch(() => {
-          notification.error({
-            title: "Error",
-            message: "can not get report data"
-          })
-          setPageLoading(false)
-        })
-    }
-    getUsers()
   }, [])
-  const LineChartdata = {
+ 
+  const data = {
     labels,
+    type: type,
     datasets: [
+      // type: 'bar' as const,
       {
+        type: type,
         label: 'Employees',
+        backgroundColor: 'rgb(54, 162, 235)',
         data: reportList.map((item, key) => key),
-        borderColor: 'rgb(255, 99, 132)',
-        backgroundColor: 'rgba(255, 99, 132, 0.5)',
-      },
-      {
-        label: 'Users',
-        data: usersList.map((item, key) => key),
-        borderColor: 'rgb(75,192,192)',
-        backgroundColor: 'rgb(75,192,192)',
+        borderColor: 'rgb(75, 192, 192)',
+        borderWidth: 2,
       }
     ],
   };
-  const barChartdata = {
-    labels,
-    datasets: [
-      {
-        label: 'Employees',
-        data: reportList.map((item, key) => item),
-        borderColor: 'rgb(255, 99, 132)',
-        backgroundColor: 'rgba(255, 99, 132, 0.5)',
-      },
-      {
-        label: 'Users',
-        data: usersList.map((item, key) => key),
-        borderColor: 'rgb(75,192,192)',
-        backgroundColor: 'rgb(75,192,192)',
-      }
-    ],
-  };
-  const doughnutData = {
-    labels: ['Red', 'Blue', 'Yellow', 'Green', 'Purple', 'Orange'],
-    datasets: [
-      {
-        label: '# of Votes',
-        data: [12, 19, 3, 5, 2, 3],
-        backgroundColor: [
-          'rgba(255, 99, 132, 0.2)',
-          'rgba(54, 162, 235, 0.2)',
-          'rgba(255, 206, 86, 0.2)',
-          'rgba(75, 192, 192, 0.2)',
-          'rgba(153, 102, 255, 0.2)',
-          'rgba(255, 159, 64, 0.2)',
-        ],
-        borderColor: [
-          'rgba(255, 99, 132, 1)',
-          'rgba(54, 162, 235, 1)',
-          'rgba(255, 206, 86, 1)',
-          'rgba(75, 192, 192, 1)',
-          'rgba(153, 102, 255, 1)',
-          'rgba(255, 159, 64, 1)',
-        ],
-        borderWidth: 1,
-      },
-    ],
-  };
+
   return <div className="reports__container">
-    <div style={{ display: "flex", justifyContent: "space-between", flexWrap: "wrap" }}>
-      <div style={{ width: 600 }}>
-        <Line data={LineChartdata} options={options} />
+    <div>
+      <div>
       </div>
-      <div style={{ width: 300 }}>
-        <Doughnut data={doughnutData} options={options} />
-      </div>
-      <div style={{ width: 600 }}>
-        <Bar data={barChartdata} options={options} />
+      <Chart type='bar' data={data} options={options}/>
+      <div style={{textAlign: "center"}}>
+        <Button onClick={() => setType('bar')}>Bar Chart</Button>
+        <Button onClick={() => setType('line')}>Line Chart</Button>
+        <Button onClick={() => setType('doughnut')}>Doughnut Chart</Button>
       </div>
     </div>
 
