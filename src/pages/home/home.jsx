@@ -9,6 +9,7 @@ import { notification, Input } from 'antd';
 import { EditOutlined, CameraOutlined } from '@ant-design/icons';
 import Button from '../../components/button/button';
 import { fallbackToDefaultAvatar } from '../../utils';
+import { uploadImage } from '../../config/aws';
 
 const Home = () => {
   const accessToken = useRecoilValue(accessTokenState);
@@ -24,18 +25,16 @@ const Home = () => {
   const [id, setId] = useState('');
   const [previewImg, setPreviewImg] = useState();
   const [img, setImg] = useState([]);
-
-  const handleUpdateUser = id => {
+  const handleUpdateUser = async id => {
     const url = `${getAPIHostName()}/users/${id}`;
-    let buildBody = {};
-    if (userName) buildBody = { ...buildBody, username: userName };
-    if (img && img[0]) buildBody = { ...buildBody, image: img[0] };
-    httpPut(url, buildBody, accessToken)
+    const imageName = img[0].name?.split('.');
+    const fileNameRandom = `${imageName[0]}-${Date.now()}.${imageName[1]}`;
+    const publicUrl = await uploadImage(fileNameRandom, img[0]);
+    httpPut(url, { username: userName, user_avatar: publicUrl }, accessToken)
       .then(res => {
-        if (res.success) {
-          const { username, user_avatar } = res.data;
-          setAccountAvatar(user_avatar);
-          accountName(username);
+        if (res.status) {
+          accountAvatar(publicUrl);
+          accountName(userName);
           notification.success({
             title: 'Success',
             message: 'Successfully updated user'
@@ -87,7 +86,7 @@ const Home = () => {
 
   return (
     <div className="overview-wrapper">
-      <div className="overview__heading">Employees detail </div>
+      <div className="overview__heading">Home Page detail</div>
       <div className="overview__content">
         <div className="overview__content-avatar">
           <input
