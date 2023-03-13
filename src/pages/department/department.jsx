@@ -12,7 +12,6 @@ import CustomInput from '../../components/custom-input/custom-input';
 
 export default function DepartmentPage() {
   const accessToken = useRecoilValue(accessTokenState);
-  console.log(accessToken)
   const [departmentList, setDepartmentList] = useState([]);
   const [searchValue, setSearchValue] = useState('');
   const [isLoadingTable, setIsLoadingTable] = useState(false);

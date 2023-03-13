@@ -35,3 +35,7 @@ export const blobToFile = (theBlob, fileName) => {
   theBlob.name = fileName;
   return theBlob;
 };
+
+export const randomDate = (start, end) => {
+  return new Date(start.getTime() + Math.random() * (end.getTime() - start.getTime()));
+};
