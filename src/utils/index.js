@@ -20,3 +20,18 @@ export const fallbackToDefaultAvatar = avatarUrl => {
 export const removeTimeFromDate = timeStamp => {
   return timeStamp?.split('T')[0] || timeStamp;
 };
+
+export const fileToBase64 = file =>
+  new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = () => resolve(reader.result);
+    reader.onerror = error => reject(error);
+  });
+
+export const blobToFile = (theBlob, fileName) => {
+  //A Blob() is almost a File() - it's just missing the two properties below which we will add
+  theBlob.lastModifiedDate = new Date();
+  theBlob.name = fileName;
+  return theBlob;
+};
