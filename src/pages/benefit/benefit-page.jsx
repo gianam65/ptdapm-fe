@@ -1,6 +1,6 @@
 import React, { useRef, useState } from 'react';
 import { useEffect } from 'react';
-import { Table, Popover, notification, Modal, Input, InputNumber, Select } from 'antd';
+import { Table, Popover, notification, Modal, Input, InputNumber, Select, Descriptions } from 'antd';
 import Button from '../../components/button/button';
 import './benefit-page.scss';
 import { httpGet, httpDelete, httpPost, httpPut } from '../../services/request';
@@ -24,12 +24,16 @@ const BenefitPage = () => {
   const benefitStatusRef = useRef(null);
   const [isLoadingTable, setIsLoadingTable] = useState(false);
   const accessToken = useRecoilValue(accessTokenState);
-  const [searchValue, setSearchValue] = useState('');
 
+
+  const [searchValue, setSearchValue] = useState('');
+  const [selectValue, setSelectValue] = useState('');
   const { Option } = Select;
+
   function handleChange(value) {
-    // console.log(`Selected ${value}`);
+    setSelectValue(value)
   }
+
   function SelectComponent() {
     return (
       <Select ref={benefitStatusRef} defaultValue="Active" style={{ width: 120 }} onChange={handleChange}>
@@ -46,7 +50,7 @@ const BenefitPage = () => {
       httpGet(url)
         .then(res => {
           if (res.success) {
-            const { benefitList } = res.data;
+            const { benefitList } = res.data
             setBenefitList(benefitList);
           }
           setPageLoading(false);
@@ -99,14 +103,77 @@ const BenefitPage = () => {
       }
     });
   };
-  const handleUpdateBenefit = id => {
+  const handleUpdateBenefit = iUpdate => {
+    if (!iUpdate) return;
     const name = benefitNameRef.current.input.value;
     const description = benefitDescriptionRef.current.input.value;
     const standard = benefitStandardRef.current.value;
     const month = benefitMonthRef.current.value;
-    const status = benefitStatusRef.current;
-    console.log('status', status);
+    const status = selectValue;
+    const url = `${getAPIHostName()}/benefits/${iUpdate}`
+    httpPut(url, { name, description, standard, month, status }, accessToken)
+      .then(res => {
+        if (res.success) {
+          setBenefitList(oldBenefitList => {
+            const updateBenefitIdx = oldBenefitList.findIndex(item => item._id = iUpdate)
+            console.log(oldBenefitList)
+            oldBenefitList[updateBenefitIdx].name = name
+            oldBenefitList[updateBenefitIdx].description = description
+            oldBenefitList[updateBenefitIdx].standard = standard
+            oldBenefitList[updateBenefitIdx].month = month
+            oldBenefitList[updateBenefitIdx].status = status
+
+            return oldBenefitList;
+          })
+          notification.success({
+            title: 'Success',
+            message: 'Successfully updated benefit'
+          });
+          setOpenUpSertBenefit(false);
+        }
+      })
+      .catch(() => {
+        notification.error({
+          title: 'Error',
+          message: 'Failed to update benefit'
+        });
+        setOpenUpSertBenefit(false);
+      });
   };
+  const hanldeAddBenefit = () => {
+    const name = benefitNameRef.current.input.value;
+    const description = benefitDescriptionRef.current.input.value;
+    const standardLeave = benefitStandardRef.current.value;
+    const month = benefitMonthRef.current.value;
+    const status = selectValue;
+    const url = `${getAPIHostName()}/benefits`;
+    httpPost(url, { name, description, standardLeave, month, status }, accessToken)
+      .then(res => {
+        if (res.success) {
+          setBenefitList(oldBenefitList => [res.data, ...oldBenefitList]);
+
+          // setBenefitList(oldBenefitList => console.log(oldBenefitList, 'hello'))
+          notification.success({
+            title: 'Success',
+            message: 'Successfully created a new department'
+          });
+
+          setOpenUpSertBenefit(false);
+        } else {
+          notification.error({
+            title: 'Error',
+            message: res.message || 'Failed to create new department'
+          });
+        }
+      })
+      .catch(err => {
+        notification.error({
+          title: 'Error',
+          message: err || 'Failed to create new department'
+        });
+        setOpenUpSertBenefit(false);
+      });
+  }
   const content = id => {
     return (
       <div className="benefit__action-menu">
@@ -150,7 +217,7 @@ const BenefitPage = () => {
       render: (_, item) => {
         return (
           <div className="benefit__action">
-            <Popover placement="topLeft" content={content(item._id)} trigger="click" onClick={() => {}}>
+            <Popover placement="topLeft" content={content(item._id)} trigger="click" onClick={() => { }}>
               ...
             </Popover>
           </div>
@@ -158,10 +225,14 @@ const BenefitPage = () => {
       }
     }
   ];
+
   const getDataSource = () => {
-    const benefitData = benefitList.filter(item => item.is_deleted === false);
-    return benefitData.filter(item => item.name?.indexOf(searchValue) >= 0 || item.code?.indexOf(searchValue) >= 0);
+    let benefitData = benefitList.filter(item => !item.is_deleted);
+    return benefitData.filter(
+      item => item.name?.indexOf(searchValue) >= 0 || item.code?.indexOf(searchValue) >= 0
+    );
   };
+
 
   return (
     <div className="benefit__container">
@@ -196,10 +267,10 @@ const BenefitPage = () => {
           title="Add benefit"
           open={openUpSertBenefit}
           onOk={() => {
-            updateId ? handleUpdateBenefit(updateId) : console.log(2);
+            updateId ? handleUpdateBenefit(updateId) : hanldeAddBenefit();
           }}
           onCancel={() => setOpenUpSertBenefit(false)}
-          okText="Edit"
+          okText="Update"
         >
           <div className="benefit__modal-list">
             <div className="benefit__modal-left">
