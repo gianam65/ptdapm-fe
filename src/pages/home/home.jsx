@@ -1,17 +1,19 @@
 import './home.scss';
-import { useRecoilValue, useSetRecoilState } from 'recoil';
-import { accessTokenState, accountIdState, accountNameState } from '../../recoil/store/account';
+import { useRecoilValue, useSetRecoilState, useRecoilState } from 'recoil';
+import { accessTokenState, accountIdState, accountNameState, accountAvatarState } from '../../recoil/store/account';
 import { useEffect, useState } from 'react';
 import { httpGet, httpPut } from '../../services/request';
 import { getAPIHostName } from '../../utils';
 import { loadingState } from '../../recoil/store/app';
 import { notification, Input } from 'antd';
-import { EditOutlined } from '@ant-design/icons';
+import { EditOutlined, CameraOutlined } from '@ant-design/icons';
 import Button from '../../components/button/button';
+import { fallbackToDefaultAvatar } from '../../utils';
 
 const Home = () => {
   const accessToken = useRecoilValue(accessTokenState);
   const userId = useRecoilValue(accountIdState);
+  const [accountAvatar, setAccountAvatar] = useRecoilState(accountAvatarState);
   const [userName, setUsername] = useState('');
   const accountName = useSetRecoilState(accountNameState);
   const [email, setEmail] = useState('');
@@ -20,16 +22,20 @@ const Home = () => {
   const setPageLoading = useSetRecoilState(loadingState);
   const [isEdit, setIsEdit] = useState(true);
   const [id, setId] = useState('');
-  const [img, setImg] = useState([]);
   const [previewImg, setPreviewImg] = useState();
+  const [img, setImg] = useState([]);
 
   const handleUpdateUser = id => {
     const url = `${getAPIHostName()}/users/${id}`;
-    httpPut(url, { username: userName, image: img[0] }, accessToken)
+    let buildBody = {};
+    if (userName) buildBody = { ...buildBody, username: userName };
+    if (img && img[0]) buildBody = { ...buildBody, image: img[0] };
+    httpPut(url, buildBody, accessToken)
       .then(res => {
-        if (res.status) {
-          
-          accountName(userName);
+        if (res.success) {
+          const { username, user_avatar } = res.data;
+          setAccountAvatar(user_avatar);
+          accountName(username);
           notification.success({
             title: 'Success',
             message: 'Successfully updated user'
@@ -49,9 +55,6 @@ const Home = () => {
     setPreviewImg(url);
   };
 
-
-
-
   useEffect(() => {
     const getUserDetail = () => {
       const url = `${getAPIHostName()}/users/find/${userId}`;
@@ -65,7 +68,7 @@ const Home = () => {
             setRole(role);
             setStatus(status);
             setId(_id);
-            setImg(user_avatar);
+            setAccountAvatar(user_avatar);
           }
           setPageLoading(false);
         })
@@ -78,18 +81,26 @@ const Home = () => {
         });
     };
     getUserDetail();
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-
-
 
   return (
     <div className="overview-wrapper">
       <div className="overview__heading">Employees detail </div>
       <div className="overview__content">
         <div className="overview__content-avatar">
-          {isEdit || <input type="file" onChange={e => handlePreview(e.target.files)}></input>}
-          <img src={previewImg ? previewImg : img} width="300" height="275" />
+          <input
+            className="overview__inp-change-avatar"
+            type="file"
+            onChange={e => handlePreview(e.target.files)}
+          ></input>
+          <img
+            src={previewImg ? previewImg : fallbackToDefaultAvatar(accountAvatar)}
+            alt="User avatar"
+            className="avatar__img"
+          />
+          <CameraOutlined className="avatar__camera" />
         </div>
 
         <div className="overview__content-detail">
