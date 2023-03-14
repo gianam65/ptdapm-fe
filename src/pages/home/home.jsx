@@ -19,6 +19,7 @@ const Home = () => {
   const [previewImg, setPreviewImg] = useState();
   const [img, setImg] = useState(null);
   const [userInfor, setUserInfor] = useState({});
+  const [userName, setUserName] = useState();
 
   useEffect(() => {
     const getUserDetail = () => {
@@ -28,6 +29,7 @@ const Home = () => {
         .then(res => {
           if (res.success) {
             setUserInfor(res.data);
+            setUserName(res.data.username);
           }
           setPageLoading(false);
         })
@@ -43,11 +45,12 @@ const Home = () => {
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+  console.log('userName :>> ', userName);
 
   const handleUpdateUser = async userId => {
     const url = `${getAPIHostName()}/users/${userId}`;
     let buildBodyToUpdate = {
-      username: userInfor.username
+      username: userName
     };
     if (img) {
       const imageName = img[0].name?.split('.');
@@ -117,12 +120,7 @@ const Home = () => {
             </div>
             <div>
               <div>User name</div>
-              <input
-                defaultValue={userInfor.username}
-                onChange={e => {
-                  setUserInfor(prevUser => ({ ...prevUser, username: e.target.value }));
-                }}
-              />
+              <input defaultValue={userName} onInput={e => setUserName(e.target.value)} />
             </div>
             <div>
               <div>Email</div>
@@ -150,7 +148,7 @@ const Home = () => {
                 onClick={() => {
                   handleUpdateUser(userInfor._id);
                 }}
-                disable={userInfor?.username?.length === 0 && !img}
+                disable={!userName && !img}
               >
                 Update
               </Button>
