@@ -6,6 +6,21 @@ import { getAPIHostName } from '../../utils';
 import { loadingState } from '../../recoil/store/app';
 import { useSetRecoilState } from 'recoil';
 import { fallbackToDefaultAvatar, removeTimeFromDate } from '../../utils/';
+import { CSVLink } from 'react-csv';
+import { CloudDownloadOutlined } from '@ant-design/icons';
+
+const HEADERS = [
+  { label: 'Tên nhân viên', key: 'name' },
+  { label: 'Email', key: 'email' },
+  { label: 'Điện thoại', key: 'phoneNumber' },
+  { label: 'Địa chỉ', key: 'address' },
+  { label: 'Bậc lương', key: 'salaryRank' },
+  { label: 'Giới tính', key: 'gender' },
+  { label: 'Mã nhân viên', key: 'codeEmployee' },
+  { label: 'Tình trạng hoạt động', key: 'status' },
+  { label: 'Ngày sinh', key: 'BirthOfDate' }
+];
+
 const EmployeesPage = () => {
   const [listEmployees, setListEmployees] = useState([]);
   const setPageLoading = useSetRecoilState(loadingState);
@@ -94,8 +109,36 @@ const EmployeesPage = () => {
     }
   ];
 
+  const buildDataToExport = () => {
+    let data = [];
+    for (let i = 0; i < listEmployees.length; i++) {
+      if (!listEmployees[i]) return;
+      let record = {
+        name: listEmployees[i].name,
+        email: listEmployees[i].email,
+        phoneNumber: listEmployees[i].phoneNumber,
+        address: listEmployees[i].address,
+        salaryRank: listEmployees[i].salaryRank,
+        gender: listEmployees[i].gender,
+        codeEmployee: listEmployees[i].codeEmployee,
+        status: listEmployees[i].status,
+        BirthOfDate: removeTimeFromDate(listEmployees[i].BirthOfDate)
+      };
+
+      data = [...data, record];
+    }
+
+    return data;
+  };
+
   return (
-    <div>
+    <div className="employess__section">
+      <CSVLink data={buildDataToExport()} headers={HEADERS}>
+        <div className="download__btn">
+          Tải xuống excel
+          <CloudDownloadOutlined />
+        </div>
+      </CSVLink>
       <div className="employees__container">
         <Table columns={columns} dataSource={listEmployees} rowKey={record => record._id} pagination={true} />
       </div>
