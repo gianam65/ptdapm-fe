@@ -11,18 +11,17 @@ import Button from '../../components/button/button';
 import CustomInput from '../../components/custom-input/custom-input';
 import { accessTokenState } from '../../recoil/store/account';
 const EmployeesPage = () => {
-  const employeesNameRef = useRef(null);
-  console.log(employeesNameRef)
-  const employeesCodeRef = useRef(null);
-  const employeesEmailRef = useRef(null);
-  const employeesBirthdayRef = useRef(null);
-  const employeesPhoneRef = useRef(null);
-  const employeesGenderRef = useRef(null);
   const [listEmployees, setListEmployees] = useState([]);
   const setPageLoading = useSetRecoilState(loadingState);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const accessToken = useRecoilValue(accessTokenState);
   const [imageUrl, setImageUrl] = useState();
+  const employeesNameRef = useRef(null);
+  const employeesCodeRef = useRef(null);
+  const employeesEmailRef = useRef(null);
+  const employeesBirthdayRef = useRef(null);
+  const employeesPhoneRef = useRef(null);
+  const employeesGenderRef = useRef(null);
 
   useEffect(() => {
     const fetchEmployees = () => {
@@ -30,6 +29,7 @@ const EmployeesPage = () => {
       const url = `${getAPIHostName()}/employees`;
       httpGet(url)
         .then(res => {
+          console.log(res, 'dataaa')
           if (res.success) {
             const { employeeList } = res.data;
             setListEmployees(employeeList);
@@ -47,7 +47,6 @@ const EmployeesPage = () => {
 
   const fetchAddEmployees = () => {
     const name = employeesNameRef.current.input.value;
-    console.log(name)
     const code = employeesCodeRef.current.input.value;
     const email = employeesEmailRef.current.input.value;
     const birthday = employeesBirthdayRef.current.input.value;
@@ -55,12 +54,19 @@ const EmployeesPage = () => {
     const gender = employeesGenderRef.current.input.value;
     setPageLoading(true);
     const url = `${getAPIHostName()}/employees`;
-    httpGet(url, {name, code, email, birthday, phone, gender}, accessToken)
+    httpPost(url, {name, code, email, birthday, phone, gender}, accessToken)
       .then(res => {
         if (res.success) {
-          // const { employeeList } = res.data;
-          // setListEmployees(employeeList);
-          console.log(res, "12222")
+          setListEmployees(oldEmployeeList => [res.data, ...oldEmployeeList]);
+          notification.success({
+            title: 'Success',
+            message: 'Successfully created a new employee'
+          });
+        } else {
+          notification.error({
+            title: 'Error',
+            message: res.message || 'Failed to create new employee'
+          });
         }
         setPageLoading(false);
       })
@@ -68,7 +74,6 @@ const EmployeesPage = () => {
         setPageLoading(false);
       });
   };
-  fetchAddEmployees();
 
 
   const columns = [
@@ -226,7 +231,7 @@ const EmployeesPage = () => {
         wrapClassName="add__employees-modal"
         okText="Add"
         open={isModalOpen}
-        onOk={handleOk}
+        onOk={() => fetchAddEmployees()}
         onCancel={handleCancel}
       >
         <div style={{ display: "flex", justifyContent: "space-between" }}>
