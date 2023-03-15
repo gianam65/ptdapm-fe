@@ -25,11 +25,11 @@ import { httpPut } from '../../services/request';
 
 const items = [
   {
-    key: 'overview',
+    key: '/',
     label: (
       <span className="dropdown__item">
         <FormOutlined />
-        Edit info
+        Thay đổi thông tin
       </span>
     )
   },
@@ -38,7 +38,7 @@ const items = [
     label: (
       <span className="dropdown__item">
         <SecurityScanOutlined />
-        Change password
+        Đổi mật khẩu
       </span>
     )
   }
@@ -63,8 +63,8 @@ const Header = () => {
       case 'change_password':
         setIsOpenModal(true);
         break;
-      case 'overview':
-        navigation('/overview');
+      case '/':
+        navigation('/');
         break;
       default:
         break;
@@ -75,12 +75,12 @@ const Header = () => {
     if (oldPassword === newPassword)
       return {
         valid: false,
-        errorMessage: 'New password must difference from the old password'
+        errorMessage: 'Mật khẩu mới phải khác với mật khẩu cũ'
       };
     if (newPassword !== confirmPassword)
       return {
         valid: false,
-        errorMessage: 'New password and old password do not match'
+        errorMessage: 'Mật khẩu mới và mật khẩu xác nhận không khớp'
       };
 
     return { valid: true };
@@ -93,7 +93,7 @@ const Header = () => {
     const { valid, errorMessage } = validatePassword(oldPassword, newPassword, confirmPassword);
     if (!valid) {
       notification.error({
-        title: 'Error',
+        title: 'Lỗi',
         message: errorMessage
       });
       return;
@@ -111,16 +111,16 @@ const Header = () => {
       .then(res => {
         if (res.success) {
           notification.success({
-            title: 'Success',
-            message: res.message || 'Change password success'
+            title: 'Thành công',
+            message: res.message || 'Đổi mật khẩu thành công'
           });
           setAccessToken('');
         }
       })
       .catch(err => {
         notification.error({
-          title: 'Failed',
-          message: err || 'Change password failed'
+          title: 'Thất bại',
+          message: err || 'Đổi mật khẩu thất bại'
         });
       });
   };
@@ -164,19 +164,21 @@ const Header = () => {
         title={
           <div className="change__password-title">
             <SafetyCertificateOutlined />
-            Change password
+            Đổi mật khẩu
           </div>
         }
         open={isOpenModal}
         onOk={handleChangePassword}
         onCancel={handleCloseModal}
+        okText="Cập nhật"
+        cancelText="Huỷ"
       >
         <div className="change__password-container">
-          <div className="change__password-label">Old password</div>
+          <div className="change__password-label">Mật khẩu cũ</div>
           <CustomInput ref={oldPasswordRef} customClass="change__password-inp" type="password" />
-          <div className="change__password-label">New password</div>
+          <div className="change__password-label">Mật khẩu mới</div>
           <CustomInput ref={newPasswordRef} customClass="change__password-inp" type="password" />
-          <div className="change__password-label">Confirm password</div>
+          <div className="change__password-label">Xác nhận mật khẩu mới</div>
           <CustomInput ref={confirmPasswordRef} customClass="change__password-inp" type="password" />
         </div>
       </Modal>

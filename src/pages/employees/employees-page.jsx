@@ -32,7 +32,7 @@ const EmployeesPage = () => {
 
   const columns = [
     {
-      title: 'Name',
+      title: 'Tên nhân viên',
       dataIndex: 'name',
       key: 'name',
       render: text => <span className="employee__name">{text}</span>
@@ -43,37 +43,49 @@ const EmployeesPage = () => {
       key: 'email'
     },
     {
-      title: 'Phone',
+      title: 'Điện thoại',
       dataIndex: 'phoneNumber',
       key: 'phoneNumber',
       render: phoneNumber => <span className="employee__phone">{phoneNumber}</span>
     },
     {
-      title: 'Salary rank',
+      title: 'Địa chỉ',
+      key: 'address',
+      dataIndex: 'address',
+      render: address => <span className="employee__address">{address}</span>
+    },
+    {
+      title: 'Bậc lương',
       dataIndex: 'salaryRank',
       key: 'salaryRank',
       render: salaryRank => <span className="employee__salary">{salaryRank}</span>
     },
     {
-      title: 'Gender',
+      title: 'Giới tính',
       dataIndex: 'gender',
       key: 'gender',
       render: gender => <span className="employee__gender">{gender}</span>
     },
     {
-      title: 'Code employee',
+      title: 'Mã nhân viên',
       key: 'codeEmployee',
       dataIndex: 'codeEmployee',
       render: codeEmployee => <span className="employee__position">{codeEmployee}</span>
     },
     {
-      title: 'Birth day',
+      title: 'Tình trạng hoạt động',
+      key: 'status',
+      dataIndex: 'status',
+      render: status => <span className="employee__status">{status}</span>
+    },
+    {
+      title: 'Ngày sinh',
       key: 'BirthOfDate',
       dataIndex: 'BirthOfDate',
       render: BirthOfDate => <span className="employee__birthday">{removeTimeFromDate(BirthOfDate)}</span>
     },
     {
-      title: 'Avatar',
+      title: 'Ảnh',
       key: 'picturePath',
       dataIndex: 'picturePath',
       render: picturePath => (
@@ -85,7 +97,7 @@ const EmployeesPage = () => {
   return (
     <div>
       <div className="employees__container">
-        <Table columns={columns} dataSource={listEmployees} rowKey={record => record._id} pagination={false} />
+        <Table columns={columns} dataSource={listEmployees} rowKey={record => record._id} pagination={true} />
       </div>
     </div>
   );

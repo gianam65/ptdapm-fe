@@ -8,7 +8,6 @@ import { loadingState } from '../../recoil/store/app';
 import { notification, Input } from 'antd';
 import { CameraOutlined } from '@ant-design/icons';
 import Button from '../../components/button/button';
-import { uploadImage } from '../../config/aws';
 
 const Home = () => {
   const accessToken = useRecoilValue(accessTokenState);
@@ -35,8 +34,8 @@ const Home = () => {
         })
         .catch(() => {
           notification.error({
-            title: 'Error',
-            message: 'Can not get users data'
+            title: 'Lỗi',
+            message: 'Không thể lấy thông tin người dùng'
           });
           setPageLoading(false);
         });
@@ -45,18 +44,14 @@ const Home = () => {
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-  console.log('userName :>> ', userName);
 
-  const handleUpdateUser = async userId => {
+  const handleUpdateUser = userId => {
     const url = `${getAPIHostName()}/users/${userId}`;
     let buildBodyToUpdate = {
       username: userName
     };
     if (img) {
-      const imageName = img[0].name?.split('.');
-      const fileNameRandom = `${imageName[0]}-${Date.now()}.${imageName[1]}`;
-      const publicUrl = await uploadImage(fileNameRandom, img[0]);
-      buildBodyToUpdate = { ...buildBodyToUpdate, user_avatar: publicUrl };
+      buildBodyToUpdate = { ...buildBodyToUpdate, user_avatar: img[0] };
     }
     httpPut(url, buildBodyToUpdate, accessToken)
       .then(res => {
@@ -66,15 +61,15 @@ const Home = () => {
           setAccountName(username);
           setImg(null);
           notification.success({
-            title: 'Success',
-            message: 'Successfully updated user'
+            title: 'Thành công',
+            message: 'Cập nhật thông tin thành công'
           });
         }
       })
       .catch(() => {
         notification.error({
-          title: 'Error',
-          message: 'Failed to update user'
+          title: 'Lỗi',
+          message: 'Cập nhật thông tin thất bại'
         });
       });
   };
@@ -83,8 +78,8 @@ const Home = () => {
     const imgSize = img[0].size;
     if (imgSize > 10e6) {
       notification.error({
-        title: 'Error',
-        message: 'Image size have to smaller than 10MB'
+        title: 'Lỗi',
+        message: 'Dung lượng của ảnh phải nhỏ hơn 10MB'
       });
       return;
     } else {
@@ -96,7 +91,7 @@ const Home = () => {
 
   return (
     <div className="overview-wrapper">
-      <div className="overview__heading">Home page detail</div>
+      <div className="overview__heading">Tổng quan nhân viên</div>
       <div className="overview__content">
         <div className="overview__content-avatar">
           <input
@@ -116,10 +111,10 @@ const Home = () => {
         <div className="overview__content-detail">
           <div className="overview__content-detail-wrapper">
             <div className="overview__content-detail-heading">
-              <div>Personal Data</div>
+              <div>Thông tin nhân viên</div>
             </div>
             <div>
-              <div>User name</div>
+              <div>Tên nhân viên</div>
               <input defaultValue={userName} onInput={e => setUserName(e.target.value)} />
             </div>
             <div>
@@ -127,21 +122,21 @@ const Home = () => {
               <Input size={'medium'} value={userInfor.email} disabled></Input>
             </div>
             <div>
-              <div>Role</div>
+              <div>Quyền hạn</div>
               <Input size={'medium'} value={userInfor.role} disabled></Input>
             </div>
             <div>
-              <div>Status</div>
+              <div>Tình trạng hoạt động</div>
               <Input size={'medium'} value={userInfor.status || 'Active'} disabled></Input>
             </div>
             <div>
-              <div>Working at</div>
+              <div>Ngày vào làm</div>
               <Input size={'medium'} value={removeTimeFromDate(userInfor.createdAt)} disabled></Input>
             </div>
 
             <div className="overview__edit">
               <Button className="overview__edit-cancel" onClick={() => setImg(null)}>
-                Cancel
+                Huỷ
               </Button>
               <Button
                 className="overview__edit-ok"
@@ -150,7 +145,7 @@ const Home = () => {
                 }}
                 disable={!userName && !img}
               >
-                Update
+                Cập nhật
               </Button>
             </div>
           </div>

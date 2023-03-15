@@ -29,7 +29,7 @@ const options = {
     },
     title: {
       display: true,
-      text: 'Employees Chart'
+      text: 'Biểu đồ nhân viên'
     }
   }
 };
@@ -53,8 +53,8 @@ export default function ReportPage() {
         })
         .catch(err => {
           notification.error({
-            title: 'Error',
-            message: 'can not get report data'
+            title: 'Lỗi',
+            message: 'Không thể lấy dữ liệu'
           });
           setPageLoading(false);
         });
@@ -135,7 +135,7 @@ export default function ReportPage() {
     datasets: [
       {
         type: type,
-        label: 'Employees',
+        label: 'Nhân viên',
         backgroundColor: 'rgb(54, 162, 235)',
         data: seperateDataByDate().map((_, key) => key),
         borderColor: 'rgb(75, 192, 192)',
@@ -147,12 +147,11 @@ export default function ReportPage() {
   return (
     <div className="reports__container">
       <div>
-        <div></div>
         <Chart type="bar" data={data} options={options} />
         <div style={{ textAlign: 'center' }}>
-          <Button onClick={() => setType('bar')}>Bar Chart</Button>
-          <Button onClick={() => setType('line')}>Line Chart</Button>
-          <Button onClick={() => setType('doughnut')}>Doughnut Chart</Button>
+          <Button onClick={() => setType('bar')}>Biểu đồ cột</Button>
+          <Button onClick={() => setType('line')}>Biểu đồ đường</Button>
+          <Button onClick={() => setType('doughnut')}>Biểu đồ tròn</Button>
         </div>
       </div>
     </div>

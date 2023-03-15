@@ -4,7 +4,6 @@ import EmployeesPage from '../pages/employees/employees-page';
 import ErrorPage from '../pages/error-page/error-page';
 import ReportPage from '../pages/report/report-page';
 import LoginPage from '../pages/login/login';
-import SalaryPage from '../pages/salary/salary';
 import DepartmentPage from '../pages/department/department';
 import SettingsPage from '../pages/settings/settings';
 import BenefitPage from '../pages/benefit/benefit-page';
@@ -15,22 +14,21 @@ import {
   UserOutlined,
   DollarOutlined,
   ClusterOutlined,
-  SettingOutlined,
-  SolutionOutlined
+  SettingOutlined
 } from '@ant-design/icons';
 const publicRoutes = [
   {
     path: config.routes.home,
     element: <Home />,
     pageIcon: <AppstoreOutlined />,
-    label: 'Dashboard',
+    label: 'Bảng',
     needShowSideMenu: true
   },
   {
     path: config.routes.employee,
     element: <EmployeesPage />,
     pageIcon: <UserOutlined />,
-    label: 'Employees',
+    label: 'Nhân viên',
     needShowSideMenu: true
   },
   {
@@ -43,35 +41,28 @@ const publicRoutes = [
     path: config.routes.report,
     element: <ReportPage />,
     pageIcon: <BarChartOutlined />,
-    label: 'Reports',
+    label: 'Báo cáo',
     needShowSideMenu: true
   },
   {
     path: config.routes.department,
     element: <DepartmentPage />,
     pageIcon: <ClusterOutlined />,
-    label: 'Department',
-    needShowSideMenu: true
-  },
-  {
-    path: config.routes.salary_rank,
-    element: <SalaryPage />,
-    pageIcon: <DollarOutlined />,
-    label: 'Salary',
+    label: 'Phòng ban',
     needShowSideMenu: true
   },
   {
     path: config.routes.benefit,
-    pageIcon: <SolutionOutlined />,
+    pageIcon: <DollarOutlined />,
     element: <BenefitPage />,
-    label: 'Benefit',
+    label: 'Quyền lợi',
     needShowSideMenu: true
   },
   {
     path: config.routes.settings,
     element: <SettingsPage />,
     pageIcon: <SettingOutlined />,
-    label: 'Settings role',
+    label: 'Phân quyền',
     needShowSideMenu: true
   },
   {
@@ -85,7 +76,6 @@ const privateRoutes = [
   config.routes.home,
   config.routes.report,
   config.routes.employee,
-  config.routes.salary_rank,
   config.routes.benefit,
   config.routes.department
 ];
