@@ -1,11 +1,7 @@
 .benefit__container {
   background: #ffffff;
   border-radius: 6px;
-  // padding: 0 10px;
   box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
-}
-.benefit__center {
-  // min-height: 750px ;
 }
 .benefit__center .ant-table-content .ant-table-thead tr th {
   font-weight: 700;
@@ -108,17 +104,6 @@
 }
 .benefit__modal-left .benefit__modal-item {
   width: 245px;
-}
-.ant-modal-footer {
-  text-align: start !important;
-  display: flex;
-  flex-direction: row-reverse;
-  justify-content: flex-end;
-  gap: 30px;
-}
-.ant-modal-footer button {
-  font-size: 16px;
-  line-height: 22px;
 }
 .benefit__modal-label {
   font-size: 16px;
