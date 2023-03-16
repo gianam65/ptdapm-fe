@@ -5,7 +5,7 @@ import { httpGet } from '../../services/request';
 import { getAPIHostName } from '../../utils';
 import { loadingState } from '../../recoil/store/app';
 import { useSetRecoilState } from 'recoil';
-import { fallbackToDefaultAvatar, removeTimeFromDate } from '../../utils/';
+import { fallbackToDefaultAvatar, removeTimeFromDate, translateStatus } from '../../utils/';
 import { CSVLink } from 'react-csv';
 import { CloudDownloadOutlined } from '@ant-design/icons';
 
@@ -91,7 +91,7 @@ const EmployeesPage = () => {
       title: 'Tình trạng hoạt động',
       key: 'status',
       dataIndex: 'status',
-      render: status => <span className="employee__status">{status}</span>
+      render: status => <span className="employee__status">{translateStatus(status)}</span>
     },
     {
       title: 'Ngày sinh',

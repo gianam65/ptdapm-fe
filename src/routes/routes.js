@@ -21,7 +21,7 @@ const publicRoutes = [
     path: config.routes.home,
     element: <Home />,
     pageIcon: <AppstoreOutlined />,
-    label: 'Bảng',
+    label: 'Trang chủ',
     needShowSideMenu: true
   },
   {
