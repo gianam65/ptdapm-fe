@@ -12,7 +12,6 @@ import CustomInput from '../../components/custom-input/custom-input';
 
 export default function DepartmentPage() {
   const accessToken = useRecoilValue(accessTokenState);
-  console.log(accessToken)
   const [departmentList, setDepartmentList] = useState([]);
   const [searchValue, setSearchValue] = useState('');
   const [isLoadingTable, setIsLoadingTable] = useState(false);
@@ -35,8 +34,8 @@ export default function DepartmentPage() {
         })
         .catch(() => {
           notification.error({
-            title: 'Error',
-            message: 'Can not get deparment data'
+            title: 'Lỗi',
+            message: 'Không thể lấy thông tin phòng ban'
           });
           setPageLoading(false);
         });
@@ -68,16 +67,16 @@ export default function DepartmentPage() {
             return oldDepartmentList;
           });
           notification.success({
-            title: 'Success',
-            message: 'Successfully updated department'
+            title: 'Thành công',
+            message: 'Cập nhật phòng ban thành công'
           });
           setOpenUpSertDepartment(false);
         }
       })
       .catch(() => {
         notification.error({
-          title: 'Error',
-          message: 'Failed to update department'
+          title: 'Lỗi',
+          message: 'Cập nhật phòng ban thất bại'
         });
         setOpenUpSertDepartment(false);
       });
@@ -97,7 +96,7 @@ export default function DepartmentPage() {
           }}
         >
           <DeleteOutlined />
-          <div>Delete</div>
+          <div>Xoá</div>
         </div>
       </div>
     );
@@ -105,7 +104,7 @@ export default function DepartmentPage() {
 
   const showConfirm = idDelete => {
     Modal.confirm({
-      title: 'Do you want to delete this department?',
+      title: 'Bạn có muốn xoá phòng ban này không?',
       icon: <ExclamationCircleFilled />,
       onOk() {
         setIsLoadingTable(true);
@@ -115,16 +114,16 @@ export default function DepartmentPage() {
             if (res.success) {
               setDepartmentList(oldDepartments => oldDepartments.filter(deparment => deparment._id !== idDelete));
               notification.success({
-                title: 'Success',
-                message: res.message || 'Delete deparment success'
+                title: 'Thành công',
+                message: 'Xoá phòng ban thành công'
               });
             }
             setIsLoadingTable(false);
           })
           .catch(() => {
             notification.error({
-              title: 'Error',
-              message: 'Delete deparment failed'
+              title: 'Lỗi',
+              message: 'Xoá phòng ban thất bại'
             });
             setIsLoadingTable(false);
           });
@@ -137,23 +136,23 @@ export default function DepartmentPage() {
 
   const columns = [
     {
-      title: 'Code',
+      title: 'Mã phòng ban',
       dataIndex: 'code',
       key: 'code'
     },
     {
-      title: 'Department name',
+      title: 'Tên phòng ban',
       dataIndex: 'name',
       key: 'name'
     },
     {
-      title: 'Total employees ',
+      title: 'Tổng số nhân viên',
       key: 'employeesId',
       dataIndex: 'employeesId',
-      render: (_, record) => <span className="department__total-emp">{record.employeesId?.length || 0} employees</span>
+      render: (_, record) => <span className="department__total-emp">{record.employeesId?.length || 0} nhân viên</span>
     },
     {
-      title: 'ACTION',
+      title: 'Hành động',
       render: (_, item) => (
         <div className="department__row-action">
           <Popover content={content(item._id)} trigger="click">
@@ -174,21 +173,21 @@ export default function DepartmentPage() {
         if (res.success) {
           setDepartmentList(oldDepartmentList => [res.data, ...oldDepartmentList]);
           notification.success({
-            title: 'Success',
-            message: 'Successfully created a new department'
+            title: 'Thành công',
+            message: 'Tạo phòng ban mới thành công'
           });
           setOpenUpSertDepartment(false);
         } else {
           notification.error({
-            title: 'Error',
-            message: res.message || 'Failed to create new department'
+            title: 'Lỗi',
+            message: 'Tạo phòng ban mới thất bại'
           });
         }
       })
       .catch(err => {
         notification.error({
-          title: 'Error',
-          message: err || 'Failed to create new department'
+          title: 'Lỗi',
+          message: 'Tạo phòng ban mới thất bại'
         });
         setOpenUpSertDepartment(false);
       });
@@ -207,7 +206,7 @@ export default function DepartmentPage() {
       <div className="department__action">
         <CustomInput
           type="search"
-          placeholder="Type here to search"
+          placeholder="Nhập vào đây để tìm kiếm"
           onChange={e => setSearchValue(e.target.value)}
           className="department__search-inp"
         />
@@ -216,11 +215,11 @@ export default function DepartmentPage() {
           onClick={() => openModalUpSertDepartment()}
           rightIcon={<PlusOutlined />}
         >
-          Add department
+          Thêm phòng ban
         </Button>
       </div>
       <Table
-        pagination={false}
+        pagination={true}
         loading={isLoadingTable}
         columns={columns}
         rowKey={record => record._id}
@@ -228,19 +227,20 @@ export default function DepartmentPage() {
       />
 
       <Modal
-        title="Add department"
+        title="Tạo phòng ban"
         open={openUpSertDepartment}
         onOk={() => {
           updateId ? handleUpdateDepartment(updateId) : handleAddDepartment();
         }}
         wrapClassName="add__department-modal"
         onCancel={() => setOpenUpSertDepartment(false)}
-        okText="Add"
+        okText="Thêm"
+        cancelText="Huỷ"
       >
-        <div className="add__department-label">Name:</div>
-        <CustomInput ref={departmentNameRef} placeholder="Enter department name" />
-        <div className="add__department-label">Code:</div>
-        <CustomInput ref={departmentCodeRef} placeholder="Enter department code" />
+        <div className="add__department-label">Tên phòng ban:</div>
+        <CustomInput ref={departmentNameRef} placeholder="Vui lòng nhập tên phòng ban" />
+        <div className="add__department-label">Mã phòng ban:</div>
+        <CustomInput ref={departmentCodeRef} placeholder="Vui lòng nhập mã phòng ban" />
       </Modal>
     </div>
   );

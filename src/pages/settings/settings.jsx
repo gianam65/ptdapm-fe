@@ -36,7 +36,7 @@ const SettingsPage = () => {
 
   const columns = [
     {
-      title: 'User name',
+      title: 'Tên nhân viên',
       dataIndex: 'username',
       key: 'username',
       render: text => <span className="settings__username">{text}</span>
@@ -47,13 +47,13 @@ const SettingsPage = () => {
       key: 'email'
     },
     {
-      title: 'Working day',
+      title: 'Ngày vào làm',
       dataIndex: 'createdAt',
       key: 'createdAt',
       render: date => <span className="settings__working-date">{normalizeDate(date)}</span>
     },
     {
-      title: 'Role',
+      title: 'Quyền hạn',
       dataIndex: 'role',
       key: 'role',
       render: role => (
@@ -63,7 +63,7 @@ const SettingsPage = () => {
       )
     },
     {
-      title: 'User avatar',
+      title: 'Ảnh đại diện',
       dataIndex: 'user_avatar',
       key: 'user_avatar',
       render: avatarURL => {
@@ -71,14 +71,14 @@ const SettingsPage = () => {
       }
     },
     {
-      title: 'Action',
+      title: 'Hành động',
       key: 'action',
       render: (_, record) => {
         const userRole = getPriorityRole(record.role);
         return (
           <span className="settings__action" onClick={() => handleToggleUserRole(record, userRole !== 'Admin')}>
             {
-              <Tooltip placement="top" title={userRole === 'Admin' ? 'Downgrade role' : 'Upgrade role'}>
+              <Tooltip placement="top" title={userRole === 'Admin' ? 'Giảm quyền' : 'Nâng quyền'}>
                 <DoubleRightOutlined className={userRole === 'Admin' ? 'settings__down' : 'settings__up'} />
               </Tooltip>
             }
@@ -90,9 +90,9 @@ const SettingsPage = () => {
 
   const handleToggleUserRole = (user, upgradeRole) => {
     const { username, _id, role } = user;
-    const updateMessage = `Do you want to ${
-      upgradeRole ? 'upgrade' : 'downgrade'
-    } <span class="bolder__name">${username}</span> role ?`;
+    const updateMessage = `Bạn có muốn ${
+      upgradeRole ? 'nâng quyền' : 'giảm quyền'
+    } <span class="bolder__name">${username}</span>?`;
     Modal.confirm({
       title: <div dangerouslySetInnerHTML={{ __html: updateMessage }} />,
       onCancel: () => {
@@ -110,15 +110,15 @@ const SettingsPage = () => {
               copyListUsers.splice(updatedIdx, 1, res.data);
               setUsers(copyListUsers || []);
               notification.success({
-                title: 'Success',
-                message: res.message || 'Update user success'
+                title: 'Thành công',
+                message: 'Cập nhật quyền người dùng thành công'
               });
             }
           })
-          .catch(err => {
+          .catch(() => {
             notification.error({
-              title: 'Failed',
-              message: err || 'Failed to update user'
+              title: 'Lỗi',
+              message: 'Cập nhật quyền của người dùng thất bại'
             });
           });
       }
@@ -127,7 +127,7 @@ const SettingsPage = () => {
 
   return (
     <div className="settings__page-container">
-      <Table dataSource={users} columns={columns} rowKey={record => record._id} pagination={false} />
+      <Table dataSource={users} columns={columns} rowKey={record => record._id} pagination={true} />
     </div>
   );
 };

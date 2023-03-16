@@ -6,10 +6,24 @@ import { getAPIHostName } from '../../utils';
 import { loadingState } from '../../recoil/store/app';
 import { useSetRecoilState, useRecoilValue } from 'recoil';
 import { fallbackToDefaultAvatar, removeTimeFromDate } from '../../utils/';
-import { PlusOutlined, MoreOutlined, EditOutlined, DeleteOutlined, ExclamationCircleFilled, LoadingOutlined } from '@ant-design/icons';
-import Button from '../../components/button/button';
+import { CSVLink } from 'react-csv';
+import { CloudDownloadOutlined } from '@ant-design/icons';
 import CustomInput from '../../components/custom-input/custom-input';
 import { accessTokenState } from '../../recoil/store/account';
+import {  MoreOutlined  } from '@ant-design/icons';
+
+const HEADERS = [
+  { label: 'Tên nhân viên', key: 'name' },
+  { label: 'Email', key: 'email' },
+  { label: 'Điện thoại', key: 'phoneNumber' },
+  { label: 'Địa chỉ', key: 'address' },
+  { label: 'Bậc lương', key: 'salaryRank' },
+  { label: 'Giới tính', key: 'gender' },
+  { label: 'Mã nhân viên', key: 'codeEmployee' },
+  { label: 'Tình trạng hoạt động', key: 'status' },
+  { label: 'Ngày sinh', key: 'BirthOfDate' }
+];
+
 const EmployeesPage = () => {
   const [listEmployees, setListEmployees] = useState([]);
   const setPageLoading = useSetRecoilState(loadingState);
@@ -78,7 +92,7 @@ const EmployeesPage = () => {
 
   const columns = [
     {
-      title: 'Name',
+      title: 'Tên nhân viên',
       dataIndex: 'name',
       key: 'name',
       render: text => <span className="employee__name">{text}</span>
@@ -89,37 +103,49 @@ const EmployeesPage = () => {
       key: 'email'
     },
     {
-      title: 'Phone',
+      title: 'Điện thoại',
       dataIndex: 'phoneNumber',
       key: 'phoneNumber',
       render: phoneNumber => <span className="employee__phone">{phoneNumber}</span>
     },
     {
-      title: 'Salary rank',
+      title: 'Địa chỉ',
+      key: 'address',
+      dataIndex: 'address',
+      render: address => <span className="employee__address">{address}</span>
+    },
+    {
+      title: 'Bậc lương',
       dataIndex: 'salaryRank',
       key: 'salaryRank',
       render: salaryRank => <span className="employee__salary">{salaryRank}</span>
     },
     {
-      title: 'Gender',
+      title: 'Giới tính',
       dataIndex: 'gender',
       key: 'gender',
       render: gender => <span className="employee__gender">{gender}</span>
     },
     {
-      title: 'Code employee',
+      title: 'Mã nhân viên',
       key: 'codeEmployee',
       dataIndex: 'codeEmployee',
       render: codeEmployee => <span className="employee__position">{codeEmployee}</span>
     },
     {
-      title: 'Birth day',
+      title: 'Tình trạng hoạt động',
+      key: 'status',
+      dataIndex: 'status',
+      render: status => <span className="employee__status">{status}</span>
+    },
+    {
+      title: 'Ngày sinh',
       key: 'BirthOfDate',
       dataIndex: 'BirthOfDate',
       render: BirthOfDate => <span className="employee__birthday">{removeTimeFromDate(BirthOfDate)}</span>
     },
     {
-      title: 'Avatar',
+      title: 'Ảnh',
       key: 'picturePath',
       dataIndex: 'picturePath',
       render: picturePath => (
@@ -130,7 +156,7 @@ const EmployeesPage = () => {
       title: 'ACTION',
       render: (_, item) => (
         <div className="employees__row-action">
-          <Popover content={content(item._id)} trigger="click">
+          <Popover  trigger="click">
             <MoreOutlined />
           </Popover>
         </div>
@@ -138,93 +164,38 @@ const EmployeesPage = () => {
     }
   ];
 
-  const content = id => {
-    return (
-      <div className="action manipulated__action">
-        <div className="action__edit">
-          <EditOutlined />
-          <div>Edit</div>
-        </div>
-        <div
-          className="action__delete"
-        >
-          <DeleteOutlined />
-          <div>Delete</div>
-        </div>
-      </div>
-    );
-  };
-  //Modal 
-  const showModal = () => {
-    setIsModalOpen(true);
-  };
-  const handleOk = () => {
-    setIsModalOpen(false);
-  };
-  const handleCancel = () => {
-    setIsModalOpen(false);
+  const buildDataToExport = () => {
+    let data = [];
+    for (let i = 0; i < listEmployees.length; i++) {
+      if (!listEmployees[i]) return;
+      let record = {
+        name: listEmployees[i].name,
+        email: listEmployees[i].email,
+        phoneNumber: listEmployees[i].phoneNumber,
+        address: listEmployees[i].address,
+        salaryRank: listEmployees[i].salaryRank,
+        gender: listEmployees[i].gender,
+        codeEmployee: listEmployees[i].codeEmployee,
+        status: listEmployees[i].status,
+        BirthOfDate: removeTimeFromDate(listEmployees[i].BirthOfDate)
+      };
+
+      data = [...data, record];
+    }
+
+    return data;
   };
 
-
-  const getBase64 = (img, callback) => {
-    const reader = new FileReader();
-    reader.addEventListener('load', () => callback(reader.result));
-    reader.readAsDataURL(img);
-  };
-  const beforeUpload = (file) => {
-    const isJpgOrPng = file.type === 'image/jpeg' || file.type === 'image/png';
-    if (!isJpgOrPng) {
-      message.error('You can only upload JPG/PNG file!');
-    }
-    const isLt2M = file.size / 1024 / 1024 < 2;
-    if (!isLt2M) {
-      message.error('Image must smaller than 2MB!');
-    }
-    return isJpgOrPng && isLt2M;
-  };
-  const handleChange = (info) => {
-    if (info.file.status === 'uploading') {
-      setPageLoading(true);
-      return;
-    }
-    if (info.file.status === 'done') {
-      // Get this url from response in real world.
-      getBase64(info.file.originFileObj, (url) => {
-        setPageLoading(false);
-        setImageUrl(url);
-      });
-    }
-  };
-  const uploadButton = (
-    <div>
-      {setPageLoading(false) ? <LoadingOutlined /> : <PlusOutlined />}
-      <div
-        style={{
-          marginTop: 8,
-        }}
-      >
-        Upload
-      </div>
-    </div>
-  );
   return (
-    <div>
-      <div className="employees__action">
-        <CustomInput
-          type="search"
-          placeholder="Type here to search"
-          className="employees__search-inp"
-        />
-        <Button
-          className="employees__search-btn"
-          rightIcon={<PlusOutlined />}
-          onClick={showModal}
-        >
-          Add employees
-        </Button>
-      </div>
+    <div className="employess__section">
+      <CSVLink data={buildDataToExport()} headers={HEADERS}>
+        <div className="download__btn">
+          Tải xuống excel
+          <CloudDownloadOutlined />
+        </div>
+      </CSVLink>
       <div className="employees__container">
-        <Table columns={columns} dataSource={listEmployees} rowKey={record => record._id} pagination={false} />
+        <Table columns={columns} dataSource={listEmployees} rowKey={record => record._id} pagination={true} />
       </div>
       <Modal
         title="Add employees"
@@ -255,9 +226,6 @@ const EmployeesPage = () => {
               listType="picture-circle"
               className="avatar-uploader"
               showUploadList={false}
-              action="https://www.mocky.io/v2/5cc8019d300000980a055e76"
-              beforeUpload={beforeUpload}
-              onChange={handleChange}
             >
               {imageUrl ? (
                 <img

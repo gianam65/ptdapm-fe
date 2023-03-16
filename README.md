@@ -14,9 +14,15 @@ EXAMPLE: `git checkout -b feature/9_implement_ui_dashboard`
 COMMAND: `git commit -m "comment message #issue id"`.\
 EXAMPLE: `git commit -m "implement ui dashboard #9`.
 
-### ACCOUNT TEST
+### ACCOUNT TEST1
 
 #EMAIL: nammmmdev@gmail.com.\
+#PASSWORD: 123456
+
+
+### ACCOUNT TEST2
+
+#EMAIL: manhpham@gmail.com.\
 #PASSWORD: 123456
 
 ### `npm run build`

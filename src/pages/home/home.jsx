@@ -1,59 +1,24 @@
 import './home.scss';
-import { useRecoilValue, useSetRecoilState } from 'recoil';
-import { accessTokenState, accountIdState, accountNameState } from '../../recoil/store/account';
+import { useRecoilValue, useSetRecoilState, useRecoilState } from 'recoil';
+import { accessTokenState, accountIdState, accountNameState, accountAvatarState } from '../../recoil/store/account';
 import { useEffect, useState } from 'react';
 import { httpGet, httpPut } from '../../services/request';
-import { getAPIHostName } from '../../utils';
+import { getAPIHostName, removeTimeFromDate, fallbackToDefaultAvatar } from '../../utils';
 import { loadingState } from '../../recoil/store/app';
 import { notification, Input } from 'antd';
-import { EditOutlined } from '@ant-design/icons';
+import { CameraOutlined } from '@ant-design/icons';
 import Button from '../../components/button/button';
-import { uploadImage } from '../../config/aws'
+
 const Home = () => {
   const accessToken = useRecoilValue(accessTokenState);
   const userId = useRecoilValue(accountIdState);
-  const [userName, setUsername] = useState('');
-  const accountName = useSetRecoilState(accountNameState);
-  const [email, setEmail] = useState('');
-  const [role, setRole] = useState('');
-  const [status, setStatus] = useState('');
+  const [accountAvatar, setAccountAvatar] = useRecoilState(accountAvatarState);
+  const setAccountName = useSetRecoilState(accountNameState);
   const setPageLoading = useSetRecoilState(loadingState);
-  const [isEdit, setIsEdit] = useState(true);
-  const [id, setId] = useState('');
-  const [img, setImg] = useState([]);
   const [previewImg, setPreviewImg] = useState();
-
-  const handleUpdateUser = async (id) => {
-    const url = `${getAPIHostName()}/users/${id}`;
-    const imageName = img[0].name?.split(".")
-    const fileNameRandom = `${imageName[0]}-${Date.now()}.${imageName[1]}`
-    const publicUrl = await uploadImage(fileNameRandom,img[0]);
-    httpPut(url, { username: userName, user_avatar: publicUrl }, accessToken)
-      .then(res => {
-        if (res.status) {
-          
-          accountName(userName);
-          notification.success({
-            title: 'Success',
-            message: 'Successfully updated user'
-          });
-        }
-      })
-      .catch(() => {
-        notification.error({
-          title: 'Error',
-          message: 'Failed to update user'
-        });
-      });
-  };
-  const handlePreview = img => {
-    setImg(img);
-    const url = URL.createObjectURL(img[0]);
-    setPreviewImg(url);
-  };
-
-
-
+  const [img, setImg] = useState(null);
+  const [userInfor, setUserInfor] = useState({});
+  const [userName, setUserName] = useState();
 
   useEffect(() => {
     const getUserDetail = () => {
@@ -62,88 +27,127 @@ const Home = () => {
       httpGet(url)
         .then(res => {
           if (res.success) {
-            let { username, email, role, status, _id, user_avatar } = res.data;
-            setUsername(username);
-            setEmail(email);
-            setRole(role);
-            setStatus(status);
-            setId(_id);
-            setImg(user_avatar);
+            setUserInfor(res.data);
+            setUserName(res.data.username);
           }
           setPageLoading(false);
         })
         .catch(() => {
           notification.error({
-            title: 'Error',
-            message: 'Can not get users data'
+            title: 'Lỗi',
+            message: 'Không thể lấy thông tin người dùng'
           });
           setPageLoading(false);
         });
     };
     getUserDetail();
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  const handleUpdateUser = userId => {
+    const url = `${getAPIHostName()}/users/${userId}`;
+    let buildBodyToUpdate = {
+      username: userName
+    };
+    if (img) {
+      buildBodyToUpdate = { ...buildBodyToUpdate, user_avatar: img[0] };
+    }
+    httpPut(url, buildBodyToUpdate, accessToken)
+      .then(res => {
+        if (res.success) {
+          const { user_avatar, username } = res.data;
+          setAccountAvatar(user_avatar);
+          setAccountName(username);
+          setImg(null);
+          notification.success({
+            title: 'Thành công',
+            message: 'Cập nhật thông tin thành công'
+          });
+        }
+      })
+      .catch(() => {
+        notification.error({
+          title: 'Lỗi',
+          message: 'Cập nhật thông tin thất bại'
+        });
+      });
+  };
 
+  const handlePreview = img => {
+    const imgSize = img[0].size;
+    if (imgSize > 10e6) {
+      notification.error({
+        title: 'Lỗi',
+        message: 'Dung lượng của ảnh phải nhỏ hơn 10MB'
+      });
+      return;
+    } else {
+      setImg(img);
+      const url = URL.createObjectURL(img[0]);
+      setPreviewImg(url);
+    }
+  };
 
   return (
     <div className="overview-wrapper">
-      <div className="overview__heading">Home Page detail</div>
+      <div className="overview__heading">Tổng quan nhân viên</div>
       <div className="overview__content">
         <div className="overview__content-avatar">
-          {isEdit || <input type="file" onChange={e => handlePreview(e.target.files)}></input>}
-          <img src={previewImg ? previewImg : img} width="300" height="275" />
+          <input
+            className="overview__inp-change-avatar"
+            type="file"
+            onChange={e => handlePreview(e.target.files)}
+            accept="image/*"
+          ></input>
+          <img
+            src={previewImg ? previewImg : fallbackToDefaultAvatar(accountAvatar)}
+            alt="User avatar"
+            className="avatar__img"
+          />
+          <CameraOutlined className="avatar__camera" />
         </div>
 
         <div className="overview__content-detail">
           <div className="overview__content-detail-wrapper">
             <div className="overview__content-detail-heading">
-              <div>Personal Data</div>
-              <EditOutlined onClick={() => setIsEdit(false)} />
+              <div>Thông tin nhân viên</div>
             </div>
             <div>
-              <div>UserName</div>
-              <input
-                defaultValue={userName}
-                disabled={isEdit}
-                onChange={e => {
-                  setUsername(e.target.value);
-                }}
-              />
+              <div>Tên nhân viên</div>
+              <input defaultValue={userName} onInput={e => setUserName(e.target.value)} />
             </div>
             <div>
               <div>Email</div>
-              <Input size={'medium'} value={email} disabled></Input>
+              <Input size={'medium'} value={userInfor.email} disabled></Input>
             </div>
             <div>
-              <div>Role</div>
-              <Input size={'medium'} value={role} disabled></Input>
+              <div>Quyền hạn</div>
+              <Input size={'medium'} value={userInfor.role} disabled></Input>
             </div>
             <div>
-              <div>Status</div>
-              <Input size={'medium'} value={status} disabled></Input>
+              <div>Tình trạng hoạt động</div>
+              <Input size={'medium'} value={userInfor.status || 'Active'} disabled></Input>
             </div>
-            {isEdit || (
-              <div className="overview__edit">
-                <Button
-                  className="overview__edit-cancel"
-                  onClick={() => {
-                    setIsEdit(true);
-                  }}
-                >
-                  Cancel
-                </Button>
-                <Button
-                  className="overview__edit-ok"
-                  onClick={() => {
-                    handleUpdateUser(id);
-                    setIsEdit(true);
-                  }}
-                >
-                  Edit
-                </Button>
-              </div>
-            )}
+            <div>
+              <div>Ngày vào làm</div>
+              <Input size={'medium'} value={removeTimeFromDate(userInfor.createdAt)} disabled></Input>
+            </div>
+
+            <div className="overview__edit">
+              <Button className="overview__edit-cancel" onClick={() => setImg(null)}>
+                Huỷ
+              </Button>
+              <Button
+                className="overview__edit-ok"
+                onClick={() => {
+                  handleUpdateUser(userInfor._id);
+                }}
+                disable={!userName && !img}
+              >
+                Cập nhật
+              </Button>
+            </div>
           </div>
         </div>
       </div>
