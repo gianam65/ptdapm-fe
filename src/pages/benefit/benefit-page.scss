@@ -95,12 +95,15 @@
   padding: 0 22px;
   margin-left: 15px;
 }
+.benefit__top-modal-btn .button__text {
+  margin-right: 10px;
+}
 .benefit__top-right {
   display: flex;
 }
 .benefit__top {
   display: flex;
-  justify-content: space-between;
+  justify-content: flex-end;
 }
 .benefit__modal-list {
   display: flex;

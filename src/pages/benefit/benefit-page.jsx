@@ -9,7 +9,7 @@ import { useSetRecoilState, useRecoilValue } from 'recoil';
 import { loadingState } from '../../recoil/store/app';
 import CustomInput from '../../components/custom-input/custom-input';
 import { accessTokenState } from '../../recoil/store/account';
-import { ExclamationCircleFilled } from '@ant-design/icons';
+import { ExclamationCircleFilled, PlusOutlined, MoreOutlined } from '@ant-design/icons';
 
 const { Search } = Input;
 const BenefitPage = () => {
@@ -86,7 +86,7 @@ const BenefitPage = () => {
               setBenefitList(oldBenefitList => oldBenefitList.filter(benefit => benefit._id !== idDelete));
               notification.success({
                 title: 'Success',
-                message: res.message || 'Delete deparment success'
+                message: res.message || 'Xóa quyền lợi thành công'
               });
             }
             setIsLoadingTable(false);
@@ -94,7 +94,7 @@ const BenefitPage = () => {
           .catch(() => {
             notification.error({
               title: 'Error',
-              message: 'Delete deparment failed'
+              message: 'Xóa quyền lợi thất bại'
             });
             setIsLoadingTable(false);
           });
@@ -127,7 +127,7 @@ const BenefitPage = () => {
           });
           notification.success({
             title: 'Success',
-            message: 'Successfully updated benefit'
+            message: 'Cập nhật quyền lợi thành công'
           });
           setOpenUpSertBenefit(false);
         }
@@ -154,20 +154,20 @@ const BenefitPage = () => {
 
           notification.success({
             title: 'Success',
-            message: 'Successfully created a new benefit'
+            message: 'Thêm quyền lợi thành công'
           });
           setOpenUpSertBenefit(false);
         } else {
           notification.error({
             title: 'Error',
-            message: res.message || 'Failed to create new department'
+            message: res.message || 'Thêm quyền lợi thất bại'
           });
         }
       })
       .catch(err => {
         notification.error({
           title: 'Error',
-          message: err || 'Failed to create new department'
+          message: err || 'Thêm quyền lợi thất bại'
         });
         setOpenUpSertBenefit(false);
       });
@@ -176,47 +176,47 @@ const BenefitPage = () => {
     return (
       <div className="benefit__action-menu">
         <Button className={'benefit__button'} onClick={() => openModalUpSertBenefit(id)}>
-          Edit
+          Sửa
         </Button>
         <Button className={'benefit__button'} onClick={() => showConfirm(id)}>
-          Delete
+          Xóa
         </Button>
       </div>
     );
   };
   const columns = [
     {
-      title: 'Name',
+      title: 'Tên',
       dataIndex: 'name',
       key: 'name'
     },
     {
-      title: 'Description',
+      title: 'Miêu tả',
       dataIndex: 'description',
       key: 'description'
     },
     {
-      title: 'Standard Leave',
+      title: 'Tiêu chuẩn nghỉ',
       dataIndex: 'standardLeave',
       key: 'standardLeave'
     },
     {
-      title: 'Month',
+      title: 'Tháng',
       dataIndex: 'month',
       key: 'month'
     },
     {
-      title: 'Status',
+      title: 'Trạng thái',
       dataIndex: 'status',
       key: 'status'
     },
     {
-      title: 'Actions',
+      title: 'Hành động',
       render: (_, item) => {
         return (
           <div className="benefit__action">
-            <Popover placement="topLeft" content={content(item._id)} trigger="click" onClick={() => {}}>
-              ...
+            <Popover placement="topLeft" content={content(item._id)} trigger="click" onClick={() => { }}>
+              <MoreOutlined />
             </Popover>
           </div>
         );
@@ -233,20 +233,18 @@ const BenefitPage = () => {
   return (
     <div className="benefit__container">
       <div className="benefit__top">
-        <div className="benefit__top-left">
-          <div className="benefit__top-breadcrum">Setting &gt; Benefit</div>
-        </div>
+
         <div className="benefit__top-right">
           <div className="benefit__top-search">
             <Search
               className="benefit__top-search-input"
-              placeholder="Type here to search"
+              placeholder="Nhập vào đây để tìm kiếm"
               onChange={e => setSearchValue(e.target.value)}
             />
           </div>
           <div className="benefit__top-modal">
-            <Button onClick={() => openModalUpSertBenefit()} className="benefit__top-modal-btn">
-              Add benefit
+            <Button onClick={() => openModalUpSertBenefit()} rightIcon={<PlusOutlined />} className="benefit__top-modal-btn">
+              Thêm quyền lợi
             </Button>
           </div>
         </div>
@@ -256,17 +254,17 @@ const BenefitPage = () => {
           columns={columns}
           loading={isLoadingTable}
           dataSource={getDataSource()}
-          pagination={false}
+          pagination={true}
           rowKey={record => record._id}
         ></Table>
         <Modal
-          title="Add benefit"
+          title=""
           open={openUpSertBenefit}
           onOk={() => {
             updateId ? handleUpdateBenefit(updateId) : hanldeAddBenefit();
           }}
           onCancel={() => setOpenUpSertBenefit(false)}
-          okText="Update"
+          okText="Lưu"
         >
           <div className="benefit__modal-list">
             <div className="benefit__modal-left">
