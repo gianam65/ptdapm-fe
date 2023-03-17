@@ -8,6 +8,7 @@ import { useSetRecoilState } from 'recoil';
 import { fallbackToDefaultAvatar, removeTimeFromDate, translateStatus } from '../../utils/';
 import { CSVLink } from 'react-csv';
 import { CloudDownloadOutlined, CloudUploadOutlined } from '@ant-design/icons';
+import classNames from 'classnames';
 
 const HEADERS = [
   { label: 'Tên nhân viên', key: 'name' },
@@ -91,7 +92,17 @@ const EmployeesPage = () => {
       title: 'Tình trạng hoạt động',
       key: 'status',
       dataIndex: 'status',
-      render: status => <span className="employee__status">{translateStatus(status)}</span>
+      render: status => (
+        <span
+          className={classNames('employee__status', {
+            employee__inactive: status === 'inActive',
+            employee__active: status?.toLowerCase() === 'active',
+            employee__onboarding: status === 'onBoarding'
+          })}
+        >
+          {translateStatus(status)}
+        </span>
+      )
     },
     {
       title: 'Ngày sinh',
