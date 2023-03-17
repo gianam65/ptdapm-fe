@@ -1,21 +1,3 @@
-.benefit__container {
-  background: #ffffff;
-  border-radius: 6px;
-  // padding: 0 10px;
-  box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
-}
-.benefit__center {
-  // min-height: 750px ;
-}
-.benefit__center .ant-table-content .ant-table-thead tr th {
-  font-weight: 700;
-  font-size: 12px;
-  text-transform: uppercase;
-  line-height: 15px;
-  background: #f3f2f7;
-  color: #5e5873;
-  width: 20%;
-}
 .benefit__center .ant-table-content .ant-table-thead tr th:last-child {
   text-align: center;
 }
@@ -27,9 +9,7 @@
   padding: 25px 16px;
   border-bottom: 2px solid #efefef;
 }
-.benefit__top {
-  padding: 20px 16px;
-}
+
 .benefit__top-breadcrum {
   font-weight: 400;
   font-size: 11px;
@@ -72,34 +52,18 @@
 }
 
 .benefit__top-search-input input {
-  border: 1px solid #b9b9c3;
-  border-radius: 5px;
-  height: 38px;
-  font-size: 14px;
-  line-height: 24px;
-  padding-left: 15px;
-  color: #b9b9c3;
+  border-color: #555;
 }
 .benefit__top-search-input .ant-btn {
-  height: 38px;
-}
-
-.benefit__top-modal-btn {
-  font-weight: 400;
-  font-size: 14px;
-  line-height: 38px;
-  border-radius: 5px;
-  color: #ffffff;
-  text-align: center;
-  height: 38px;
-  padding: 0 22px;
-  margin-left: 15px;
+  border-color: #555;
 }
 .benefit__top-modal-btn .button__text {
   margin-right: 10px;
 }
 .benefit__top-right {
   display: flex;
+  gap: 12px;
+  margin-bottom: 20px;
 }
 .benefit__top {
   display: flex;
