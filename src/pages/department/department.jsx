@@ -224,6 +224,7 @@ export default function DepartmentPage() {
         columns={columns}
         rowKey={record => record._id}
         dataSource={getDataSource()}
+        scroll={{ y: 'calc(100vh - 320px)' }}
       />
 
       <Modal

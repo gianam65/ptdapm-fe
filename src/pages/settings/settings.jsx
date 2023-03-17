@@ -127,7 +127,13 @@ const SettingsPage = () => {
 
   return (
     <div className="settings__page-container">
-      <Table dataSource={users} columns={columns} rowKey={record => record._id} pagination={true} />
+      <Table
+        dataSource={users}
+        columns={columns}
+        rowKey={record => record._id}
+        pagination={true}
+        scroll={{ y: 'calc(100vh - 320px)' }}
+      />
     </div>
   );
 };
