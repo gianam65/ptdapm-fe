@@ -1,13 +1,13 @@
 import './employees-page.scss';
-import { Table } from 'antd';
+import { notification, Table } from 'antd';
 import { useEffect, useState } from 'react';
-import { httpGet } from '../../services/request';
+import { httpGet, httpPost } from '../../services/request';
 import { getAPIHostName } from '../../utils';
 import { loadingState } from '../../recoil/store/app';
 import { useSetRecoilState } from 'recoil';
 import { fallbackToDefaultAvatar, removeTimeFromDate, translateStatus } from '../../utils/';
 import { CSVLink } from 'react-csv';
-import { CloudDownloadOutlined } from '@ant-design/icons';
+import { CloudDownloadOutlined, CloudUploadOutlined } from '@ant-design/icons';
 
 const HEADERS = [
   { label: 'Tên nhân viên', key: 'name' },
@@ -131,16 +131,57 @@ const EmployeesPage = () => {
     return data;
   };
 
+  const handleChangeFile = e => {
+    const fileUploaded = e.target.files?.[0];
+    if (!fileUploaded) return;
+    const url = `${getAPIHostName()}/import_excel`;
+
+    httpPost(url, { file: fileUploaded })
+      .then(res => {
+        if (res.success) {
+          setListEmployees([...res.data, ...listEmployees]);
+          notification.success({
+            title: 'Thành công',
+            message: 'Thêm nhân viên từ file thành công'
+          });
+        } else {
+          notification.error({
+            title: 'Thất bại',
+            message: res.message || 'Thêm nhân viên từ file thất bại'
+          });
+        }
+      })
+      .catch(err => {
+        notification.error({
+          title: 'Thất bại',
+          message: err || 'Thêm nhân viên từ file thất bại'
+        });
+      });
+  };
+
   return (
     <div className="employess__section">
-      <CSVLink data={buildDataToExport()} headers={HEADERS}>
-        <div className="download__btn">
-          Tải xuống excel
-          <CloudDownloadOutlined />
+      <div className="file__actions">
+        <CSVLink data={buildDataToExport()} headers={HEADERS}>
+          <div className="download__btn">
+            Tải xuống excel
+            <CloudDownloadOutlined />
+          </div>
+        </CSVLink>
+        <div className="upload__btn">
+          Tải lên file
+          <CloudUploadOutlined />
+          <input type="file" accept=".xlsx, .xls, .csv" onChange={handleChangeFile} />
         </div>
-      </CSVLink>
+      </div>
       <div className="employees__container">
-        <Table columns={columns} dataSource={listEmployees} rowKey={record => record._id} pagination={true} />
+        <Table
+          columns={columns}
+          dataSource={listEmployees}
+          scroll={{ y: 'calc(100vh - 320px)' }}
+          rowKey={record => record._id}
+          pagination={true}
+        />
       </div>
     </div>
   );
