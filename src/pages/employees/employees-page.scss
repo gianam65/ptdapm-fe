@@ -52,10 +52,30 @@
     }
 }
 
-
+.employee__salary {
+    display: block;
+    width: 100%;
+    text-align: right;
+}
 
 .employess__section {
     display: flex;
     flex-direction: column;
     align-items: flex-end;
+}
+
+.employee__status {
+    font-weight: bolder;
+}
+
+.employee__active {
+    color: #2ecc71;
+}
+
+.employee__inactive {
+    color: #e74c3c;
+}
+
+.employee__onboarding {
+    color: var(--primary-color);
 }
