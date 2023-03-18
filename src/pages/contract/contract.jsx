@@ -1,9 +1,9 @@
 import './contract.scss';
-import { Table, Tag, Modal, DatePicker, Select } from 'antd';
-import {CheckOutlined, EyeOutlined } from '@ant-design/icons';
+import { Table, Tag, Modal, DatePicker } from 'antd';
+import { CheckOutlined, EyeOutlined } from '@ant-design/icons';
 import { useState } from 'react';
 import CustomInput from '../../components/custom-input/custom-input';
-import { translateStatusContract } from '../../utils';
+import { translateStatus } from '../../utils';
 import moment from 'moment/moment';
 
 export default function ContractPage() {
@@ -50,7 +50,8 @@ export default function ContractPage() {
           );
         } else {
           return (
-            <CheckOutlined className='check-icon'
+            <CheckOutlined
+              className="check-icon"
               onClick={() => {
                 handleCheckContract(record);
                 showModal();
@@ -103,7 +104,7 @@ export default function ContractPage() {
         }
         return (
           <Tag color={color} key={record.key}>
-            {translateStatusContract(record.status)}
+            {translateStatus(record.status)}
           </Tag>
         );
       }
@@ -143,7 +144,7 @@ export default function ContractPage() {
       <Table columns={columns} dataSource={data} />
       <Modal title="Thông tin hợp đồng" open={isModalOpen} onOk={handleOk} onCancel={handleCancel}>
         <div className="edit__contract-label">Tên hợp đồng</div>
-        <CustomInput defaultValue={contractInfor.contract_name} disabled ></CustomInput>
+        <CustomInput defaultValue={contractInfor.contract_name} disabled></CustomInput>
 
         <div className="edit__contract-label">Tên nhân viên</div>
         <CustomInput defaultValue={contractInfor.employee_name} disabled></CustomInput>
@@ -153,16 +154,16 @@ export default function ContractPage() {
 
         <div className="edit__contract-row">
           <div>
-          <div className="edit__contract-label">Ngày ký hợp đồng</div>
-        <DatePicker value={contractInfor.contract_date} disabled />
+            <div className="edit__contract-label">Ngày ký hợp đồng</div>
+            <DatePicker value={contractInfor.contract_date} disabled />
           </div>
           <div>
             <div className="edit__contract-label">Ngày bắt đầu</div>
-            <DatePicker value={contractInfor.start_date} disabled/>
+            <DatePicker value={contractInfor.start_date} disabled />
           </div>
           <div>
             <div className="edit__contract-label">Ngày kết thúc</div>
-            <DatePicker value={contractInfor.end_date} disabled/>
+            <DatePicker value={contractInfor.end_date} disabled />
           </div>
         </div>
 

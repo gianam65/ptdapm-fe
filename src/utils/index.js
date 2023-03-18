@@ -48,14 +48,6 @@ export const translateStatus = status => {
       return 'Đã nghỉ việc';
     case 'onBoarding':
       return 'Đi công tác';
-    default:
-      return 'Làm việc tại trường';
-  }
-};
-
-
-export const translateStatusContract = status => {
-  switch (status?.toLowerCase()) {
     case 'completed':
       return 'Đã ký';
     case 'pending':
