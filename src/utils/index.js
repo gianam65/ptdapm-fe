@@ -1,8 +1,8 @@
 import defaultAvatar from '../assets/images/default_avatar.jpg';
 
 export const getAPIHostName = () => {
-  return 'http://localhost:8001/api/v1';
-  // return 'http://manhpham.site:8001/api/v1';
+  // return 'http://localhost:8001/api/v1';
+  return 'http://manhpham.site:8001/api/v1';
 };
 
 export const normalizeDate = date => {
@@ -48,6 +48,20 @@ export const translateStatus = status => {
       return 'Đã nghỉ việc';
     case 'onBoarding':
       return 'Đi công tác';
+    default:
+      return 'Làm việc tại trường';
+  }
+};
+
+
+export const translateStatusContract = status => {
+  switch (status?.toLowerCase()) {
+    case 'completed':
+      return 'Đã ký';
+    case 'pending':
+      return 'Đang chờ';
+    case 'cancel':
+      return 'Đã huỷ';
     default:
       return 'Làm việc tại trường';
   }

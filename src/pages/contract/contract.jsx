@@ -1,26 +1,65 @@
 import './contract.scss';
 import { Table, Tag, Modal, DatePicker, Select } from 'antd';
-import { EditOutlined } from '@ant-design/icons';
+import {CheckOutlined, EyeOutlined } from '@ant-design/icons';
 import { useState } from 'react';
 import CustomInput from '../../components/custom-input/custom-input';
+import { translateStatusContract } from '../../utils';
+import moment from 'moment/moment';
+
 export default function ContractPage() {
-  const { RangePicker } = DatePicker;
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [dateRange, setDateRange] = useState([]);
-  function handleDateChange(dates) {
-    setDateRange(dates);
-  }
+  const [contractInfor, setContractInfor] = useState({});
+
+  const handleCheckContract = record => {
+    setContractInfor({
+      contract_name: record.contract_name,
+      role: record.role,
+      employee_name: record.employee_name,
+      contract_date: moment(record.contract_date),
+      email: record.email,
+      end_date: moment(record.end_date),
+      start_date: moment(record.start_date)
+    });
+  };
+
   const showModal = () => {
     setIsModalOpen(true);
   };
+
   const handleOk = () => {
     setIsModalOpen(false);
   };
+
   const handleCancel = () => {
     setIsModalOpen(false);
   };
 
   const columns = [
+    {
+      title: 'Hành động',
+      key: 'action',
+      render: (_, record) => {
+        if (record.status === 'completed') {
+          return (
+            <EyeOutlined
+              onClick={() => {
+                handleCheckContract(record);
+                showModal();
+              }}
+            />
+          );
+        } else {
+          return (
+            <CheckOutlined className='check-icon'
+              onClick={() => {
+                handleCheckContract(record);
+                showModal();
+              }}
+            />
+          );
+        }
+      }
+    },
     {
       title: 'Tên hợp đồng',
       dataIndex: 'contract_name',
@@ -59,14 +98,12 @@ export default function ContractPage() {
         let color;
         if (record.status === 'pending') {
           color = 'geekblue';
-        } else if (record.status === 'success') {
-          color = 'green';
         } else {
-          color = 'volcano';
+          color = 'green';
         }
         return (
           <Tag color={color} key={record.key}>
-            {record.status.toUpperCase()}
+            {translateStatusContract(record.status)}
           </Tag>
         );
       }
@@ -75,17 +112,6 @@ export default function ContractPage() {
       title: 'Email',
       dataIndex: 'email',
       key: 'email'
-    },
-    {
-      title: 'Cập nhật',
-      key: 'action',
-      render: (_, record) => (
-        <EditOutlined
-          onClick={() => {
-            showModal();
-          }}
-        />
-      )
     }
   ];
   const data = [
@@ -94,59 +120,54 @@ export default function ContractPage() {
       contract_name: 'Hợp đồng 1 ',
       role: 'teacher',
       employee_name: 'Loi',
-      contract_date: '01-02-2001',
-      start_date: '02-03-2001',
-      end_date: '02-11-2001',
+      contract_date: '2021-03-01',
+      start_date: '2021-03-05',
+      end_date: '2023-03-01',
+      status: 'completed',
+      email: 'loi123456@gmail.com'
+    },
+    {
+      key: '2',
+      contract_name: 'Hợp đồng 2 ',
+      role: 'teacher2',
+      employee_name: 'Manh',
+      contract_date: '2021-03-12',
+      start_date: '2021-03-06',
+      end_date: '2023-03-06',
       status: 'pending',
       email: 'loi123456@gmail.com'
     }
   ];
   return (
     <div>
-      <Table columns={columns} dataSource={data} />;
-      <Modal title="Chỉnh sửa hợp đồng" open={isModalOpen} onOk={handleOk} onCancel={handleCancel}>
+      <Table columns={columns} dataSource={data} />
+      <Modal title="Thông tin hợp đồng" open={isModalOpen} onOk={handleOk} onCancel={handleCancel}>
         <div className="edit__contract-label">Tên hợp đồng</div>
-        <CustomInput></CustomInput>
+        <CustomInput defaultValue={contractInfor.contract_name} disabled ></CustomInput>
+
         <div className="edit__contract-label">Tên nhân viên</div>
-        <CustomInput></CustomInput>
+        <CustomInput defaultValue={contractInfor.employee_name} disabled></CustomInput>
 
         <div className="edit__contract-label">Chức vụ</div>
-        <CustomInput></CustomInput>
+        <CustomInput defaultValue={contractInfor.role} disabled></CustomInput>
+
         <div className="edit__contract-row">
           <div>
-            <div className="edit__contract-label">Ngày ký hợp đồng</div>
-            <DatePicker onChange={() => {}} />
+          <div className="edit__contract-label">Ngày ký hợp đồng</div>
+        <DatePicker value={contractInfor.contract_date} disabled />
           </div>
           <div>
-          <div className="edit__contract-label">Ngày bắt đầu và kết thúc hợp đồng</div>
-          <RangePicker onChange={handleDateChange} value={dateRange} />
+            <div className="edit__contract-label">Ngày bắt đầu</div>
+            <DatePicker value={contractInfor.start_date} disabled/>
+          </div>
+          <div>
+            <div className="edit__contract-label">Ngày kết thúc</div>
+            <DatePicker value={contractInfor.end_date} disabled/>
           </div>
         </div>
 
-        <div className="edit__contract-label">Trạng thái</div>
-        <Select
-          defaultValue="complete"
-          style={{
-            width: 120
-          }}
-          onChange={() => {}}
-          options={[
-            {
-              value: 'complete',
-              label: 'complete'
-            },
-            {
-              value: 'pending',
-              label: 'pending'
-            },
-            {
-              value: 'cancel',
-              label: 'cancel'
-            }
-          ]}
-        />
         <div className="edit__contract-label">Email</div>
-        <CustomInput></CustomInput>
+        <CustomInput defaultValue={contractInfor.email} disabled></CustomInput>
         <div></div>
       </Modal>
     </div>

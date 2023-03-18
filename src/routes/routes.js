@@ -53,6 +53,13 @@ const publicRoutes = [
     needShowSideMenu: true
   },
   {
+    path: config.routes.contract,
+    element: <ContractPage />,
+    pageIcon: <AuditOutlined />,
+    label: 'Hợp đồng',
+    needShowSideMenu: true
+  },
+  {
     path: config.routes.benefit,
     pageIcon: <DollarOutlined />,
     element: <BenefitPage />,
@@ -66,13 +73,7 @@ const publicRoutes = [
     label: 'Phân quyền',
     needShowSideMenu: true
   },
-  {
-    path: config.routes.contract,
-    element: <ContractPage />,
-    pageIcon: <AuditOutlined />,
-    label: 'Hợp đồng',
-    needShowSideMenu: true
-  },
+
   {
     path: config.routes.login,
     element: <LoginPage />,
