@@ -18,10 +18,10 @@ import {
   accessTokenState
 } from '../../recoil/store/account';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import CustomInput from '../custom-input/custom-input';
 import { getAPIHostName } from '../../utils';
-import { httpPut } from '../../services/request';
+import { httpPut, httpGet } from '../../services/request';
 
 const items = [
   {
@@ -50,6 +50,8 @@ const Header = () => {
   // const accountRole = useRecoilValue(accountRoleState);
   const accountAvatar = useRecoilValue(accountAvatarState);
   const accountId = useRecoilValue(accountIdState);
+  const [currentAccountName, setCurrentAccountName] = useState(accountName || '');
+  const [currentAccountAvatar, setCurrentAccountAvatar] = useState(accountAvatar || '');
   const [accessToken, setAccessToken] = useRecoilState(accessTokenState);
   const navigation = useNavigate();
   const location = useLocation();
@@ -58,6 +60,28 @@ const Header = () => {
   const oldPasswordRef = useRef(null);
   const newPasswordRef = useRef(null);
   const confirmPasswordRef = useRef(null);
+
+  useEffect(() => {
+    const getUserDetail = () => {
+      const url = `${getAPIHostName()}/users/find/${accountId}`;
+      httpGet(url)
+        .then(res => {
+          if (res.success) {
+            setCurrentAccountName(res.data.username);
+            setCurrentAccountAvatar(res.data.user_avatar);
+          }
+        })
+        .catch(() => {
+          notification.error({
+            title: 'Lỗi',
+            message: 'Không thể lấy thông tin người dùng'
+          });
+        });
+    };
+    getUserDetail();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [accountName, accountAvatar]);
+
   const handleHeaderAction = ({ key }) => {
     switch (key) {
       case 'change_password':
@@ -137,11 +161,11 @@ const Header = () => {
       </div>
       <div className="header__user-info">
         <div className="name_and_status">
-          <div className="header__user-name">{accountName}</div>
+          <div className="header__user-name">{currentAccountName || accountName}</div>
           <span className="header__user-status">{accountStatus}</span>
         </div>
-        {accountAvatar ? (
-          <img src={accountAvatar} alt="account avatar" className="header__user-img" />
+        {currentAccountAvatar || accountAvatar ? (
+          <img src={currentAccountAvatar || accountAvatar} alt="account avatar" className="header__user-img" />
         ) : (
           <div className="header__user-ava">
             <UserOutlined />

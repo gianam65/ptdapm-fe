@@ -20,7 +20,6 @@ const Home = () => {
   const [img, setImg] = useState(null);
   const [userInfor, setUserInfor] = useState({});
   const [userName, setUserName] = useState();
-  const [lazyLoadingImg, setLazyLoadingImg] = useState(false);
 
   useEffect(() => {
     const getUserDetail = () => {
@@ -93,7 +92,6 @@ const Home = () => {
       setImg(img);
       const url = URL.createObjectURL(img[0]);
       setPreviewImg(url);
-      setAccountAvatar(url)
     }
   };
 
@@ -109,14 +107,10 @@ const Home = () => {
             accept="image/*"
           ></input>
           <img
-            src={previewImg ? previewImg : fallbackToDefaultAvatar(accountAvatar,lazyLoadingImg)}
+            src={previewImg ? previewImg : fallbackToDefaultAvatar(accountAvatar)}
             alt="User avatar"
             className="avatar__img"
-            loading='lazy'
-            onLoad={()=>{
-              console.log("lazyLoadingImglazyLoadingImg");
-              setLazyLoadingImg(true)
-            }}
+            loading="lazy"
           />
           <CameraOutlined className="avatar__camera" />
         </div>

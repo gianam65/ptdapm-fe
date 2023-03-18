@@ -51,7 +51,7 @@ const LoginPage = () => {
           setAccountAvatar(user_avatar);
         } else {
           notification.error({
-            message: res.message || 'Failed to login, please retry later',
+            message: 'Sai tài khoản hoặc mật khẩu',
             placement: 'topRight'
           });
         }
@@ -73,30 +73,25 @@ const LoginPage = () => {
           <img src={loginBg} alt="Login background" />
         </div>
         <div className="login__right">
-          <div className="login__right-title">Welcome back</div>
-          <div className="login__right-desc">Nice to see you again</div>
+          <div className="login__right-title">Chào mừng trở lại</div>
+          <div className="login__right-desc">Rất vui được gặp lại</div>
           <div className="login__right-form">
             <span className="login__right-label">Email</span>
-            <CustomInput
-              size="large"
-              className="login__right-inp"
-              placeholder="Please enter your email"
-              ref={emailRef}
-            />
+            <CustomInput size="large" className="login__right-inp" placeholder="Vui lòng nhập email" ref={emailRef} />
 
-            <span className="login__right-label">Password</span>
+            <span className="login__right-label">Mật khẩu</span>
             <CustomInput
               size="large"
               type="password"
               className="login__right-inp"
               id="login__password"
-              placeholder="Please enter your password"
+              placeholder="Vui lòng nhập mật khẩu"
               ref={passwordRef}
               onPressEnter={handleLogin}
             />
 
             <Button className="login__right-btn" large onClick={handleLogin}>
-              Login
+              Đăng nhập
             </Button>
           </div>
         </div>
