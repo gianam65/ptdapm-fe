@@ -48,6 +48,12 @@ export const translateStatus = status => {
       return 'Đã nghỉ việc';
     case 'onBoarding':
       return 'Đi công tác';
+    case 'completed':
+      return 'Đã ký';
+    case 'pending':
+      return 'Đang chờ';
+    case 'cancel':
+      return 'Đã huỷ';
     default:
       return 'Làm việc tại trường';
   }
