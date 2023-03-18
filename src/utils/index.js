@@ -13,8 +13,8 @@ export const getPriorityRole = roles => {
   return roles?.includes('Admin') ? 'Admin' : 'HR';
 };
 
-export const fallbackToDefaultAvatar = (avatarUrl,lazyLoadingImg) => {
-  return avatarUrl && !lazyLoadingImg ? avatarUrl : defaultAvatar;
+export const fallbackToDefaultAvatar = avatarUrl => {
+  return avatarUrl ? avatarUrl : defaultAvatar;
 };
 
 export const removeTimeFromDate = timeStamp => {
