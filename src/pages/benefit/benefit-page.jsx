@@ -1,6 +1,6 @@
 import React, { useRef, useState } from 'react';
 import { useEffect } from 'react';
-import { Table, Popover, notification, Modal, Input, InputNumber, Select } from 'antd';
+import { Table, Popover, notification, Modal, Input, InputNumber, Select, Pagination } from 'antd';
 import Button from '../../components/button/button';
 import './benefit-page.scss';
 import { httpGet, httpDelete, httpPost, httpPut } from '../../services/request';
@@ -226,7 +226,6 @@ const BenefitPage = () => {
 
   const getDataSource = () => {
     let benefitData = benefitList.filter(item => !item.is_deleted);
-
     return benefitData.filter(item => item.name?.indexOf(searchValue) >= 0 || item.code?.indexOf(searchValue) >= 0);
   };
 
@@ -254,7 +253,7 @@ const BenefitPage = () => {
           columns={columns}
           loading={isLoadingTable}
           dataSource={getDataSource()}
-          pagination={true}
+          pagination={{ pageSize: 5 }}
           rowKey={record => record._id}
         ></Table>
         <Modal
