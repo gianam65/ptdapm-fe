@@ -39,3 +39,22 @@ export const blobToFile = (theBlob, fileName) => {
 export const randomDate = (start, end) => {
   return new Date(start.getTime() + Math.random() * (end.getTime() - start.getTime()));
 };
+
+export const translateStatus = status => {
+  switch (status?.toLowerCase()) {
+    case 'active':
+      return 'Làm việc tại trường';
+    case 'inActive':
+      return 'Đã nghỉ việc';
+    case 'onBoarding':
+      return 'Đi công tác';
+    case 'completed':
+      return 'Đã ký';
+    case 'pending':
+      return 'Đang chờ';
+    case 'cancel':
+      return 'Đã huỷ';
+    default:
+      return 'Làm việc tại trường';
+  }
+};

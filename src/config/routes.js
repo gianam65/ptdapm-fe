@@ -6,7 +6,8 @@ const routes = {
   login: '/login',
   department: '/department',
   benefit: '/benefit',
-  settings: '/settings'
+  settings: '/settings',
+  contract:'/contract'
 };
 
 export default routes;
