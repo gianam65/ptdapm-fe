@@ -115,7 +115,6 @@ const EmployeesPage = () => {
       .then(res => {
         if (res.success) {
           const { employeeList, totalPage, totalEmployee } = res.data;
-          console.log(res.data, "1222")
           setListEmployees(employeeList);
           setActivePage(activePage)
           setTotalPage(totalPage)
@@ -234,7 +233,7 @@ const EmployeesPage = () => {
     httpGet(url, accessToken)
       .then(res => {
         if (res.success) {
-          const {employeeList, totalPage} = res.data
+          const { employeeList, totalPage } = res.data
           setListEmployees(employeeList)
           setTotalPage(totalPage)
         } else {
@@ -421,10 +420,10 @@ const EmployeesPage = () => {
         </Button>
       </div>
       <div className="employees__container">
-        <Table columns={columns} dataSource={listEmployees} rowKey={record => record._id} pagination={{total: totalEmployee, current: activePage, pageSize: 4, onChange: activePage => fetchEmployees(activePage)}}  />
+        <Table columns={columns} dataSource={listEmployees} rowKey={record => record._id} pagination={{ total: totalEmployee, current: activePage, pageSize: 4, onChange: activePage => fetchEmployees(activePage) }} />
       </div>
       <Modal
-        style={{ width: 1000 }}
+        style={{ width: 10000 }}
         title="Add employees"
         wrapClassName="add__employees-modal"
         okText="Add"
@@ -432,7 +431,7 @@ const EmployeesPage = () => {
         onOk={() => fetchAddEmployees()}
         onCancel={() => setIsModalOpen(false)}
       >
-        <div style={{ display: "flex", justifyContent: "space-between" }}>
+        <div className='add_employees_modal'>
           <div className='add__employees_left'>
             <div className="add__employees-label">Name:</div>
             <CustomInput ref={employeesNameRef} placeholder="Enter employees name" />
@@ -442,16 +441,6 @@ const EmployeesPage = () => {
             <CustomInput ref={employeesBirthdayRef} placeholder="Your birthday " />
             <div className="add__employees-label">phoneNumber:</div>
             <CustomInput ref={employeesPhoneRef} placeholder="Your number" />
-          </div>
-          <div className='add__employees_right'>
-            <div className="add__employees-label">Gender:</div>
-            <CustomInput ref={employeesGenderRef} placeholder="Male or Female" />
-            <div className="add__employees-label">Employee code :</div>
-            <CustomInput ref={employeesCodeRef} placeholder="Enter employees code" />
-            <div className="add__employees-label">Address: </div>
-            <CustomInput ref={employeesAddressRef} placeholder="Address" />
-            <div className="add__employees-label">salaryRank: </div>
-            <InputNumber type={'number'} defaultValue={salaryRanks} onChange={(value) => setSalaryRanks(value)} />
             <Select placeholder="Depratment"
               style={{ width: 120 }}
             >
@@ -489,6 +478,17 @@ const EmployeesPage = () => {
               )}
             </Upload>
           </div>
+          <div className='add__employees_right'>
+            <div className="add__employees-label">Gender:</div>
+            <CustomInput ref={employeesGenderRef} placeholder="Male or Female" />
+            <div className="add__employees-label">Employee code :</div>
+            <CustomInput ref={employeesCodeRef} placeholder="Enter employees code" />
+            <div className="add__employees-label">Address: </div>
+            <CustomInput ref={employeesAddressRef} placeholder="Address" />
+            <div className="add__employees-label">salaryRank: </div>
+            <InputNumber type={'number'} defaultValue={salaryRanks} onChange={(value) => setSalaryRanks(value)} />
+
+          </div>
         </div>
       </Modal>
 
@@ -513,22 +513,29 @@ const EmployeesPage = () => {
             <CustomInput onChange={e => setAddress(e.target.value)} placeholder="Address" />
             <div className="add__employees-label">salaryRank: </div>
             <InputNumber onChange={value => setSalaryRanks(value)} type={'number'} defaultValue={salaryRanks} />
-            <Select onChange={value => setDepartment(value)} placeholder="Depratment" style={{ width: 120 }}
-            >
-              {departmentList.map((list, idx) => {
-                return (
-                  <Option key={idx} value={list._id}>{list.name}</Option>
-                )
-              })}
-            </Select>
-            <Select onChange={value => setBenefit(value)} placeholder="Benefit"
-              style={{ width: 120 }}>
-              {benefitList.map((list, idx) => {
-                return (
-                  <Option key={idx} value={list._id}>{list.name}</Option>
-                )
-              })}
-            </Select>
+            <div className='select'>
+              <div>
+                <Select onChange={value => setDepartment(value)} placeholder="Depratment" style={{ width: 120 }}
+                >
+                  {departmentList.map((list, idx) => {
+                    return (
+                      <Option key={idx} value={list._id}>{list.name}</Option>
+                    )
+                  })}
+                </Select>
+              </div>
+              <div>
+                <Select onChange={value => setBenefit(value)} placeholder="Benefit"
+                  style={{ width: 120 }}>
+                  {benefitList.map((list, idx) => {
+                    return (
+                      <Option key={idx} value={list._id}>{list.name}</Option>
+                    )
+                  })}
+                </Select>
+              </div>
+
+            </div>
             <Upload
               name="avatar"
               listType="picture-circle"

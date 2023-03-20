@@ -90,3 +90,19 @@
     flex-direction: column;
     align-items: flex-end;
 }
+.add_employees_modal {
+ display: flex;
+ justify-content: space-around;
+ width: 100%;
+ gap: 50px;
+}
+.select {
+  display: flex;
+  gap: 20px;
+}
+.ant-select-selector {
+ margin-right: 20px;
+}
+.ant-input-number.css-dev-only-do-not-override-1km3mtt {
+  margin-bottom: 20px;
+}
