@@ -36,7 +36,7 @@ const options = {
 export default function ReportPage() {
   const [reportList, setReportList] = useState([]);
   const setPageLoading = useSetRecoilState(loadingState);
-  const [type, setType] = useState('bar');
+  const [type, setType] = useState('line');
 
   useEffect(() => {
     const getEmployee = () => {
@@ -147,12 +147,12 @@ export default function ReportPage() {
   return (
     <div className="reports__container">
       <div>
-        <Chart type="bar" data={data} options={options} />
-        <div style={{ textAlign: 'center' }}>
+        <Chart type="line" data={data} options={options} />
+        {/* <div style={{ textAlign: 'center' }}>
           <Button onClick={() => setType('bar')}>Biểu đồ cột</Button>
           <Button onClick={() => setType('line')}>Biểu đồ đường</Button>
           <Button onClick={() => setType('doughnut')}>Biểu đồ tròn</Button>
-        </div>
+        </div> */}
       </div>
     </div>
   );
