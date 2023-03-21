@@ -1,18 +1,17 @@
 import './employees-page.scss';
-import { Table, notification, Modal, Popover, Upload, message, InputNumber, Select, Input, Pagination } from 'antd';
+import { Table, notification, Modal, Tooltip, InputNumber, Select, Input } from 'antd';
 import { useEffect, useState, useRef } from 'react';
 import { httpGet, httpPost, httpDelete } from '../../services/request';
 import { getAPIHostName } from '../../utils';
 import { loadingState } from '../../recoil/store/app';
 import { useSetRecoilState, useRecoilValue } from 'recoil';
-import { fallbackToDefaultAvatar, removeTimeFromDate } from '../../utils/';
+import { fallbackToDefaultAvatar, removeTimeFromDate, randomText } from '../../utils/';
 import { CSVLink } from 'react-csv';
 import { CloudDownloadOutlined } from '@ant-design/icons';
 import CustomInput from '../../components/custom-input/custom-input';
 import { accessTokenState } from '../../recoil/store/account';
-import { MoreOutlined, PlusOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons';
+import { PlusOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons';
 import Button from '../../components/button/button';
-import Search from 'antd/es/transfer/search';
 
 const HEADERS = [
   { label: 'Tên nhân viên', key: 'name' },
@@ -25,47 +24,41 @@ const HEADERS = [
   { label: 'Tình trạng hoạt động', key: 'status' },
   { label: 'Ngày sinh', key: 'BirthOfDate' }
 ];
-
+const { Search } = Input;
+const { Option } = Select;
 const EmployeesPage = () => {
-  const { Option } = Select;
   const [departmentList, setDepartmentList] = useState([]);
   const [benefitList, setBenefitList] = useState([]);
-  const [activePage, setActivePage] = useState(1)
-  const [totalPage, setTotalPage] = useState()
+  const [activePage, setActivePage] = useState(1);
   const [listEmployees, setListEmployees] = useState([]);
   const setPageLoading = useSetRecoilState(loadingState);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editModalOpen, setEditModalOpen] = useState(false);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const accessToken = useRecoilValue(accessTokenState);
-  const [imageUrl, setImageUrl] = useState();
   const employeesNameRef = useRef(null);
   const employeesCodeRef = useRef(null);
   const employeesEmailRef = useRef(null);
   const employeesBirthdayRef = useRef(null);
   const employeesPhoneRef = useRef(null);
   const employeesGenderRef = useRef(null);
-  const employeesAddressRef = useRef(null)
-  const [name, setName] = useState("")
-  const [email, setEmail] = useState("")
-  const [code, setCode] = useState("")
-  const [birthday, setBirthday] = useState("")
-  const [phone, setPhone] = useState("")
-  const [gender, setGender] = useState("")
-  const [address, setAddress] = useState("")
-  const [salaryRanks, setSalaryRanks] = useState(1)
-  const [department, setDepartment] = useState()
-  const [benefit, setBenefit] = useState()
-  const [startDate, setStartDate] = useState()
-  const [id, setID] = useState()
-  const [modalText] = useState('Are you sure to delete this employee ?');
-  const [textSearch, setTextSearch] = useState()
-  const [totalEmployee, setTotalEmployee] = useState()
-  const { Search } = Input
+  const employeesAddressRef = useRef(null);
+  const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
+  const [code, setCode] = useState('');
+  const [birthday, setBirthday] = useState('');
+  const [phone, setPhone] = useState('');
+  const [gender, setGender] = useState('');
+  const [address, setAddress] = useState('');
+  const [salaryRanks, setSalaryRanks] = useState(1);
+  const [department, setDepartment] = useState();
+  const [benefit, setBenefit] = useState();
+  const [startDate, setStartDate] = useState();
+  const [id, setID] = useState();
+  const [textSearch, setTextSearch] = useState('');
   useEffect(() => {
-    fetchEmployees(activePage);
-    getDepartment();
-    getBenefit();
+    Promise.all([fetchEmployees(activePage), getDepartment(), getBenefit()]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const getBenefit = () => {
@@ -81,8 +74,8 @@ const EmployeesPage = () => {
       })
       .catch(() => {
         notification.error({
-          title: 'Error',
-          message: 'Can not get benefit data'
+          title: 'Lỗi',
+          message: 'Không thể lấy thông tin phòng ban'
         });
         setPageLoading(false);
       });
@@ -108,17 +101,15 @@ const EmployeesPage = () => {
       });
   };
 
-  const fetchEmployees = (activePage) => {
+  const fetchEmployees = activePage => {
     setPageLoading(true);
-    const url = `${getAPIHostName()}/employees?is_deleted=false&limit=4&page=${activePage}`;
+    const url = `${getAPIHostName()}/employees`;
     httpGet(url)
       .then(res => {
         if (res.success) {
-          const { employeeList, totalPage, totalEmployee } = res.data;
+          const { employeeList } = res.data;
           setListEmployees(employeeList);
-          setActivePage(activePage)
-          setTotalPage(totalPage)
-          setTotalEmployee(totalEmployee)
+          setActivePage(activePage);
         }
         setPageLoading(false);
       })
@@ -127,7 +118,7 @@ const EmployeesPage = () => {
       });
   };
 
-  const fetchAddEmployees = () => {
+  const handleAddEmployees = () => {
     const name = employeesNameRef.current.input.value;
     const codeEmployee = employeesCodeRef.current.input.value;
     const email = employeesEmailRef.current.input.value;
@@ -141,14 +132,15 @@ const EmployeesPage = () => {
       .then(res => {
         if (res.success) {
           notification.success({
-            title: 'Success',
-            message: 'Successfully created a new employee'
+            title: 'Thành công',
+            message: 'Thêm nhân viên thành công'
           });
-          fetchEmployees()
+          fetchEmployees();
+          setIsModalOpen(false);
         } else {
           notification.error({
-            title: 'Error',
-            message: res.message || 'Failed to create new employee'
+            title: 'Thất bại',
+            message: 'Thêm nhân viên thất bại'
           });
         }
         setPageLoading(false);
@@ -159,11 +151,11 @@ const EmployeesPage = () => {
   };
 
   const handleCodeEmployee = codeEmployee => {
-    setCode(codeEmployee)
-    setEditModalOpen(true)
-  }
+    setCode(codeEmployee);
+    setEditModalOpen(true);
+  };
 
-  const fetchUpdateEmployees = () => {
+  const handleUpdateEmployees = () => {
     setPageLoading(true);
     const url = `${getAPIHostName()}/employees?department=&position=&benefit=`;
     let buildBodyToUpdate = {
@@ -183,15 +175,15 @@ const EmployeesPage = () => {
       .then(res => {
         if (res.success) {
           notification.success({
-            title: 'Success',
-            message: 'Successfully update a new employee'
-          })
-          setEditModalOpen(false)
-          fetchEmployees()
+            title: 'Thành công',
+            message: 'Cập nhật nhân viên thành công'
+          });
+          setEditModalOpen(false);
+          fetchEmployees();
         } else {
           notification.error({
-            title: 'Error',
-            message: res.message || 'Failed to update new employee'
+            title: 'Thất bại',
+            message: 'Cập nhật nhân viên thất bại'
           });
         }
         setPageLoading(false);
@@ -201,23 +193,22 @@ const EmployeesPage = () => {
       });
   };
 
-  const fetchDeleteEmployees = () => {
+  const handleDeleteEmployees = () => {
     setPageLoading(true);
     const url = `${getAPIHostName()}/employees/delete/${id}`;
-    console.log(url, "12121")
-    console.log(accessToken)
     httpDelete(url, accessToken)
       .then(res => {
         if (res.success) {
           notification.success({
-            title: 'Success',
-            message: 'Successfully delete an employee',
+            title: 'Thành công',
+            message: 'Xoá nhân viên thành công'
           });
-          fetchEmployees()
+          fetchEmployees();
+          setDeleteModalOpen(false);
         } else {
           notification.error({
-            title: 'Error',
-            message: res.message || 'Failed to delete an employee'
+            title: 'Thất bại',
+            message: 'Xoá nhân viên thất bại'
           });
         }
         setPageLoading(false);
@@ -227,28 +218,45 @@ const EmployeesPage = () => {
       });
   };
 
-  const fetchSearchEmployees = (activePage) => {
-    setPageLoading(true);
-    const url = `${getAPIHostName()}/employees?text=${textSearch}&is_deleted=false&page=${activePage}`;
-    httpGet(url, accessToken)
-      .then(res => {
-        if (res.success) {
-          const { employeeList, totalPage } = res.data
-          setListEmployees(employeeList)
-          setTotalPage(totalPage)
-        } else {
-          notification.error({
-            title: 'Error',
-          });
-        }
-        setPageLoading(false);
-      })
-      .catch(() => {
-        setPageLoading(false);
-      });
-  };
+  // Hàm này sửa sau, data chưa nhiều nên k cần search trên DB
+  // const fetchSearchEmployees = activePage => {
+  //   setPageLoading(true);
+  //   const url = `${getAPIHostName()}/employees?text=${textSearch}&is_deleted=false&page=${activePage}`;
+  //   httpGet(url, accessToken)
+  //     .then(res => {
+  //       if (res.success) {
+  //         const { employeeList } = res.data;
+  //         setListEmployees(employeeList);
+  //       } else {
+  //         notification.error({
+  //           title: 'Error'
+  //         });
+  //       }
+  //       setPageLoading(false);
+  //     })
+  //     .catch(() => {
+  //       setPageLoading(false);
+  //     });
+  // };
 
   const columns = [
+    {
+      title: 'Hành động',
+      render: (_, item) => (
+        <div className="action manipulated__action employee__actions">
+          <div onClick={() => handleCodeEmployee(item.codeEmployee)} className="action__edit">
+            <Tooltip title="Sửa">
+              <EditOutlined />
+            </Tooltip>
+          </div>
+          <div onClick={() => handleID(item._id)} className="action__delete">
+            <Tooltip title="Xoá">
+              <DeleteOutlined />
+            </Tooltip>
+          </div>
+        </div>
+      )
+    },
     {
       title: 'Tên nhân viên',
       dataIndex: 'name',
@@ -309,37 +317,12 @@ const EmployeesPage = () => {
       render: picturePath => (
         <img src={fallbackToDefaultAvatar(picturePath)} alt="employee avatar" className="employee__avatar" />
       )
-    },
-    {
-      title: 'ACTION',
-      render: (_, item) => (
-        <div className="employees__row-action">
-          <Popover content={content(item.codeEmployee, item._id)} trigger="click">
-            <MoreOutlined />
-          </Popover>
-        </div>
-      )
     }
   ];
 
   const handleID = id => {
-    setID(id)
-    setDeleteModalOpen(true)
-  }
-
-  const content = (codeEmployee, id) => {
-    return (
-      <div className="action manipulated__action">
-        <div onClick={() => handleCodeEmployee(codeEmployee)} className="action__edit">
-          <EditOutlined />
-          <div>Edit</div>
-        </div>
-        <div onClick={() => handleID(id)} className="action__delete">
-          <DeleteOutlined />
-          <div>Xoá</div>
-        </div>
-      </div>
-    );
+    setID(id);
+    setDeleteModalOpen(true);
   };
 
   const buildDataToExport = () => {
@@ -364,33 +347,18 @@ const EmployeesPage = () => {
     return data;
   };
 
-  const beforeUpload = (file) => {
-    const isJpgOrPng = file.type === 'image/jpeg' || file.type === 'image/png';
-    if (!isJpgOrPng) {
-      message.error('You can only upload JPG/PNG file!');
-    }
-    const isLt2M = file.size / 1024 / 1024 < 2;
-    if (!isLt2M) {
-      message.error('Image must smaller than 2MB!');
-    }
-    return isJpgOrPng && isLt2M;
+  const provideDatasource = () => {
+    let employees = listEmployees.filter(item => !item.is_deleted);
+
+    return employees.filter(
+      item =>
+        item.name?.indexOf(textSearch) >= 0 ||
+        item.address?.indexOf(textSearch) >= 0 ||
+        item.email?.indexOf(textSearch) >= 0 ||
+        item.phoneNumber?.indexOf(textSearch) >= 0 ||
+        item.code?.indexOf(textSearch) >= 0
+    );
   };
-
-  const uploadButton = (
-    <div>
-      {<PlusOutlined />}
-      <div
-        style={{
-          marginTop: 8,
-        }}
-      >
-        Upload
-      </div>
-    </div>
-  );
-
-
-
 
   return (
     <div className="employess__section">
@@ -404,169 +372,137 @@ const EmployeesPage = () => {
         <Search
           type="search"
           style={{
-            width: 200,
+            width: 200
           }}
-          placeholder="Nhập vào đây để tìm kiếm"
+          placeholder="Tìm kiếm"
           className="employees__search-inp"
           onChange={e => setTextSearch(e.target.value)}
-          onSearch={() => textSearch ? fetchSearchEmployees() : fetchEmployees()}
         />
-        <Button
-          className="employees__search-btn"
-          rightIcon={<PlusOutlined />}
-          onClick={() => setIsModalOpen(true)}
-        >
+        <Button className="employees__search-btn" rightIcon={<PlusOutlined />} onClick={() => setIsModalOpen(true)}>
           Thêm nhân viên
         </Button>
       </div>
       <div className="employees__container">
-        <Table columns={columns} dataSource={listEmployees} rowKey={record => record._id} pagination={{ total: totalEmployee, current: activePage, pageSize: 4, onChange: activePage => fetchEmployees(activePage) }} />
+        <Table columns={columns} dataSource={provideDatasource()} rowKey={record => record._id} pagination={true} />
       </div>
       <Modal
-        style={{ width: 10000 }}
-        title="Add employees"
+        title="Thêm nhân viên"
         wrapClassName="add__employees-modal"
-        okText="Add"
+        okText="Thêm"
+        cancelText="Huỷ"
         open={isModalOpen}
-        onOk={() => fetchAddEmployees()}
+        onOk={() => handleAddEmployees()}
         onCancel={() => setIsModalOpen(false)}
       >
-        <div className='add_employees_modal'>
-          <div className='add__employees_left'>
-            <div className="add__employees-label">Name:</div>
-            <CustomInput ref={employeesNameRef} placeholder="Enter employees name" />
+        <div className="add_employees_modal">
+          <div className="add__employees_left">
+            <div className="add__employees-label">Tên:</div>
+            <CustomInput ref={employeesNameRef} placeholder="Tên nhân viên" />
             <div className="add__employees-label">Email:</div>
-            <CustomInput ref={employeesEmailRef} placeholder="Enter employees email" />
-            <div className="add__employees-label">Your birthday :</div>
-            <CustomInput ref={employeesBirthdayRef} placeholder="Your birthday " />
-            <div className="add__employees-label">phoneNumber:</div>
-            <CustomInput ref={employeesPhoneRef} placeholder="Your number" />
-            <Select placeholder="Depratment"
-              style={{ width: 120 }}
-            >
-              {departmentList.map((list, idx) => {
-                return (
-                  <Option key={idx} value={list._id}>{list.name}</Option>
-                )
-              })}
-            </Select>
-            <Select placeholder="Benefit"
-              style={{ width: 120 }}>
-              {benefitList.map((list, idx) => {
-                return (
-                  <Option key={idx} value={list._id}>{list.name}</Option>
-                )
-              })}
-            </Select>
-            <Upload
-              name="avatar"
-              listType="picture-circle"
-              className="avatar-uploader"
-              showUploadList={false}
-              beforeUpload={beforeUpload}
-            >
-              {imageUrl ? (
-                <img
-                  src={imageUrl}
-                  alt="avatar"
-                  style={{
-                    width: '100%',
-                  }}
-                />
-              ) : (
-                uploadButton
-              )}
-            </Upload>
+            <CustomInput ref={employeesEmailRef} placeholder="Email" />
+            <div className="add__employees-label">Ngày sinh:</div>
+            <CustomInput ref={employeesBirthdayRef} placeholder="Ngày sinh" />
+            <div className="add__employees-label">Điện thoại:</div>
+            <CustomInput ref={employeesPhoneRef} placeholder="Điện thoại" />
+            <div className="add__employees-selects">
+              <Select placeholder="Phòng ban" style={{ width: 120 }}>
+                {departmentList.map((list, idx) => {
+                  return (
+                    <Option key={idx} value={list._id}>
+                      {list.name}
+                    </Option>
+                  );
+                })}
+              </Select>
+              <Select placeholder="Quyền lợi" style={{ width: 120 }}>
+                {benefitList.map((list, idx) => {
+                  return (
+                    <Option key={idx} value={list._id}>
+                      {list.name}
+                    </Option>
+                  );
+                })}
+              </Select>
+            </div>
           </div>
-          <div className='add__employees_right'>
-            <div className="add__employees-label">Gender:</div>
-            <CustomInput ref={employeesGenderRef} placeholder="Male or Female" />
-            <div className="add__employees-label">Employee code :</div>
-            <CustomInput ref={employeesCodeRef} placeholder="Enter employees code" />
-            <div className="add__employees-label">Address: </div>
-            <CustomInput ref={employeesAddressRef} placeholder="Address" />
-            <div className="add__employees-label">salaryRank: </div>
-            <InputNumber type={'number'} defaultValue={salaryRanks} onChange={(value) => setSalaryRanks(value)} />
-
+          <div className="add__employees_right">
+            <div className="add__employees-label">Giới tính:</div>
+            <CustomInput ref={employeesGenderRef} placeholder="Nam hoặc nữ" />
+            <div className="add__employees-label">Mã nhân viên:</div>
+            <CustomInput ref={employeesCodeRef} placeholder="Mã nhân viên" value={randomText(6)} disabled />
+            <div className="add__employees-label">Địa chỉ: </div>
+            <CustomInput ref={employeesAddressRef} placeholder="Địa chỉ" />
+            <div className="add__employees-label">Bậc lương: </div>
+            <InputNumber type={'number'} defaultValue={salaryRanks} onChange={value => setSalaryRanks(value)} />
           </div>
         </div>
       </Modal>
 
-      <Modal title="Update Employees" open={editModalOpen} onOk={() => fetchUpdateEmployees()} onCancel={() => setEditModalOpen(false)}>
-        <div style={{ display: "flex", justifyContent: "space-between" }}>
-          <div className='add__employees_left'>
-            <div className="add__employees-label">Name:</div>
-            <CustomInput onChange={e => setName(e.target.value)} placeholder="Enter employees name" />
+      <Modal
+        title="Cập nhật nhân viên"
+        open={editModalOpen}
+        onOk={() => handleUpdateEmployees()}
+        onCancel={() => setEditModalOpen(false)}
+        okText="Sửa"
+        cancelText="Huỷ"
+      >
+        <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+          <div className="add__employees_left">
+            <div className="add__employees-label">Tên:</div>
+            <CustomInput onChange={e => setName(e.target.value)} placeholder="Tên nhân viên" />
             <div className="add__employees-label">Email:</div>
-            <CustomInput onChange={e => setEmail(e.target.value)} placeholder="Enter employees email" />
-            <div className="add__employees-label">Your birthday :</div>
-            <CustomInput onChange={e => setBirthday(e.target.value)} placeholder="Your birthday " />
-            <div className="add__employees-label">phoneNumber:</div>
-            <CustomInput onChange={e => setPhone(e.target.value)} placeholder="Your number" />
-            <div className="add__employees-label">startDate:</div>
-            <CustomInput onChange={e => setStartDate(e.target.value)} placeholder="Your number" />
+            <CustomInput onChange={e => setEmail(e.target.value)} placeholder="Email" />
+            <div className="add__employees-label">Ngày sinh :</div>
+            <CustomInput onChange={e => setBirthday(e.target.value)} placeholder="Ngày sinh VD: 06/05/2001" />
+            <div className="add__employees-label">Điện thoại:</div>
+            <CustomInput onChange={e => setPhone(e.target.value)} placeholder="Điện thoại" />
+            <div className="add__employees-label">Ngày bắt đầu:</div>
+            <CustomInput onChange={e => setStartDate(e.target.value)} placeholder="Ngày vào làm" />
           </div>
-          <div className='add__employees_right'>
-            <div className="add__employees-label">Gender:</div>
-            <CustomInput onChange={e => setGender(e.target.value)} placeholder="Male or Female" />
-            <div className="add__employees-label">Address: </div>
-            <CustomInput onChange={e => setAddress(e.target.value)} placeholder="Address" />
-            <div className="add__employees-label">salaryRank: </div>
+          <div className="add__employees_right">
+            <div className="add__employees-label">Giới tính:</div>
+            <CustomInput onChange={e => setGender(e.target.value)} placeholder="Nam hoặc nữ" />
+            <div className="add__employees-label">Địa chỉ: </div>
+            <CustomInput onChange={e => setAddress(e.target.value)} placeholder="Địa chỉ" />
+            <div className="add__employees-label">Bậc lương: </div>
             <InputNumber onChange={value => setSalaryRanks(value)} type={'number'} defaultValue={salaryRanks} />
-            <div className='select'>
+            <div className="select">
               <div>
-                <Select onChange={value => setDepartment(value)} placeholder="Depratment" style={{ width: 120 }}
-                >
+                <Select onChange={value => setDepartment(value)} placeholder="Phòng ban" style={{ width: 120 }}>
                   {departmentList.map((list, idx) => {
                     return (
-                      <Option key={idx} value={list._id}>{list.name}</Option>
-                    )
+                      <Option key={idx} value={list._id}>
+                        {list.name}
+                      </Option>
+                    );
                   })}
                 </Select>
               </div>
               <div>
-                <Select onChange={value => setBenefit(value)} placeholder="Benefit"
-                  style={{ width: 120 }}>
+                <Select onChange={value => setBenefit(value)} placeholder="Quyền lợi" style={{ width: 120 }}>
                   {benefitList.map((list, idx) => {
                     return (
-                      <Option key={idx} value={list._id}>{list.name}</Option>
-                    )
+                      <Option key={idx} value={list._id}>
+                        {list.name}
+                      </Option>
+                    );
                   })}
                 </Select>
               </div>
-
             </div>
-            <Upload
-              name="avatar"
-              listType="picture-circle"
-              className="avatar-uploader"
-              showUploadList={false}
-              beforeUpload={beforeUpload}
-            >
-              {imageUrl ? (
-                <img
-                  src={imageUrl}
-                  alt="avatar"
-                  style={{
-                    width: '100%',
-                  }}
-                />
-              ) : (
-                uploadButton
-              )}
-            </Upload>
           </div>
         </div>
       </Modal>
       <Modal
-        title="delete employees"
+        title="Xoá nhân viên"
         wrapClassName="delete__employees-modal"
-        okText="delete"
         open={deleteModalOpen}
-        onOk={() => fetchDeleteEmployees()}
+        onOk={() => handleDeleteEmployees()}
         onCancel={() => setDeleteModalOpen(false)}
+        okText="Xoá"
+        cancelText="Huỷ"
       >
-        <p>{modalText}</p>
+        <p>Bạn có thật sự muốn xoá nhân viên</p>
       </Modal>
     </div>
   );

@@ -79,30 +79,35 @@
     transition: 0.12s all ease-in-out;
 
     &:hover {
-        border-color: var(--primary-color);
-        background-color: transparent;
-        color: var(--primary-color);
+      border-color: var(--primary-color);
+      background-color: transparent;
+      color: var(--primary-color);
     }
 }
 
 .employess__section {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-end;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
 }
 .add_employees_modal {
- display: flex;
- justify-content: space-around;
- width: 100%;
- gap: 50px;
-}
-.select {
   display: flex;
+  justify-content: space-around;
+  width: 100%;
+  gap: 50px;
+}
+
+.employee__actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  .action__edit {
+    margin-bottom: 0;
+  }
+}
+
+.add__employees-selects {
+  display: flex;
+  align-items: center;
   gap: 20px;
-}
-.ant-select-selector {
- margin-right: 20px;
-}
-.ant-input-number.css-dev-only-do-not-override-1km3mtt {
-  margin-bottom: 20px;
 }
