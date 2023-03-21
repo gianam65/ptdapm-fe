@@ -1,14 +1,15 @@
 import './contract.scss';
 import { Table, Tag, Modal, DatePicker, notification } from 'antd';
-import { EyeOutlined, EditOutlined } from '@ant-design/icons';
+import { EyeOutlined, EditOutlined, DeleteOutlined,ExclamationCircleFilled } from '@ant-design/icons';
 import { useEffect, useState } from 'react';
 import CustomInput from '../../components/custom-input/custom-input';
 import { translateStatus } from '../../utils';
 import { getAPIHostName } from '../../utils';
-import { httpGet, httpPut } from '../../services/request';
+import { httpDelete, httpGet, httpPut } from '../../services/request';
 import { loadingState } from '../../recoil/store/app';
 import { useSetRecoilState } from 'recoil';
 
+const { confirm } = Modal;
 export default function ContractPage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [contractInfor, setContractInfor] = useState({});
@@ -16,7 +17,7 @@ export default function ContractPage() {
   const [listcontract, setListContract] = useState([]);
   const setPageLoading = useSetRecoilState(loadingState);
   const [listEmployees, setListEmployees] = useState([]);
-  
+
   const handleChangeContractDate = value => {
     setContractInfor({ ...contractInfor, contract_date: value });
   };
@@ -27,7 +28,37 @@ export default function ContractPage() {
     setContractInfor({ ...contractInfor, end_date: value });
   };
 
-  const getEmployees = ()=>{
+  const showConfirm = idDelete => {
+    confirm({
+      title: 'Bạn có chắc muốn xoá hợp đồng này không',
+      icon: <ExclamationCircleFilled />,
+      onOk() {
+        const url = `${getAPIHostName()}/contracts/${idDelete}`
+        httpDelete(url)
+        .then(res=>{
+          if(res.success){
+            getContract()
+            notification.success({
+              title: 'Thành công',
+              message: 'Huỷ hợp đồng thành công'
+            });
+          }
+        })
+        .catch(() => {
+          notification.error({
+            title: 'Error',
+            message: 'Không thể huỷ hợp đồng'
+          });
+          setPageLoading(false);
+        })
+      },
+      onCancel() {
+        console.log('Cancel');
+      },
+    });
+  };
+
+  const getEmployees = () => {
     const url = `${getAPIHostName()}/employees`;
     httpGet(url)
       .then(res => {
@@ -36,8 +67,7 @@ export default function ContractPage() {
         }
       })
       .catch(err => console.log(err));
-  }
-
+  };
 
   const getContract = () => {
     const url = `${getAPIHostName()}/contracts`;
@@ -60,10 +90,11 @@ export default function ContractPage() {
 
   useEffect(() => {
     getContract();
-    getEmployees()
+    getEmployees();
     // eslint-disable-next-line
   }, []);
 
+  
   const handleUpCheckContract = record => {
     setContractInfor(record);
   };
@@ -73,7 +104,6 @@ export default function ContractPage() {
 
   const handleOk = () => {
     setIsModalOpen(false);
-    console.log(contractInfor)
     if (contractInfor.status === 'pending') {
       const url = `${getAPIHostName()}/contracts/${contractInfor._id}`;
       httpPut(url, contractInfor)
@@ -104,25 +134,28 @@ export default function ContractPage() {
       title: 'Hành động',
       key: 'action',
       render: (_, record) => {
-        if (record.status === 'completed') {
-          return (
-            <EyeOutlined
-              onClick={() => {
-                handleUpCheckContract(record);
-                showModal();
-              }}
-            />
-          );
-        } else {
-          return (
-            <EditOutlined
-              onClick={() => {
-                handleUpCheckContract(record);
-                showModal();
-              }}
-            />
-          );
-        }
+        return (
+          <div className='contract__action'>
+            <DeleteOutlined onClick={()=>{
+              showConfirm(record._id)
+            }}/>
+            {record.status === 'completed' ? (
+              <EyeOutlined
+                onClick={() => {
+                  handleUpCheckContract(record);
+                  showModal();
+                }}
+              />
+            ) : (
+              <EditOutlined
+                onClick={() => {
+                  handleUpCheckContract(record);
+                  showModal();
+                }}
+              />
+            )}
+          </div>
+        );
       }
     },
     {
@@ -163,8 +196,10 @@ export default function ContractPage() {
         let color;
         if (record.status === 'pending') {
           color = 'geekblue';
-        } else {
+        } else if(record.status === 'completed'){
           color = 'green';
+        }else{
+          color = 'vocalno'
         }
         return (
           <Tag color={color} key={record.key}>
@@ -179,17 +214,14 @@ export default function ContractPage() {
       key: 'email'
     }
   ];
-  
- 
-  
+
   const getDataSource = () => {
-   
-   return listcontract.map(itemContract => {
-      const employee = listEmployees.find(item=>item._id===itemContract.employeeId)
-      
+    const dataToRender = listcontract.map(itemContract => {
+      const employee = listEmployees.find(item => item._id === itemContract.employeeId);
+
       return { ...itemContract, employee_name: employee?.name };
     });
-    // return listcontract.filter(item => item.contract_name.includes(searchValue));
+    return dataToRender.filter(item => item.contract_name.toLowerCase().includes(searchValue.toLowerCase()));
   };
 
   return (
@@ -203,7 +235,12 @@ export default function ContractPage() {
         />
       </div>
 
-      <Table pagination={{pageSize:5}} columns={columns} dataSource={getDataSource()} rowKey={record => record._id} />
+      <Table
+        pagination={{ pageSize: 5 }}
+        columns={columns}
+        dataSource={getDataSource()}
+        rowKey={record => record._id}
+      />
       <Modal
         title="Thông tin hợp đồng"
         open={isModalOpen}
