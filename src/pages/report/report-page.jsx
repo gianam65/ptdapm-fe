@@ -11,7 +11,8 @@ import {
   Tooltip,
   Legend,
   ArcElement,
-  LineController
+  LineController,
+  BarController
 } from 'chart.js';
 import { getAPIHostName } from '../../utils';
 import React, { useState } from 'react';
@@ -21,7 +22,7 @@ import { httpGet } from '../../services/request';
 import { notification } from 'antd';
 import { loadingState } from '../../recoil/store/app';
 
-ChartJS.register(ArcElement, BarElement, CategoryScale, LinearScale, PointElement, LineController, LineElement, Title, Tooltip, Legend);
+ChartJS.register(ArcElement,BarController, BarElement, CategoryScale, LinearScale, PointElement, LineController, LineElement, Title, Tooltip, Legend);
 const options = {
   responsive: true,
   plugins: {
