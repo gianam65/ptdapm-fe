@@ -316,12 +316,6 @@ const EmployeesPage = () => {
       render: salaryRank => <span className="employee__salary">{salaryRank}</span>
     },
     {
-      title: 'Giới tính',
-      dataIndex: 'gender',
-      key: 'gender',
-      render: gender => <span className="employee__gender">{gender}</span>
-    },
-    {
       title: 'Mã nhân viên',
       key: 'codeEmployee',
       dataIndex: 'codeEmployee',
