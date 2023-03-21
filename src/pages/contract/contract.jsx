@@ -1,39 +1,104 @@
 import './contract.scss';
-import { Table, Tag, Modal, DatePicker } from 'antd';
-import { CheckOutlined, EyeOutlined } from '@ant-design/icons';
-import { useState } from 'react';
+import { Table, Tag, Modal, DatePicker, notification } from 'antd';
+import { EyeOutlined, EditOutlined } from '@ant-design/icons';
+import { useEffect, useState } from 'react';
 import CustomInput from '../../components/custom-input/custom-input';
 import { translateStatus } from '../../utils';
-import moment from 'moment/moment';
+import { getAPIHostName } from '../../utils';
+import { httpGet, httpPut } from '../../services/request';
+import { loadingState } from '../../recoil/store/app';
+import { useSetRecoilState } from 'recoil';
 
 export default function ContractPage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [contractInfor, setContractInfor] = useState({});
-
-  const handleCheckContract = record => {
-    setContractInfor({
-      contract_name: record.contract_name,
-      role: record.role,
-      employee_name: record.employee_name,
-      contract_date: moment(record.contract_date),
-      email: record.email,
-      end_date: moment(record.end_date),
-      start_date: moment(record.start_date)
-    });
+  const [searchValue, setSearchValue] = useState('');
+  const [listcontract, setListContract] = useState([]);
+  const setPageLoading = useSetRecoilState(loadingState);
+  const [listEmployees, setListEmployees] = useState([]);
+  
+  const handleChangeContractDate = value => {
+    setContractInfor({ ...contractInfor, contract_date: value });
+  };
+  const handleChangeStartDate = value => {
+    setContractInfor({ ...contractInfor, start_date: value });
+  };
+  const handleChangeEndDate = value => {
+    setContractInfor({ ...contractInfor, end_date: value });
   };
 
+  const getEmployees = ()=>{
+    const url = `${getAPIHostName()}/employees`;
+    httpGet(url)
+      .then(res => {
+        if (res.success) {
+          setListEmployees(res.data.employeeList);
+        }
+      })
+      .catch(err => console.log(err));
+  }
+
+
+  const getContract = () => {
+    const url = `${getAPIHostName()}/contracts`;
+    setPageLoading(true);
+    httpGet(url)
+      .then(res => {
+        if (res.success) {
+          setListContract(res.data);
+        }
+        setPageLoading(false);
+      })
+      .catch(() => {
+        notification.error({
+          title: 'Error',
+          message: 'Không thể lấy được dữ liệu hợp đồng'
+        });
+        setPageLoading(false);
+      });
+  };
+
+  useEffect(() => {
+    getContract();
+    getEmployees()
+    // eslint-disable-next-line
+  }, []);
+
+  const handleUpCheckContract = record => {
+    setContractInfor(record);
+  };
   const showModal = () => {
     setIsModalOpen(true);
   };
 
   const handleOk = () => {
     setIsModalOpen(false);
+    console.log(contractInfor)
+    if (contractInfor.status === 'pending') {
+      const url = `${getAPIHostName()}/contracts/${contractInfor._id}`;
+      httpPut(url, contractInfor)
+        .then(res => {
+          if (res.success) {
+            getContract();
+            notification.success({
+              title: 'Thành công',
+              message: 'Cập nhật hợp đồng thành công'
+            });
+          }
+        })
+        .catch(() => {
+          notification.error({
+            title: 'Error',
+            message: 'Cập nhật hợp đồng không thành công'
+          });
+          setPageLoading(false);
+        });
+    }
   };
 
   const handleCancel = () => {
     setIsModalOpen(false);
   };
-
   const columns = [
     {
       title: 'Hành động',
@@ -43,17 +108,16 @@ export default function ContractPage() {
           return (
             <EyeOutlined
               onClick={() => {
-                handleCheckContract(record);
+                handleUpCheckContract(record);
                 showModal();
               }}
             />
           );
         } else {
           return (
-            <CheckOutlined
-              className="check-icon"
+            <EditOutlined
               onClick={() => {
-                handleCheckContract(record);
+                handleUpCheckContract(record);
                 showModal();
               }}
             />
@@ -115,60 +179,95 @@ export default function ContractPage() {
       key: 'email'
     }
   ];
-  const data = [
-    {
-      key: '1',
-      contract_name: 'Hợp đồng 1 ',
-      role: 'teacher',
-      employee_name: 'Loi',
-      contract_date: '2021-03-01',
-      start_date: '2021-03-05',
-      end_date: '2023-03-01',
-      status: 'completed',
-      email: 'loi123456@gmail.com'
-    },
-    {
-      key: '2',
-      contract_name: 'Hợp đồng 2 ',
-      role: 'teacher2',
-      employee_name: 'Manh',
-      contract_date: '2021-03-12',
-      start_date: '2021-03-06',
-      end_date: '2023-03-06',
-      status: 'pending',
-      email: 'loi123456@gmail.com'
-    }
-  ];
+  
+ 
+  
+  const getDataSource = () => {
+   
+   return listcontract.map(itemContract => {
+      const employee = listEmployees.find(item=>item._id===itemContract.employeeId)
+      
+      return { ...itemContract, employee_name: employee?.name };
+    });
+    // return listcontract.filter(item => item.contract_name.includes(searchValue));
+  };
+
   return (
     <div>
-      <Table columns={columns} dataSource={data} />
-      <Modal title="Thông tin hợp đồng" open={isModalOpen} onOk={handleOk} onCancel={handleCancel}>
+      <div className="contract__search">
+        <CustomInput
+          type="search"
+          placeholder="Nhập vào đây để tìm kiếm"
+          onChange={e => setSearchValue(e.target.value)}
+          className="contract__search-inp"
+        />
+      </div>
+
+      <Table pagination={{pageSize:5}} columns={columns} dataSource={getDataSource()} rowKey={record => record._id} />
+      <Modal
+        title="Thông tin hợp đồng"
+        open={isModalOpen}
+        okText={contractInfor.status === 'completed' ? 'OK' : 'Cập nhật'}
+        onOk={handleOk}
+        onCancel={handleCancel}
+      >
         <div className="edit__contract-label">Tên hợp đồng</div>
-        <CustomInput defaultValue={contractInfor.contract_name} disabled></CustomInput>
+
+        <CustomInput
+          value={contractInfor.contract_name}
+          onChange={e => {
+            setContractInfor({ ...contractInfor, contract_name: e.target.value });
+          }}
+          disabled={contractInfor.status === 'completed'}
+        ></CustomInput>
 
         <div className="edit__contract-label">Tên nhân viên</div>
-        <CustomInput defaultValue={contractInfor.employee_name} disabled></CustomInput>
+        <CustomInput value={contractInfor.employee_name} disabled></CustomInput>
 
         <div className="edit__contract-label">Chức vụ</div>
-        <CustomInput defaultValue={contractInfor.role} disabled></CustomInput>
+        <CustomInput
+          value={contractInfor.role}
+          onChange={e => {
+            setContractInfor({ ...contractInfor, role: e.target.value });
+          }}
+          disabled={contractInfor.status === 'completed'}
+        ></CustomInput>
 
         <div className="edit__contract-row">
           <div>
             <div className="edit__contract-label">Ngày ký hợp đồng</div>
-            <DatePicker value={contractInfor.contract_date} disabled />
+            <DatePicker
+              value={contractInfor.contract_date}
+              onChange={handleChangeContractDate}
+              disabled={contractInfor.status === 'completed'}
+            />
           </div>
           <div>
             <div className="edit__contract-label">Ngày bắt đầu</div>
-            <DatePicker value={contractInfor.start_date} disabled />
+            <DatePicker
+              value={contractInfor.start_date}
+              onChange={handleChangeStartDate}
+              disabled={contractInfor.status === 'completed'}
+            />
           </div>
           <div>
             <div className="edit__contract-label">Ngày kết thúc</div>
-            <DatePicker value={contractInfor.end_date} disabled />
+            <DatePicker
+              value={contractInfor.end_date}
+              onChange={handleChangeEndDate}
+              disabled={contractInfor.status === 'completed'}
+            />
           </div>
         </div>
 
         <div className="edit__contract-label">Email</div>
-        <CustomInput defaultValue={contractInfor.email} disabled></CustomInput>
+        <CustomInput
+          value={contractInfor.email}
+          onChange={e => {
+            setContractInfor({ ...contractInfor, email: e.target.value });
+          }}
+          disabled={contractInfor.status === 'completed'}
+        ></CustomInput>
         <div></div>
       </Modal>
     </div>
