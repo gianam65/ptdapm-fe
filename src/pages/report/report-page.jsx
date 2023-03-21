@@ -10,7 +10,8 @@ import {
   Title,
   Tooltip,
   Legend,
-  ArcElement
+  ArcElement,
+  LineController
 } from 'chart.js';
 import { getAPIHostName } from '../../utils';
 import React, { useState } from 'react';
@@ -20,7 +21,7 @@ import { httpGet } from '../../services/request';
 import { notification } from 'antd';
 import { loadingState } from '../../recoil/store/app';
 
-ChartJS.register(ArcElement, BarElement, CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend);
+ChartJS.register(ArcElement, BarElement, CategoryScale, LinearScale, PointElement, LineController, LineElement, Title, Tooltip, Legend);
 const options = {
   responsive: true,
   plugins: {
@@ -36,7 +37,7 @@ const options = {
 export default function ReportPage() {
   const [reportList, setReportList] = useState([]);
   const setPageLoading = useSetRecoilState(loadingState);
-  const [type, setType] = useState('line');
+  const [type, setType] = useState('bar');
 
   useEffect(() => {
     const getEmployee = () => {
@@ -147,12 +148,12 @@ export default function ReportPage() {
   return (
     <div className="reports__container">
       <div>
-        <Chart type="line" data={data} options={options} />
-        {/* <div style={{ textAlign: 'center' }}>
+        <Chart type="bar" data={data} options={options} />
+        <div style={{ textAlign: 'center' }}>
           <Button onClick={() => setType('bar')}>Biểu đồ cột</Button>
           <Button onClick={() => setType('line')}>Biểu đồ đường</Button>
           <Button onClick={() => setType('doughnut')}>Biểu đồ tròn</Button>
-        </div> */}
+        </div>
       </div>
     </div>
   );
