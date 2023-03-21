@@ -1,5 +1,5 @@
 import axios from "axios";
-
+import { getAPIHostName } from '../utils/index'
 
 export const uploadImage = async (filename, file) => {
     const foldersPath = 'assest/image';
@@ -7,14 +7,14 @@ export const uploadImage = async (filename, file) => {
 
     try {
         const s3Urls = await axios.get(
-            `http://localhost:8001/api/v1/services/aws-generate-url?filename=${filename}&path=${foldersPath}&contentType=${file.type}`
+            `${getAPIHostName()}/services/aws-generate-url?filename=${filename}&path=${foldersPath}&contentType=${file.type}`
         ).then(response => response.data?.urls);
 
         if (!s3Urls.signedUrl) {
             throw new Error('S3 signed url is not defined');
         }
 
-        await axios.put(s3Urls.signedUrl, file, options);
+        axios.put(s3Urls.signedUrl, file, options);
 
         return s3Urls.publicUrl
     } catch (err) {

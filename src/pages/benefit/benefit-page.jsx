@@ -258,6 +258,7 @@ const BenefitPage = () => {
           dataSource={getDataSource()}
           pagination={{ pageSize: 5 }}
           rowKey={record => record._id}
+          scroll={{ y: 'calc(100vh - 320px)' }}
         ></Table>
         <Modal
           title=""

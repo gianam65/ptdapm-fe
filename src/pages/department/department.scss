@@ -55,4 +55,11 @@
 
 .manipulated__action {
   padding: 10px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+
+  .action__edit {
+    margin: 0;
+  }
 }

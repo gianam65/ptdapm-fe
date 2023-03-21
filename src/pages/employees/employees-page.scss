@@ -1,8 +1,99 @@
 .employees__container {
+  .employee__avatar {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+  }
+}
+
+.file__actions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    .upload__btn, .download__btn {
+        display: inline-flex;
+        margin-bottom: 20px;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        padding: 5px 12px;
+        border-radius: 4px;
+        color: #fff;
+        background-color: var(--primary-color);
+        border: 1px solid transparent;
+        transition: 0.12s all ease-in-out;
     
-    .employee__avatar {
-        width: 50px;
-        height: 50px;
-        border-radius: 50%;
+        &:hover {
+            border-color: var(--primary-color);
+            background-color: transparent;
+            color: var(--primary-color);
+        }
     }
+
+    .upload__btn {
+        background: transparent;
+        border-color: var(--primary-color);
+        color: var(--primary-color);
+        position: relative;
+        cursor: pointer;
+        input {
+            position: absolute;
+            inset: 0;
+            cursor: pointer;
+            opacity: 0;            
+        }
+
+        &:hover {
+            border-color: transparent;
+            background-color: var(--primary-color);
+            color: #fff;
+        }
+    }
+}
+
+.employee__salary {
+    display: block;
+    width: 100%;
+    text-align: right;
+}
+
+.employess__section {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+}
+
+.employee__status {
+    font-weight: bolder;
+}
+
+.employee__active {
+    color: #2ecc71;
+}
+
+.employee__inactive {
+    color: #e74c3c;
+}
+
+.employee__onboarding {
+    color: var(--primary-color);
+}
+
+.add_employees_modal {
+    display: flex;
+    gap: 50px;
+    .add__employees-label {
+        font-weight: bolder;
+        margin-bottom: 12px;
+    }
+
+    .custom__input-container {
+        margin-bottom: 6px;
+    }
+}
+
+.employees__action {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 20px;
 }

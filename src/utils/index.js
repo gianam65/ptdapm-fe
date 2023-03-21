@@ -20,3 +20,51 @@ export const fallbackToDefaultAvatar = avatarUrl => {
 export const removeTimeFromDate = timeStamp => {
   return timeStamp?.split('T')[0] || timeStamp;
 };
+
+export const fileToBase64 = file =>
+  new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = () => resolve(reader.result);
+    reader.onerror = error => reject(error);
+  });
+
+export const blobToFile = (theBlob, fileName) => {
+  //A Blob() is almost a File() - it's just missing the two properties below which we will add
+  theBlob.lastModifiedDate = new Date();
+  theBlob.name = fileName;
+  return theBlob;
+};
+
+export const randomDate = (start, end) => {
+  return new Date(start.getTime() + Math.random() * (end.getTime() - start.getTime()));
+};
+
+export const randomText = length => {
+  let result = '';
+  const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+  const charactersLength = characters.length;
+  for (let i = 0; i < length; i++) {
+    result += characters.charAt(Math.floor(Math.random() * charactersLength));
+  }
+  return `employee_${result}`;
+};
+
+export const translateStatus = status => {
+  switch (status?.toLowerCase()) {
+    case 'active':
+      return 'Làm việc tại trường';
+    case 'inActive':
+      return 'Đã nghỉ việc';
+    case 'onBoarding':
+      return 'Đi công tác';
+    case 'completed':
+      return 'Đã ký';
+    case 'pending':
+      return 'Đang chờ';
+    case 'cancel':
+      return 'Đã huỷ';
+    default:
+      return 'Làm việc tại trường';
+  }
+};
