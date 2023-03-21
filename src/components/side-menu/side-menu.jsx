@@ -8,7 +8,7 @@ import { ExportOutlined } from '@ant-design/icons';
 import { useMemo } from 'react';
 import mainLogo from '../../assets/images/dthl_logo.png';
 
-const ROUTES_NEED_TO_SHOW = ['/', '/reports', '/employee', '/department', '/benefit', '/settings','/contract'];
+const ROUTES_NEED_TO_SHOW = ['/', '/reports', '/employee', '/department', '/benefit', '/settings', '/contract'];
 const DEFAULT_MENU_ITEMS = publicRoutes
   .filter(route => ROUTES_NEED_TO_SHOW.includes(route.path))
   .map(filteredRoute => ({ key: filteredRoute.path, icon: filteredRoute.pageIcon, label: filteredRoute.label }));

@@ -15,7 +15,8 @@ import {
   UserOutlined,
   DollarOutlined,
   ClusterOutlined,
-  SettingOutlined,AuditOutlined
+  SettingOutlined,
+  AuditOutlined
 } from '@ant-design/icons';
 const publicRoutes = [
   {
