@@ -10,7 +10,7 @@ import { CSVLink } from 'react-csv';
 import { CloudDownloadOutlined } from '@ant-design/icons';
 import CustomInput from '../../components/custom-input/custom-input';
 import { accessTokenState } from '../../recoil/store/account';
-import { PlusOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons';
+import { PlusOutlined, EditOutlined, DeleteOutlined, CloudUploadOutlined } from '@ant-design/icons';
 import Button from '../../components/button/button';
 import classNames from 'classnames';
 
@@ -99,6 +99,34 @@ const EmployeesPage = () => {
           message: 'Không thể lấy thông tin phòng ban'
         });
         setPageLoading(false);
+      });
+  };
+
+  const handleChangeFile = e => {
+    const fileUploaded = e.target.files?.[0];
+    if (!fileUploaded) return;
+    const url = `${getAPIHostName()}/import_excel`;
+
+    httpPost(url, { file: fileUploaded })
+      .then(res => {
+        if (res.success) {
+          setListEmployees([...res.data, ...listEmployees]);
+          notification.success({
+            title: 'Thành công',
+            message: 'Thêm nhân viên từ file thành công'
+          });
+        } else {
+          notification.error({
+            title: 'Thất bại',
+            message: res.message || 'Thêm nhân viên từ file thất bại'
+          });
+        }
+      })
+      .catch(err => {
+        notification.error({
+          title: 'Thất bại',
+          message: err || 'Thêm nhân viên từ file thất bại'
+        });
       });
   };
 
@@ -380,6 +408,11 @@ const EmployeesPage = () => {
             <CloudDownloadOutlined />
           </div>
         </CSVLink>
+        <div className="upload__btn">
+          Tải lên file
+          <CloudUploadOutlined />
+          <input type="file" accept=".xlsx, .xls, .csv" onChange={handleChangeFile} />
+        </div>
       </div>
       <div className="employees__action">
         <Search
@@ -399,7 +432,7 @@ const EmployeesPage = () => {
         <Table
           columns={columns}
           dataSource={provideDatasource()}
-          scroll={{ y: 'calc(100vh - 320px)' }}
+          scroll={{ y: 'calc(100vh - 420px)' }}
           rowKey={record => record._id}
           pagination={true}
         />
