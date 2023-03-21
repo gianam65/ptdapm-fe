@@ -1,6 +1,6 @@
 import React, { useRef, useState } from 'react';
 import { useEffect } from 'react';
-import { Table, Popover, notification, Modal, Input, InputNumber, Select, Pagination } from 'antd';
+import { Table, Popover, notification, Modal, Input, InputNumber, Select } from 'antd';
 import Button from '../../components/button/button';
 import './benefit-page.scss';
 import { httpGet, httpDelete, httpPost, httpPut } from '../../services/request';
@@ -215,7 +215,7 @@ const BenefitPage = () => {
       render: (_, item) => {
         return (
           <div className="benefit__action">
-            <Popover placement="topLeft" content={content(item._id)} trigger="click" onClick={() => { }}>
+            <Popover placement="topLeft" content={content(item._id)} trigger="click" onClick={() => {}}>
               <MoreOutlined />
             </Popover>
           </div>
@@ -232,7 +232,6 @@ const BenefitPage = () => {
   return (
     <div className="benefit__container">
       <div className="benefit__top">
-
         <div className="benefit__top-right">
           <div className="benefit__top-search">
             <Search
@@ -242,7 +241,11 @@ const BenefitPage = () => {
             />
           </div>
           <div className="benefit__top-modal">
-            <Button onClick={() => openModalUpSertBenefit()} rightIcon={<PlusOutlined />} className="benefit__top-modal-btn">
+            <Button
+              onClick={() => openModalUpSertBenefit()}
+              rightIcon={<PlusOutlined />}
+              className="benefit__top-modal-btn"
+            >
               Thêm quyền lợi
             </Button>
           </div>
