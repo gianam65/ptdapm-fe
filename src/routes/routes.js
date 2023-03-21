@@ -7,6 +7,7 @@ import LoginPage from '../pages/login/login';
 import DepartmentPage from '../pages/department/department';
 import SettingsPage from '../pages/settings/settings';
 import BenefitPage from '../pages/benefit/benefit-page';
+import ContractPage from '../pages/contract/contract';
 import {
   PieChartOutlined,
   AppstoreOutlined,
@@ -14,14 +15,15 @@ import {
   UserOutlined,
   DollarOutlined,
   ClusterOutlined,
-  SettingOutlined
+  SettingOutlined,
+  AuditOutlined
 } from '@ant-design/icons';
 const publicRoutes = [
   {
     path: config.routes.home,
     element: <Home />,
     pageIcon: <AppstoreOutlined />,
-    label: 'Bảng',
+    label: 'Trang chủ',
     needShowSideMenu: true
   },
   {
@@ -52,6 +54,13 @@ const publicRoutes = [
     needShowSideMenu: true
   },
   {
+    path: config.routes.contract,
+    element: <ContractPage />,
+    pageIcon: <AuditOutlined />,
+    label: 'Hợp đồng',
+    needShowSideMenu: true
+  },
+  {
     path: config.routes.benefit,
     pageIcon: <DollarOutlined />,
     element: <BenefitPage />,
@@ -65,6 +74,7 @@ const publicRoutes = [
     label: 'Phân quyền',
     needShowSideMenu: true
   },
+
   {
     path: config.routes.login,
     element: <LoginPage />,

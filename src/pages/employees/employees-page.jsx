@@ -5,13 +5,14 @@ import { httpGet, httpPost, httpDelete } from '../../services/request';
 import { getAPIHostName } from '../../utils';
 import { loadingState } from '../../recoil/store/app';
 import { useSetRecoilState, useRecoilValue } from 'recoil';
-import { fallbackToDefaultAvatar, removeTimeFromDate, randomText } from '../../utils/';
+import { fallbackToDefaultAvatar, removeTimeFromDate, randomText, translateStatus } from '../../utils/';
 import { CSVLink } from 'react-csv';
 import { CloudDownloadOutlined } from '@ant-design/icons';
 import CustomInput from '../../components/custom-input/custom-input';
 import { accessTokenState } from '../../recoil/store/account';
 import { PlusOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons';
 import Button from '../../components/button/button';
+import classNames from 'classnames';
 
 const HEADERS = [
   { label: 'Tên nhân viên', key: 'name' },
@@ -302,7 +303,17 @@ const EmployeesPage = () => {
       title: 'Tình trạng hoạt động',
       key: 'status',
       dataIndex: 'status',
-      render: status => <span className="employee__status">{status}</span>
+      render: status => (
+        <span
+          className={classNames('employee__status', {
+            employee__inactive: status === 'inActive',
+            employee__active: status?.toLowerCase() === 'active',
+            employee__onboarding: status === 'onBoarding'
+          })}
+        >
+          {translateStatus(status)}
+        </span>
+      )
     },
     {
       title: 'Ngày sinh',
@@ -362,12 +373,14 @@ const EmployeesPage = () => {
 
   return (
     <div className="employess__section">
-      <CSVLink data={buildDataToExport()} headers={HEADERS}>
-        <div className="download__btn">
-          Tải xuống excel
-          <CloudDownloadOutlined />
-        </div>
-      </CSVLink>
+      <div className="file__actions">
+        <CSVLink data={buildDataToExport()} headers={HEADERS}>
+          <div className="download__btn">
+            Tải xuống excel
+            <CloudDownloadOutlined />
+          </div>
+        </CSVLink>
+      </div>
       <div className="employees__action">
         <Search
           type="search"
@@ -383,7 +396,13 @@ const EmployeesPage = () => {
         </Button>
       </div>
       <div className="employees__container">
-        <Table columns={columns} dataSource={provideDatasource()} rowKey={record => record._id} pagination={true} />
+        <Table
+          columns={columns}
+          dataSource={provideDatasource()}
+          scroll={{ y: 'calc(100vh - 320px)' }}
+          rowKey={record => record._id}
+          pagination={true}
+        />
       </div>
       <Modal
         title="Thêm nhân viên"
@@ -467,28 +486,24 @@ const EmployeesPage = () => {
             <div className="add__employees-label">Bậc lương: </div>
             <InputNumber onChange={value => setSalaryRanks(value)} type={'number'} defaultValue={salaryRanks} />
             <div className="select">
-              <div>
-                <Select onChange={value => setDepartment(value)} placeholder="Phòng ban" style={{ width: 120 }}>
-                  {departmentList.map((list, idx) => {
-                    return (
-                      <Option key={idx} value={list._id}>
-                        {list.name}
-                      </Option>
-                    );
-                  })}
-                </Select>
-              </div>
-              <div>
-                <Select onChange={value => setBenefit(value)} placeholder="Quyền lợi" style={{ width: 120 }}>
-                  {benefitList.map((list, idx) => {
-                    return (
-                      <Option key={idx} value={list._id}>
-                        {list.name}
-                      </Option>
-                    );
-                  })}
-                </Select>
-              </div>
+              <Select onChange={value => setDepartment(value)} placeholder="Phòng ban" style={{ width: 120 }}>
+                {departmentList.map((list, idx) => {
+                  return (
+                    <Option key={idx} value={list._id}>
+                      {list.name}
+                    </Option>
+                  );
+                })}
+              </Select>
+              <Select onChange={value => setBenefit(value)} placeholder="Quyền lợi" style={{ width: 120 }}>
+                {benefitList.map((list, idx) => {
+                  return (
+                    <Option key={idx} value={list._id}>
+                      {list.name}
+                    </Option>
+                  );
+                })}
+              </Select>
             </div>
           </div>
         </div>

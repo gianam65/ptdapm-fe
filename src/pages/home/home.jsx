@@ -8,6 +8,7 @@ import { loadingState } from '../../recoil/store/app';
 import { notification, Input } from 'antd';
 import { CameraOutlined } from '@ant-design/icons';
 import Button from '../../components/button/button';
+import { uploadImage } from '../../config/aws';
 
 const Home = () => {
   const accessToken = useRecoilValue(accessTokenState);
@@ -29,6 +30,7 @@ const Home = () => {
           if (res.success) {
             setUserInfor(res.data);
             setUserName(res.data.username);
+            setAccountAvatar(res.data.user_avatar);
           }
           setPageLoading(false);
         })
@@ -45,14 +47,18 @@ const Home = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const handleUpdateUser = userId => {
+  const handleUpdateUser = async userId => {
     const url = `${getAPIHostName()}/users/${userId}`;
     let buildBodyToUpdate = {
       username: userName
     };
     if (img) {
-      buildBodyToUpdate = { ...buildBodyToUpdate, user_avatar: img[0] };
+      const imageName = img[0].name?.split('.');
+      const fileNameRandom = `${imageName[0]}-${Date.now()}.${imageName[1]}`;
+      const publicUrl = await uploadImage(fileNameRandom, img[0]);
+      buildBodyToUpdate = { ...buildBodyToUpdate, user_avatar: publicUrl };
     }
+
     httpPut(url, buildBodyToUpdate, accessToken)
       .then(res => {
         if (res.success) {
@@ -104,6 +110,7 @@ const Home = () => {
             src={previewImg ? previewImg : fallbackToDefaultAvatar(accountAvatar)}
             alt="User avatar"
             className="avatar__img"
+            loading="lazy"
           />
           <CameraOutlined className="avatar__camera" />
         </div>

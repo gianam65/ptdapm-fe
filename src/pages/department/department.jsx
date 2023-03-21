@@ -1,7 +1,7 @@
 import './department.scss';
-import { PlusOutlined, MoreOutlined, EditOutlined, DeleteOutlined, ExclamationCircleFilled } from '@ant-design/icons';
+import { PlusOutlined, EditOutlined, DeleteOutlined, ExclamationCircleFilled } from '@ant-design/icons';
 import Button from '../../components/button/button';
-import { Modal, Table, Popover, notification } from 'antd';
+import { Modal, Table, notification, Tooltip } from 'antd';
 import { getAPIHostName } from '../../utils/';
 import { httpGet, httpDelete, httpPost, httpPut } from '../../services/request';
 import { useEffect, useState, useRef } from 'react';
@@ -82,26 +82,6 @@ export default function DepartmentPage() {
       });
   };
 
-  const content = id => {
-    return (
-      <div className="action manipulated__action">
-        <div className="action__edit">
-          <EditOutlined />
-          <div onClick={() => openModalUpSertDepartment(id)}>Edit</div>
-        </div>
-        <div
-          className="action__delete"
-          onClick={() => {
-            showConfirm(id);
-          }}
-        >
-          <DeleteOutlined />
-          <div>Xoá</div>
-        </div>
-      </div>
-    );
-  };
-
   const showConfirm = idDelete => {
     Modal.confirm({
       title: 'Bạn có muốn xoá phòng ban này không?',
@@ -136,6 +116,30 @@ export default function DepartmentPage() {
 
   const columns = [
     {
+      title: 'Hành động',
+      render: (_, item) => (
+        <div className="department__row-action">
+          <div className="action manipulated__action">
+            <div className="action__edit">
+              <Tooltip title="Sửa">
+                <EditOutlined onClick={() => openModalUpSertDepartment(item._id)} />
+              </Tooltip>
+            </div>
+            <div
+              className="action__delete"
+              onClick={() => {
+                showConfirm(item._id);
+              }}
+            >
+              <Tooltip title="Xoá">
+                <DeleteOutlined />
+              </Tooltip>
+            </div>
+          </div>
+        </div>
+      )
+    },
+    {
       title: 'Mã phòng ban',
       dataIndex: 'code',
       key: 'code'
@@ -150,16 +154,6 @@ export default function DepartmentPage() {
       key: 'employeesId',
       dataIndex: 'employeesId',
       render: (_, record) => <span className="department__total-emp">{record.employeesId?.length || 0} nhân viên</span>
-    },
-    {
-      title: 'Hành động',
-      render: (_, item) => (
-        <div className="department__row-action">
-          <Popover content={content(item._id)} trigger="click">
-            <MoreOutlined />
-          </Popover>
-        </div>
-      )
     }
   ];
 
@@ -184,7 +178,7 @@ export default function DepartmentPage() {
           });
         }
       })
-      .catch(err => {
+      .catch(() => {
         notification.error({
           title: 'Lỗi',
           message: 'Tạo phòng ban mới thất bại'
@@ -224,6 +218,7 @@ export default function DepartmentPage() {
         columns={columns}
         rowKey={record => record._id}
         dataSource={getDataSource()}
+        scroll={{ y: 'calc(100vh - 320px)' }}
       />
 
       <Modal
