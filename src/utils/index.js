@@ -1,8 +1,8 @@
 import defaultAvatar from '../assets/images/default_avatar.jpg';
 
 export const getAPIHostName = () => {
-  // return 'http://localhost:8001/api/v1';
-  return 'http://manhpham.site:8001/api/v1';
+  return 'http://localhost:8001/api/v1';
+  // return 'http://manhpham.site:8001/api/v1';
 };
 
 export const normalizeDate = date => {
@@ -38,6 +38,16 @@ export const blobToFile = (theBlob, fileName) => {
 
 export const randomDate = (start, end) => {
   return new Date(start.getTime() + Math.random() * (end.getTime() - start.getTime()));
+};
+
+export const randomText = length => {
+  let result = '';
+  const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+  const charactersLength = characters.length;
+  for (let i = 0; i < length; i++) {
+    result += characters.charAt(Math.floor(Math.random() * charactersLength));
+  }
+  return result;
 };
 
 export const translateStatus = status => {
