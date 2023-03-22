@@ -1,6 +1,6 @@
 import React, { useRef, useState } from 'react';
 import { useEffect } from 'react';
-import { Table, Popover, notification, Modal, Input, InputNumber, Select } from 'antd';
+import { Table, Popover, notification, Modal, Input, InputNumber, Select, Tooltip } from 'antd';
 import Button from '../../components/button/button';
 import './benefit-page.scss';
 import { httpGet, httpDelete, httpPost, httpPut } from '../../services/request';
@@ -9,7 +9,7 @@ import { useSetRecoilState, useRecoilValue } from 'recoil';
 import { loadingState } from '../../recoil/store/app';
 import CustomInput from '../../components/custom-input/custom-input';
 import { accessTokenState } from '../../recoil/store/account';
-import { ExclamationCircleFilled, PlusOutlined, MoreOutlined } from '@ant-design/icons';
+import { ExclamationCircleFilled, PlusOutlined, MoreOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons';
 
 const { Search } = Input;
 const BenefitPage = () => {
@@ -75,7 +75,7 @@ const BenefitPage = () => {
 
   const showConfirm = idDelete => {
     Modal.confirm({
-      title: 'Do you want to delete this benefit?',
+      title: 'Bạn có muốn xoá quyền lợi này không?',
       icon: <ExclamationCircleFilled />,
       onOk() {
         setIsLoadingTable(true);
@@ -172,19 +172,43 @@ const BenefitPage = () => {
         setOpenUpSertBenefit(false);
       });
   };
-  const content = id => {
-    return (
-      <div className="benefit__action-menu">
-        <Button className={'benefit__button'} onClick={() => openModalUpSertBenefit(id)}>
-          Sửa
-        </Button>
-        <Button className={'benefit__button'} onClick={() => showConfirm(id)}>
-          Xóa
-        </Button>
-      </div>
-    );
-  };
+  // const content = id => {
+  //   return (
+  //     <div className="benefit__action-menu">
+  //       <Button className={'benefit__button'} onClick={() => openModalUpSertBenefit(id)}>
+  //         Sửa
+  //       </Button>
+  //       <Button className={'benefit__button'} onClick={() => showConfirm(id)}>
+  //         Xóa
+  //       </Button>
+  //     </div>
+  //   );
+  // };
   const columns = [
+    {
+      title: 'Hành động',
+      render: (_, item) => {
+        return (
+          <div className="benefit__action">
+            <div className="action__edit">
+              <Tooltip title="Sửa">
+                <EditOutlined onClick={() => openModalUpSertBenefit(item._id)} />
+              </Tooltip>
+            </div>
+            <div
+              className="action__delete"
+              onClick={() => {
+                showConfirm(item._id);
+              }}
+            >
+              <Tooltip title="Xoá">
+                <DeleteOutlined />
+              </Tooltip>
+            </div>
+          </div>
+        );
+      }
+    },
     {
       title: 'Tên',
       dataIndex: 'name',
@@ -210,18 +234,7 @@ const BenefitPage = () => {
       dataIndex: 'status',
       key: 'status'
     },
-    {
-      title: 'Hành động',
-      render: (_, item) => {
-        return (
-          <div className="benefit__action">
-            <Popover placement="topLeft" content={content(item._id)} trigger="click" onClick={() => {}}>
-              <MoreOutlined />
-            </Popover>
-          </div>
-        );
-      }
-    }
+
   ];
 
   const getDataSource = () => {
@@ -267,37 +280,39 @@ const BenefitPage = () => {
             updateId ? handleUpdateBenefit(updateId) : hanldeAddBenefit();
           }}
           onCancel={() => setOpenUpSertBenefit(false)}
-          okText="Lưu"
+
+          okText={updateId ? "Sửa" : "Thêm"}
+          cancelText="Huỷ"
         >
           <div className="benefit__modal-list">
             <div className="benefit__modal-left">
               <div id="benefit__modal-name" className="benefit__modal-item">
-                <div className="benefit__modal-label">Name:</div>
+                <div className="benefit__modal-label">Tên quyền lợi:</div>
                 <CustomInput ref={benefitNameRef} placeholder="Enter benefit name" />
               </div>
               <div id="benefit__modal-description" className="benefit__modal-item">
-                <div className="benefit__modal-label">Description:</div>
+                <div className="benefit__modal-label">Mô tả:</div>
                 <CustomInput ref={benefitDescriptionRef} placeholder="Enter description" />
               </div>
             </div>
             <div className="benefit__modal-right">
               <div id="benefit__modal-standard" className="benefit__modal-item">
-                <div className="benefit__modal-label">Standard Leave:</div>
+                <div className="benefit__modal-label">Tiêu chuẩn:</div>
                 <InputNumber ref={benefitStandardRef} style={{ width: 120 }} />
               </div>
               <div id="benefit__modal-month" className="benefit__modal-item">
-                <div className="benefit__modal-label">Month:</div>
+                <div className="benefit__modal-label">Tháng:</div>
                 <InputNumber ref={benefitMonthRef} style={{ width: 120 }} min={1} />
               </div>
               <div id="benefit__modal-status" className="benefit__modal-item">
-                <div className="benefit__modal-label">Status:</div>
+                <div className="benefit__modal-label">Trạng thái:</div>
                 <SelectComponent />
               </div>
             </div>
           </div>
         </Modal>
       </div>
-    </div>
+    </div >
   );
 };
 
