@@ -200,7 +200,7 @@ export default function DepartmentPage() {
       <div className="department__action">
         <CustomInput
           type="search"
-          placeholder="Nhập vào đây để tìm kiếm"
+          placeholder="Tìm kiếm"
           onChange={e => setSearchValue(e.target.value)}
           className="department__search-inp"
         />

@@ -10,7 +10,9 @@ import {
   Title,
   Tooltip,
   Legend,
-  ArcElement
+  ArcElement,
+  LineController,
+  BarController
 } from 'chart.js';
 import { getAPIHostName } from '../../utils';
 import React, { useState } from 'react';
@@ -20,7 +22,19 @@ import { httpGet } from '../../services/request';
 import { notification } from 'antd';
 import { loadingState } from '../../recoil/store/app';
 
-ChartJS.register(ArcElement, BarElement, CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend);
+ChartJS.register(
+  ArcElement,
+  BarController,
+  BarElement,
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineController,
+  LineElement,
+  Title,
+  Tooltip,
+  Legend
+);
 const options = {
   responsive: true,
   plugins: {
@@ -97,6 +111,7 @@ export default function ReportPage() {
   };
 
   // Using this function to apply filter by day, month into this charts (week, month, 3 months)
+  // eslint-disable-next-line
   const customChartDataByDay = (date = '90days', datas) => {
     const today = new Date().toLocaleDateString();
     const unixADayTime = 86400000; // a day;
@@ -148,11 +163,11 @@ export default function ReportPage() {
     <div className="reports__container">
       <div>
         <Chart type="bar" data={data} options={options} />
-        <div style={{ textAlign: 'center' }}>
+        {/* <div style={{ textAlign: 'center' }}>
           <Button onClick={() => setType('bar')}>Biểu đồ cột</Button>
           <Button onClick={() => setType('line')}>Biểu đồ đường</Button>
           <Button onClick={() => setType('doughnut')}>Biểu đồ tròn</Button>
-        </div>
+        </div> */}
       </div>
     </div>
   );

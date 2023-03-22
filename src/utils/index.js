@@ -1,8 +1,9 @@
 import defaultAvatar from '../assets/images/default_avatar.jpg';
+import process from 'process/browser';
 
 export const getAPIHostName = () => {
-  // return 'http://localhost:8001/api/v1';
-  return 'http://manhpham.site:8001/api/v1';
+  // setup env please
+  return process.env.NODE_ENV === 'development' ? 'http://localhost:8001/api/v1' : 'http://manhpham.site:8001/api/v1';
 };
 
 export const normalizeDate = date => {
@@ -40,6 +41,16 @@ export const randomDate = (start, end) => {
   return new Date(start.getTime() + Math.random() * (end.getTime() - start.getTime()));
 };
 
+export const randomText = length => {
+  let result = '';
+  const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+  const charactersLength = characters.length;
+  for (let i = 0; i < length; i++) {
+    result += characters.charAt(Math.floor(Math.random() * charactersLength));
+  }
+  return `employee_${result}`;
+};
+
 export const translateStatus = status => {
   switch (status?.toLowerCase()) {
     case 'active':
@@ -56,5 +67,33 @@ export const translateStatus = status => {
       return 'Đã huỷ';
     default:
       return 'Làm việc tại trường';
+  }
+};
+
+export const convertDateStringToUnixDateTime = dateString => {
+  const dateObj = new Date(dateString);
+  const unixTimestamp = Math.floor(dateObj.getTime() / 1000);
+
+  return unixTimestamp;
+};
+
+export const convertRouteToVNS = route => {
+  switch (route) {
+    case '/':
+      return '>> Trang chủ';
+    case '/employee':
+      return '>> Nhân viên';
+    case '/reports':
+      return '>> Báo cáo';
+    case '/department':
+      return '>> Phòng ban';
+    case '/contract':
+      return '>> Hợp đồng';
+    case '/benefit':
+      return '>> Quyền lợi';
+    case '/settings':
+      return '>> Phân quyền';
+    default:
+      return '/';
   }
 };

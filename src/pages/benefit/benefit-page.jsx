@@ -9,30 +9,34 @@ import { useSetRecoilState, useRecoilValue } from 'recoil';
 import { loadingState } from '../../recoil/store/app';
 import CustomInput from '../../components/custom-input/custom-input';
 import { accessTokenState } from '../../recoil/store/account';
-import { ExclamationCircleFilled } from '@ant-design/icons';
+import { ExclamationCircleFilled, PlusOutlined, MoreOutlined } from '@ant-design/icons';
 
 const { Search } = Input;
 const BenefitPage = () => {
   const [benefitList, setBenefitList] = useState([]);
-  const setPageLoading = useSetRecoilState(loadingState);
-  const [updateId, setUpdateId] = useState();
   const [openUpSertBenefit, setOpenUpSertBenefit] = useState(false);
+  const [updateId, setUpdateId] = useState();
+  const [searchValue, setSearchValue] = useState('');
+  const [selectedStatus, setSelectedStatus] = useState('Active');
+  const [isLoadingTable, setIsLoadingTable] = useState(false);
+
+  const setPageLoading = useSetRecoilState(loadingState);
+  const accessToken = useRecoilValue(accessTokenState);
+
   const benefitNameRef = useRef(null);
   const benefitDescriptionRef = useRef(null);
   const benefitStandardRef = useRef(null);
   const benefitMonthRef = useRef(null);
-  const benefitStatusRef = useRef(null);
-  const [isLoadingTable, setIsLoadingTable] = useState(false);
-  const accessToken = useRecoilValue(accessTokenState);
-  const [searchValue, setSearchValue] = useState('');
 
   const { Option } = Select;
+
   function handleChange(value) {
-    // console.log(`Selected ${value}`);
+    setSelectedStatus(value);
   }
+
   function SelectComponent() {
     return (
-      <Select ref={benefitStatusRef} defaultValue="Active" style={{ width: 120 }} onChange={handleChange}>
+      <Select defaultValue="Active" style={{ width: 120 }} onChange={handleChange}>
         <Option value="Active">Active</Option>
         <Option value="Unactive">Unactive</Option>
       </Select>
@@ -68,20 +72,21 @@ const BenefitPage = () => {
     setUpdateId(id);
     setOpenUpSertBenefit(true);
   };
-  const showConfirm = iDelete => {
+
+  const showConfirm = idDelete => {
     Modal.confirm({
-      title: 'Do you want to delete this department?',
+      title: 'Do you want to delete this benefit?',
       icon: <ExclamationCircleFilled />,
       onOk() {
         setIsLoadingTable(true);
-        const url = `${getAPIHostName()}/benefits/${iDelete}`;
+        const url = `${getAPIHostName()}/benefits/${idDelete}`;
         httpDelete(url, accessToken)
           .then(res => {
             if (res.success) {
-              setBenefitList(oldBenefitList => oldBenefitList.filter(benefit => benefit._id != iDelete));
+              setBenefitList(oldBenefitList => oldBenefitList.filter(benefit => benefit._id !== idDelete));
               notification.success({
                 title: 'Success',
-                message: res.message || 'Delete deparment success'
+                message: res.message || 'Xóa quyền lợi thành công'
               });
             }
             setIsLoadingTable(false);
@@ -89,7 +94,7 @@ const BenefitPage = () => {
           .catch(() => {
             notification.error({
               title: 'Error',
-              message: 'Delete deparment failed'
+              message: 'Xóa quyền lợi thất bại'
             });
             setIsLoadingTable(false);
           });
@@ -99,87 +104,149 @@ const BenefitPage = () => {
       }
     });
   };
-  const handleUpdateBenefit = id => {
+  const handleUpdateBenefit = idUpdate => {
+    if (!idUpdate) return;
     const name = benefitNameRef.current.input.value;
     const description = benefitDescriptionRef.current.input.value;
     const standard = benefitStandardRef.current.value;
     const month = benefitMonthRef.current.value;
-    const status = benefitStatusRef.current;
-    console.log('status', status);
+    const status = selectedStatus;
+    const url = `${getAPIHostName()}/benefits/${idUpdate}`;
+    httpPut(url, { name, description, standard, month, status }, accessToken)
+      .then(res => {
+        if (res.success) {
+          setBenefitList(oldBenefitList => {
+            const updateBenefitIdx = oldBenefitList.findIndex(item => item._id === idUpdate);
+            oldBenefitList[updateBenefitIdx].name = name;
+            oldBenefitList[updateBenefitIdx].description = description;
+            oldBenefitList[updateBenefitIdx].standardLeave = standard;
+            oldBenefitList[updateBenefitIdx].month = month;
+            oldBenefitList[updateBenefitIdx].status = status;
+
+            return oldBenefitList;
+          });
+          notification.success({
+            title: 'Success',
+            message: 'Cập nhật quyền lợi thành công'
+          });
+          setOpenUpSertBenefit(false);
+        }
+      })
+      .catch(() => {
+        notification.error({
+          title: 'Error',
+          message: 'Failed to update benefit'
+        });
+        setOpenUpSertBenefit(false);
+      });
+  };
+  const hanldeAddBenefit = () => {
+    const name = benefitNameRef.current.input.value;
+    const description = benefitDescriptionRef.current.input.value;
+    const standardLeave = benefitStandardRef.current.value;
+    const month = benefitMonthRef.current.value;
+    const status = selectedStatus;
+    const url = `${getAPIHostName()}/benefits`;
+    httpPost(url, { name, description, standardLeave, month, status }, accessToken)
+      .then(res => {
+        if (res.success) {
+          setBenefitList(oldBenefitList => [res.data, ...oldBenefitList]);
+
+          notification.success({
+            title: 'Success',
+            message: 'Thêm quyền lợi thành công'
+          });
+          setOpenUpSertBenefit(false);
+        } else {
+          notification.error({
+            title: 'Error',
+            message: res.message || 'Thêm quyền lợi thất bại'
+          });
+        }
+      })
+      .catch(err => {
+        notification.error({
+          title: 'Error',
+          message: err || 'Thêm quyền lợi thất bại'
+        });
+        setOpenUpSertBenefit(false);
+      });
   };
   const content = id => {
     return (
       <div className="benefit__action-menu">
         <Button className={'benefit__button'} onClick={() => openModalUpSertBenefit(id)}>
-          Edit
+          Sửa
         </Button>
         <Button className={'benefit__button'} onClick={() => showConfirm(id)}>
-          Delete
+          Xóa
         </Button>
       </div>
     );
   };
   const columns = [
     {
-      title: 'Name',
+      title: 'Tên',
       dataIndex: 'name',
       key: 'name'
     },
     {
-      title: 'Description',
+      title: 'Miêu tả',
       dataIndex: 'description',
       key: 'description'
     },
     {
-      title: 'Standard Leave',
+      title: 'Tiêu chuẩn nghỉ',
       dataIndex: 'standardLeave',
       key: 'standardLeave'
     },
     {
-      title: 'Month',
+      title: 'Tháng',
       dataIndex: 'month',
       key: 'month'
     },
     {
-      title: 'Status',
+      title: 'Trạng thái',
       dataIndex: 'status',
       key: 'status'
     },
     {
-      title: 'Actions',
+      title: 'Hành động',
       render: (_, item) => {
         return (
           <div className="benefit__action">
             <Popover placement="topLeft" content={content(item._id)} trigger="click" onClick={() => {}}>
-              ...
+              <MoreOutlined />
             </Popover>
           </div>
         );
       }
     }
   ];
+
   const getDataSource = () => {
-    const benefitData = benefitList.filter(item => item.is_deleted === false);
+    let benefitData = benefitList.filter(item => !item.is_deleted);
     return benefitData.filter(item => item.name?.indexOf(searchValue) >= 0 || item.code?.indexOf(searchValue) >= 0);
   };
 
   return (
     <div className="benefit__container">
       <div className="benefit__top">
-        <div className="benefit__top-left">
-          <div className="benefit__top-breadcrum">Setting &gt; Benefit</div>
-        </div>
         <div className="benefit__top-right">
           <div className="benefit__top-search">
             <Search
               className="benefit__top-search-input"
-              placeholder="Type here to search"
+              placeholder="Tìm kiếm"
               onChange={e => setSearchValue(e.target.value)}
             />
           </div>
           <div className="benefit__top-modal">
-            <Button onClick={() => openModalUpSertBenefit()} className="benefit__top-modal-btn">
-              Add Leave Benefit
+            <Button
+              onClick={() => openModalUpSertBenefit()}
+              rightIcon={<PlusOutlined />}
+              className="benefit__top-modal-btn"
+            >
+              Thêm quyền lợi
             </Button>
           </div>
         </div>
@@ -189,24 +256,24 @@ const BenefitPage = () => {
           columns={columns}
           loading={isLoadingTable}
           dataSource={getDataSource()}
-          pagination={false}
+          pagination={{ pageSize: 5 }}
           rowKey={record => record._id}
           scroll={{ y: 'calc(100vh - 320px)' }}
         ></Table>
         <Modal
-          title="Add benefit"
+          title=""
           open={openUpSertBenefit}
           onOk={() => {
-            updateId ? handleUpdateBenefit(updateId) : console.log(2);
+            updateId ? handleUpdateBenefit(updateId) : hanldeAddBenefit();
           }}
           onCancel={() => setOpenUpSertBenefit(false)}
-          okText="Edit"
+          okText="Lưu"
         >
           <div className="benefit__modal-list">
             <div className="benefit__modal-left">
               <div id="benefit__modal-name" className="benefit__modal-item">
                 <div className="benefit__modal-label">Name:</div>
-                <CustomInput ref={benefitNameRef} placeholder="" />
+                <CustomInput ref={benefitNameRef} placeholder="Enter benefit name" />
               </div>
               <div id="benefit__modal-description" className="benefit__modal-item">
                 <div className="benefit__modal-label">Description:</div>
@@ -216,11 +283,11 @@ const BenefitPage = () => {
             <div className="benefit__modal-right">
               <div id="benefit__modal-standard" className="benefit__modal-item">
                 <div className="benefit__modal-label">Standard Leave:</div>
-                <InputNumber ref={benefitStandardRef} style={{ width: 120 }} defaultValue={0} />
+                <InputNumber ref={benefitStandardRef} style={{ width: 120 }} />
               </div>
               <div id="benefit__modal-month" className="benefit__modal-item">
                 <div className="benefit__modal-label">Month:</div>
-                <InputNumber ref={benefitMonthRef} style={{ width: 120 }} min={1} defaultValue={1} />
+                <InputNumber ref={benefitMonthRef} style={{ width: 120 }} min={1} />
               </div>
               <div id="benefit__modal-status" className="benefit__modal-item">
                 <div className="benefit__modal-label">Status:</div>

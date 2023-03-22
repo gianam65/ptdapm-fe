@@ -6,11 +6,14 @@ import { loadingState } from '../../recoil/store/app';
 import { accessTokenState } from '../../recoil/store/account';
 import { useSetRecoilState, useRecoilValue } from 'recoil';
 import { Table, Tooltip, Modal, notification } from 'antd';
-import { DoubleRightOutlined } from '@ant-design/icons';
+import { DoubleRightOutlined, PlusOutlined } from '@ant-design/icons';
 import classNames from 'classnames';
+import CustomInput from '../../components/custom-input/custom-input';
+import Button from '../../components/button/button';
 
 const SettingsPage = () => {
   const [users, setUsers] = useState([]);
+  const [searchValue, setSearchValue] = useState('');
   const setPageLoading = useSetRecoilState(loadingState);
   const accessToken = useRecoilValue(accessTokenState);
   useEffect(() => {
@@ -88,6 +91,12 @@ const SettingsPage = () => {
     }
   ];
 
+  const provideDataSource = () => {
+    let dataSource = users.filter(item => !item.is_deleted);
+
+    return dataSource.filter(item => item.username?.indexOf(searchValue) >= 0 || item.email?.indexOf(searchValue) >= 0);
+  };
+
   const handleToggleUserRole = (user, upgradeRole) => {
     const { username, _id, role } = user;
     const updateMessage = `Bạn có muốn ${
@@ -127,8 +136,23 @@ const SettingsPage = () => {
 
   return (
     <div className="settings__page-container">
+      <div className="department__action">
+        <CustomInput
+          type="search"
+          placeholder="Tìm kiếm"
+          onChange={e => setSearchValue(e.target.value)}
+          className="department__search-inp"
+        />
+        <Button
+          className="department__search-btn"
+          // onClick={() => openModalUpSertDepartment()}
+          rightIcon={<PlusOutlined />}
+        >
+          Thêm tài khoản
+        </Button>
+      </div>
       <Table
-        dataSource={users}
+        dataSource={provideDataSource()}
         columns={columns}
         rowKey={record => record._id}
         pagination={true}
