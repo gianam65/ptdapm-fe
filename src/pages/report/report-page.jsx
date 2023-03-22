@@ -22,7 +22,19 @@ import { httpGet } from '../../services/request';
 import { notification } from 'antd';
 import { loadingState } from '../../recoil/store/app';
 
-ChartJS.register(ArcElement,BarController, BarElement, CategoryScale, LinearScale, PointElement, LineController, LineElement, Title, Tooltip, Legend);
+ChartJS.register(
+  ArcElement,
+  BarController,
+  BarElement,
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineController,
+  LineElement,
+  Title,
+  Tooltip,
+  Legend
+);
 const options = {
   responsive: true,
   plugins: {
@@ -99,6 +111,7 @@ export default function ReportPage() {
   };
 
   // Using this function to apply filter by day, month into this charts (week, month, 3 months)
+  // eslint-disable-next-line
   const customChartDataByDay = (date = '90days', datas) => {
     const today = new Date().toLocaleDateString();
     const unixADayTime = 86400000; // a day;
