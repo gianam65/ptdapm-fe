@@ -163,11 +163,11 @@ export default function ReportPage() {
     <div className="reports__container">
       <div>
         <Chart type="bar" data={data} options={options} />
-        <div style={{ textAlign: 'center' }}>
+        {/* <div style={{ textAlign: 'center' }}>
           <Button onClick={() => setType('bar')}>Biểu đồ cột</Button>
           <Button onClick={() => setType('line')}>Biểu đồ đường</Button>
           <Button onClick={() => setType('doughnut')}>Biểu đồ tròn</Button>
-        </div>
+        </div> */}
       </div>
     </div>
   );
