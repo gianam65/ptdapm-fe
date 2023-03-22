@@ -7,6 +7,8 @@ import { translateStatus, getAPIHostName } from '../../utils';
 import { httpDelete, httpGet, httpPut } from '../../services/request';
 import { loadingState } from '../../recoil/store/app';
 import { useSetRecoilState } from 'recoil';
+import dayjs from 'dayjs';
+import { convertDateStringToUnixDateTime } from '../../utils';
 
 const { confirm } = Modal;
 export default function ContractPage() {
@@ -17,14 +19,14 @@ export default function ContractPage() {
   const setPageLoading = useSetRecoilState(loadingState);
   const [listEmployees, setListEmployees] = useState([]);
 
-  const handleChangeContractDate = value => {
-    setContractInfor({ ...contractInfor, contract_date: value });
+  const handleChangeContractDate = (_, dateString) => {
+    setContractInfor({ ...contractInfor, contract_date: dateString });
   };
-  const handleChangeStartDate = value => {
-    setContractInfor({ ...contractInfor, start_date: value });
+  const handleChangeStartDate = (_, dateString) => {
+    setContractInfor({ ...contractInfor, start_date: dateString });
   };
-  const handleChangeEndDate = value => {
-    setContractInfor({ ...contractInfor, end_date: value });
+  const handleChangeEndDate = (_, dateString) => {
+    setContractInfor({ ...contractInfor, end_date: dateString });
   };
 
   const showConfirm = idDelete => {
@@ -104,7 +106,12 @@ export default function ContractPage() {
     setIsModalOpen(false);
     if (contractInfor.status === 'pending') {
       const url = `${getAPIHostName()}/contracts/${contractInfor._id}`;
-      httpPut(url, contractInfor)
+      let buildBody = {
+        ...contractInfor,
+        start_date: convertDateStringToUnixDateTime(contractInfor.start_date),
+        end_date: convertDateStringToUnixDateTime(contractInfor.end_date)
+      };
+      httpPut(url, buildBody)
         .then(res => {
           if (res.success) {
             getContract();
@@ -258,15 +265,16 @@ export default function ContractPage() {
           <div>
             <div className="edit__contract-label">Ngày ký hợp đồng</div>
             <DatePicker
-              value={contractInfor.contract_date}
+              value={dayjs(contractInfor.contract_date, 'YYYY-MM-DD')}
               onChange={handleChangeContractDate}
+              format="YYYY-MM-DD HH:mm"
               disabled={contractInfor.status === 'completed'}
             />
           </div>
           <div>
             <div className="edit__contract-label">Ngày bắt đầu</div>
             <DatePicker
-              value={contractInfor.start_date}
+              format="YYYY-MM-DD HH:mm"
               onChange={handleChangeStartDate}
               disabled={contractInfor.status === 'completed'}
             />
@@ -274,7 +282,7 @@ export default function ContractPage() {
           <div>
             <div className="edit__contract-label">Ngày kết thúc</div>
             <DatePicker
-              value={contractInfor.end_date}
+              format="YYYY-MM-DD HH:mm"
               onChange={handleChangeEndDate}
               disabled={contractInfor.status === 'completed'}
             />
