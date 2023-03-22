@@ -155,14 +155,14 @@ const EmployeesPage = () => {
     const name = employeesNameRef.current.input.value;
     const codeEmployee = employeesCodeRef.current.input.value;
     const email = employeesEmailRef.current.input.value;
-    const birthday = employeesBirthdayRef.current.input.value;
+    // const birthday = employeesBirthdayRef.current.input.value;
     const phoneNumber = employeesPhoneRef.current.input.value;
     const address = employeesAddressRef.current.input.value;
     setPageLoading(true);
     const url = `${getAPIHostName()}/employees`;
     httpPost(
       url,
-      { name, codeEmployee, email, birthday, phoneNumber, gender: employeeGender, address, salaryRanks },
+      { name, codeEmployee, email, phoneNumber, gender: employeeGender, address, salaryRanks },
       accessToken
     )
       .then(res => {
