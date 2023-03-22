@@ -1,10 +1,9 @@
 import './contract.scss';
 import { Table, Tag, Modal, DatePicker, notification } from 'antd';
-import { EyeOutlined, EditOutlined, DeleteOutlined,ExclamationCircleFilled } from '@ant-design/icons';
+import { EyeOutlined, EditOutlined, DeleteOutlined, ExclamationCircleFilled } from '@ant-design/icons';
 import { useEffect, useState } from 'react';
 import CustomInput from '../../components/custom-input/custom-input';
-import { translateStatus } from '../../utils';
-import { getAPIHostName } from '../../utils';
+import { translateStatus, normalizeDate, getAPIHostName } from '../../utils';
 import { httpDelete, httpGet, httpPut } from '../../services/request';
 import { loadingState } from '../../recoil/store/app';
 import { useSetRecoilState } from 'recoil';
@@ -33,28 +32,28 @@ export default function ContractPage() {
       title: 'Bạn có chắc muốn xoá hợp đồng này không',
       icon: <ExclamationCircleFilled />,
       onOk() {
-        const url = `${getAPIHostName()}/contracts/${idDelete}`
+        const url = `${getAPIHostName()}/contracts/${idDelete}`;
         httpDelete(url)
-        .then(res=>{
-          if(res.success){
-            getContract()
-            notification.success({
-              title: 'Thành công',
-              message: 'Huỷ hợp đồng thành công'
+          .then(res => {
+            if (res.success) {
+              getContract();
+              notification.success({
+                title: 'Thành công',
+                message: 'Huỷ hợp đồng thành công'
+              });
+            }
+          })
+          .catch(() => {
+            notification.error({
+              title: 'Error',
+              message: 'Không thể huỷ hợp đồng'
             });
-          }
-        })
-        .catch(() => {
-          notification.error({
-            title: 'Error',
-            message: 'Không thể huỷ hợp đồng'
+            setPageLoading(false);
           });
-          setPageLoading(false);
-        })
       },
       onCancel() {
         console.log('Cancel');
-      },
+      }
     });
   };
 
@@ -94,7 +93,6 @@ export default function ContractPage() {
     // eslint-disable-next-line
   }, []);
 
-  
   const handleUpCheckContract = record => {
     setContractInfor(record);
   };
@@ -135,10 +133,12 @@ export default function ContractPage() {
       key: 'action',
       render: (_, record) => {
         return (
-          <div className='contract__action'>
-            <DeleteOutlined onClick={()=>{
-              showConfirm(record._id)
-            }}/>
+          <div className="contract__action">
+            <DeleteOutlined
+              onClick={() => {
+                showConfirm(record._id);
+              }}
+            />
             {record.status === 'completed' ? (
               <EyeOutlined
                 onClick={() => {
@@ -176,7 +176,10 @@ export default function ContractPage() {
     {
       title: 'Ngày ký hợp đồng',
       dataIndex: 'contract_date',
-      key: 'contract_date'
+      key: 'contract_date',
+      render: contractDate => {
+        <span>{normalizeDate(contractDate)}</span>;
+      }
     },
     {
       title: 'Ngày bắt đầu có hiệu lực',
@@ -196,10 +199,10 @@ export default function ContractPage() {
         let color;
         if (record.status === 'pending') {
           color = 'geekblue';
-        } else if(record.status === 'completed'){
+        } else if (record.status === 'completed') {
           color = 'green';
-        }else{
-          color = 'vocalno'
+        } else {
+          color = 'vocalno';
         }
         return (
           <Tag color={color} key={record.key}>
@@ -235,12 +238,7 @@ export default function ContractPage() {
         />
       </div>
 
-      <Table
-        pagination={{ pageSize: 5 }}
-        columns={columns}
-        dataSource={getDataSource()}
-        rowKey={record => record._id}
-      />
+      <Table pagination={true} columns={columns} dataSource={getDataSource()} rowKey={record => record._id} />
       <Modal
         title="Thông tin hợp đồng"
         open={isModalOpen}

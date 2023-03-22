@@ -230,7 +230,8 @@ const EmployeesPage = () => {
 
   const handleDeleteEmployees = () => {
     setPageLoading(true);
-    const url = `${getAPIHostName()}/employees/delete/${id}`;
+    const selectedUser = listEmployees.find(employee => employee._id === id);
+    const url = `${getAPIHostName()}/employees/delete/${id}/${selectedUser.contractId}`;
     httpDelete(url, accessToken)
       .then(res => {
         if (res.success) {
