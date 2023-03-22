@@ -3,7 +3,6 @@ import process from 'process/browser';
 
 export const getAPIHostName = () => {
   // setup env please
-  console.log('process :>> ', process.env);
   return process.env.NODE_ENV === 'development' ? 'http://localhost:8001/api/v1' : 'http://manhpham.site:8001/api/v1';
 };
 
@@ -69,4 +68,11 @@ export const translateStatus = status => {
     default:
       return 'Làm việc tại trường';
   }
+};
+
+export const convertDateStringToUnixDateTime = dateString => {
+  const dateObj = new Date(dateString);
+  const unixTimestamp = Math.floor(dateObj.getTime() / 1000);
+
+  return unixTimestamp;
 };
