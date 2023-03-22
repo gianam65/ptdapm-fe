@@ -236,7 +236,7 @@ const BenefitPage = () => {
           <div className="benefit__top-search">
             <Search
               className="benefit__top-search-input"
-              placeholder="Nhập vào đây để tìm kiếm"
+              placeholder="Tìm kiếm"
               onChange={e => setSearchValue(e.target.value)}
             />
           </div>

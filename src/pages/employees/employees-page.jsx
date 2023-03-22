@@ -1,11 +1,17 @@
 import './employees-page.scss';
-import { Table, notification, Modal, Tooltip, InputNumber, Select, Input } from 'antd';
+import { Table, notification, Modal, Tooltip, InputNumber, Select, Input, DatePicker } from 'antd';
 import { useEffect, useState, useRef } from 'react';
 import { httpGet, httpPost, httpDelete } from '../../services/request';
 import { getAPIHostName } from '../../utils';
 import { loadingState } from '../../recoil/store/app';
 import { useSetRecoilState, useRecoilValue } from 'recoil';
-import { fallbackToDefaultAvatar, removeTimeFromDate, randomText, translateStatus } from '../../utils/';
+import {
+  fallbackToDefaultAvatar,
+  removeTimeFromDate,
+  randomText,
+  translateStatus,
+  convertDateStringToUnixDateTime
+} from '../../utils/';
 import { CSVLink } from 'react-csv';
 import { CloudDownloadOutlined } from '@ant-design/icons';
 import CustomInput from '../../components/custom-input/custom-input';
@@ -36,20 +42,18 @@ const EmployeesPage = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editModalOpen, setEditModalOpen] = useState(false);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+  const [employeeGender, setEmployeeGender] = useState('nam');
   const accessToken = useRecoilValue(accessTokenState);
   const employeesNameRef = useRef(null);
   const employeesCodeRef = useRef(null);
   const employeesEmailRef = useRef(null);
   const employeesBirthdayRef = useRef(null);
   const employeesPhoneRef = useRef(null);
-  const employeesGenderRef = useRef(null);
   const employeesAddressRef = useRef(null);
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [code, setCode] = useState('');
-  const [birthday, setBirthday] = useState('');
   const [phone, setPhone] = useState('');
-  const [gender, setGender] = useState('');
   const [address, setAddress] = useState('');
   const [salaryRanks, setSalaryRanks] = useState(1);
   const [department, setDepartment] = useState();
@@ -153,11 +157,14 @@ const EmployeesPage = () => {
     const email = employeesEmailRef.current.input.value;
     const birthday = employeesBirthdayRef.current.input.value;
     const phoneNumber = employeesPhoneRef.current.input.value;
-    const gender = employeesGenderRef.current.input.value;
     const address = employeesAddressRef.current.input.value;
     setPageLoading(true);
     const url = `${getAPIHostName()}/employees`;
-    httpPost(url, { name, codeEmployee, email, birthday, phoneNumber, gender, address, salaryRanks }, accessToken)
+    httpPost(
+      url,
+      { name, codeEmployee, email, birthday, phoneNumber, gender: employeeGender, address, salaryRanks },
+      accessToken
+    )
       .then(res => {
         if (res.success) {
           notification.success({
@@ -186,15 +193,14 @@ const EmployeesPage = () => {
 
   const handleUpdateEmployees = () => {
     setPageLoading(true);
-    const url = `${getAPIHostName()}/employees?department=&position=&benefit=`;
+    const url = `${getAPIHostName()}/employees`;
     let buildBodyToUpdate = {
       name: name,
       email: email,
       codeEmployee: code,
       phoneNumber: phone,
-      gender: gender,
+      gender: employeeGender,
       address: address,
-      birthday: birthday,
       deparment: department,
       benefit: benefit,
       salaryRanks: salaryRanks,
@@ -338,10 +344,10 @@ const EmployeesPage = () => {
       )
     },
     {
-      title: 'Ngày sinh',
-      key: 'BirthOfDate',
-      dataIndex: 'BirthOfDate',
-      render: BirthOfDate => <span className="employee__birthday">{removeTimeFromDate(BirthOfDate)}</span>
+      title: 'Ngày làm việc',
+      key: 'startDate',
+      dataIndex: 'startDate',
+      render: startDate => <span className="employee__birthday">{removeTimeFromDate(startDate)}</span>
     },
     {
       title: 'Ảnh',
@@ -446,8 +452,6 @@ const EmployeesPage = () => {
             <CustomInput ref={employeesNameRef} placeholder="Tên nhân viên" />
             <div className="add__employees-label">Email:</div>
             <CustomInput ref={employeesEmailRef} placeholder="Email" />
-            <div className="add__employees-label">Ngày sinh:</div>
-            <CustomInput ref={employeesBirthdayRef} placeholder="Ngày sinh" />
             <div className="add__employees-label">Điện thoại:</div>
             <CustomInput ref={employeesPhoneRef} placeholder="Điện thoại" />
             <div className="add__employees-selects">
@@ -473,7 +477,14 @@ const EmployeesPage = () => {
           </div>
           <div className="add__employees_right">
             <div className="add__employees-label">Giới tính:</div>
-            <CustomInput ref={employeesGenderRef} placeholder="Nam hoặc nữ" />
+            <Select placeholder="Giới tính" onChange={e => setEmployeeGender(e)}>
+              <Option key={'male__gender'} value={'nam'}>
+                Nam
+              </Option>
+              <Option key={'female__gender'} value={'nữ'}>
+                Nữ
+              </Option>
+            </Select>
             <div className="add__employees-label">Mã nhân viên:</div>
             <CustomInput ref={employeesCodeRef} placeholder="Mã nhân viên" value={randomText(6)} disabled />
             <div className="add__employees-label">Địa chỉ: </div>
@@ -492,27 +503,39 @@ const EmployeesPage = () => {
         okText="Sửa"
         cancelText="Huỷ"
       >
-        <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+        <div className="update__emp-container">
           <div className="add__employees_left">
             <div className="add__employees-label">Tên:</div>
             <CustomInput onChange={e => setName(e.target.value)} placeholder="Tên nhân viên" />
             <div className="add__employees-label">Email:</div>
             <CustomInput onChange={e => setEmail(e.target.value)} placeholder="Email" />
-            <div className="add__employees-label">Ngày sinh :</div>
-            <CustomInput onChange={e => setBirthday(e.target.value)} placeholder="Ngày sinh VD: 06/05/2001" />
             <div className="add__employees-label">Điện thoại:</div>
             <CustomInput onChange={e => setPhone(e.target.value)} placeholder="Điện thoại" />
             <div className="add__employees-label">Ngày bắt đầu:</div>
-            <CustomInput onChange={e => setStartDate(e.target.value)} placeholder="Ngày vào làm" />
+            <DatePicker
+              size={'middle'}
+              format="YYYY-MM-DD HH:mm"
+              onChange={(_, dateString) => {
+                const unixDateTime = convertDateStringToUnixDateTime(dateString);
+                setStartDate(unixDateTime);
+              }}
+            />
           </div>
           <div className="add__employees_right">
             <div className="add__employees-label">Giới tính:</div>
-            <CustomInput onChange={e => setGender(e.target.value)} placeholder="Nam hoặc nữ" />
+            <Select placeholder="Giới tính" onChange={e => setEmployeeGender(e)}>
+              <Option key={'male__gender'} value={'nam'}>
+                Nam
+              </Option>
+              <Option key={'female__gender'} value={'nữ'}>
+                Nữ
+              </Option>
+            </Select>
             <div className="add__employees-label">Địa chỉ: </div>
             <CustomInput onChange={e => setAddress(e.target.value)} placeholder="Địa chỉ" />
             <div className="add__employees-label">Bậc lương: </div>
             <InputNumber onChange={value => setSalaryRanks(value)} type={'number'} defaultValue={salaryRanks} />
-            <div className="select">
+            <div className="add__employees-selects">
               <Select onChange={value => setDepartment(value)} placeholder="Phòng ban" style={{ width: 120 }}>
                 {departmentList.map((list, idx) => {
                   return (
