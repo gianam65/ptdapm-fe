@@ -1,10 +1,11 @@
 .edit__contract-label{
     font-weight: 500;
-    margin-top: 10px;
+    margin-top: 12px;
 }
 .edit__contract-row{
     display: flex;
-    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
 }
 .contract__search{
     display: flex;

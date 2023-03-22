@@ -54,7 +54,7 @@ export default function ContractPage() {
           });
       },
       onCancel() {
-        console.log('Cancel');
+        return;
       }
     });
   };
@@ -90,8 +90,7 @@ export default function ContractPage() {
   };
 
   useEffect(() => {
-    getContract();
-    getEmployees();
+    Promise.all([getEmployees(), getContract()]);
     // eslint-disable-next-line
   }, []);
 
