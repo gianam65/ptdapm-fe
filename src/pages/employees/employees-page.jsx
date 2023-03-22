@@ -5,13 +5,7 @@ import { httpGet, httpPost, httpDelete } from '../../services/request';
 import { getAPIHostName } from '../../utils';
 import { loadingState } from '../../recoil/store/app';
 import { useSetRecoilState, useRecoilValue } from 'recoil';
-import {
-  fallbackToDefaultAvatar,
-  removeTimeFromDate,
-  randomText,
-  translateStatus,
-  convertDateStringToUnixDateTime
-} from '../../utils/';
+import { removeTimeFromDate, randomText, translateStatus, convertDateStringToUnixDateTime } from '../../utils/';
 import { CSVLink } from 'react-csv';
 import { CloudDownloadOutlined } from '@ant-design/icons';
 import CustomInput from '../../components/custom-input/custom-input';
@@ -47,7 +41,6 @@ const EmployeesPage = () => {
   const employeesNameRef = useRef(null);
   const employeesCodeRef = useRef(null);
   const employeesEmailRef = useRef(null);
-  const employeesBirthdayRef = useRef(null);
   const employeesPhoneRef = useRef(null);
   const employeesAddressRef = useRef(null);
   const [name, setName] = useState('');
@@ -155,16 +148,11 @@ const EmployeesPage = () => {
     const name = employeesNameRef.current.input.value;
     const codeEmployee = employeesCodeRef.current.input.value;
     const email = employeesEmailRef.current.input.value;
-    // const birthday = employeesBirthdayRef.current.input.value;
     const phoneNumber = employeesPhoneRef.current.input.value;
     const address = employeesAddressRef.current.input.value;
     setPageLoading(true);
     const url = `${getAPIHostName()}/employees`;
-    httpPost(
-      url,
-      { name, codeEmployee, email, phoneNumber, gender: employeeGender, address, salaryRanks },
-      accessToken
-    )
+    httpPost(url, { name, codeEmployee, email, phoneNumber, gender: employeeGender, address, salaryRanks }, accessToken)
       .then(res => {
         if (res.success) {
           notification.success({
@@ -345,18 +333,16 @@ const EmployeesPage = () => {
       )
     },
     {
+      title: 'Chức vụ',
+      key: 'position',
+      dataIndex: 'position',
+      render: item => item
+    },
+    {
       title: 'Ngày làm việc',
       key: 'startDate',
       dataIndex: 'startDate',
       render: startDate => <span className="employee__birthday">{removeTimeFromDate(startDate)}</span>
-    },
-    {
-      title: 'Ảnh',
-      key: 'picturePath',
-      dataIndex: 'picturePath',
-      render: picturePath => (
-        <img src={fallbackToDefaultAvatar(picturePath)} alt="employee avatar" className="employee__avatar" />
-      )
     }
   ];
 

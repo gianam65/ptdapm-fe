@@ -238,7 +238,13 @@ export default function ContractPage() {
         />
       </div>
 
-      <Table pagination={true} columns={columns} dataSource={getDataSource()} rowKey={record => record._id} />
+      <Table
+        pagination={true}
+        columns={columns}
+        dataSource={getDataSource()}
+        rowKey={record => record._id}
+        scroll={{ y: 'calc(100vh - 320px)' }}
+      />
       <Modal
         title="Thông tin hợp đồng"
         open={isModalOpen}
