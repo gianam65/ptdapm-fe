@@ -24,12 +24,19 @@
     margin-left: 8px;
   }
 }
+.action__add-position{
+  margin-bottom: 13px 0;
+  div {
+    display: inline-block;
+    margin-left: 8px;
+  }
+}
 
 .department__row-action {
   text-align: right;
 }
 
-.action__delete, .action__edit {
+.action__delete, .action__edit, .action__add-position{
   transition: 0.12s all ease-in-out;
   cursor: pointer;
 
