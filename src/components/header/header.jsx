@@ -20,7 +20,7 @@ import {
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useState, useRef, useEffect } from 'react';
 import CustomInput from '../custom-input/custom-input';
-import { getAPIHostName } from '../../utils';
+import { getAPIHostName, convertRouteToVNS } from '../../utils';
 import { httpPut, httpGet } from '../../services/request';
 
 const items = [
@@ -157,7 +157,9 @@ const Header = () => {
     <div className="page__content-header">
       <div className="header__bread-cum">
         <HomeIcon size={20} />
-        <span className="bread__cum-path">{pathname === '/' ? ' >> Dashboard' : pathname.replace('/', ' >> ')}</span>
+        <span className="bread__cum-path">
+          {pathname === '/' ? ' >> Trang chủ' : convertRouteToVNS(pathname).replace('/', ' >> ')}
+        </span>
       </div>
       <div className="header__user-info">
         <div className="name_and_status">

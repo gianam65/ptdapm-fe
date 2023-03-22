@@ -3,7 +3,7 @@ import { Table, Tag, Modal, DatePicker, notification } from 'antd';
 import { EyeOutlined, EditOutlined, DeleteOutlined, ExclamationCircleFilled } from '@ant-design/icons';
 import { useEffect, useState } from 'react';
 import CustomInput from '../../components/custom-input/custom-input';
-import { translateStatus, normalizeDate, getAPIHostName } from '../../utils';
+import { translateStatus, getAPIHostName } from '../../utils';
 import { httpDelete, httpGet, httpPut } from '../../services/request';
 import { loadingState } from '../../recoil/store/app';
 import { useSetRecoilState } from 'recoil';
@@ -159,39 +159,6 @@ export default function ContractPage() {
       }
     },
     {
-      title: 'Tên hợp đồng',
-      dataIndex: 'contract_name',
-      key: 'contract_name'
-    },
-    {
-      title: 'Chức vụ',
-      dataIndex: 'role',
-      key: 'role'
-    },
-    {
-      title: 'Tên nhân viên',
-      dataIndex: 'employee_name',
-      key: 'employee_name'
-    },
-    {
-      title: 'Ngày ký hợp đồng',
-      dataIndex: 'contract_date',
-      key: 'contract_date',
-      render: contractDate => {
-        <span>{normalizeDate(contractDate)}</span>;
-      }
-    },
-    {
-      title: 'Ngày bắt đầu có hiệu lực',
-      dataIndex: 'start_date',
-      key: 'start_date'
-    },
-    {
-      title: 'Ngày kết thúc hợp đồng',
-      dataIndex: 'end_date',
-      key: 'end_date'
-    },
-    {
       title: 'Trạng thái',
       dataIndex: 'status',
       key: 'status',
@@ -212,9 +179,22 @@ export default function ContractPage() {
       }
     },
     {
-      title: 'Email',
-      dataIndex: 'email',
-      key: 'email'
+      title: 'Tên nhân viên',
+      dataIndex: 'employee_name',
+      key: 'employee_name'
+    },
+    {
+      title: 'Chức vụ',
+      dataIndex: 'role',
+      key: 'role',
+      render: role => {
+        return role ? role : 'Giảng viên';
+      }
+    },
+    {
+      title: 'Tên hợp đồng',
+      dataIndex: 'contract_name',
+      key: 'contract_name'
     }
   ];
 

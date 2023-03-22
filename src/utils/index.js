@@ -76,3 +76,24 @@ export const convertDateStringToUnixDateTime = dateString => {
 
   return unixTimestamp;
 };
+
+export const convertRouteToVNS = route => {
+  switch (route) {
+    case '/':
+      return '>> Trang chủ';
+    case '/employee':
+      return '>> Nhân viên';
+    case '/reports':
+      return '>> Báo cáo';
+    case '/department':
+      return '>> Phòng ban';
+    case '/contract':
+      return '>> Hợp đồng';
+    case '/benefit':
+      return '>> Quyền lợi';
+    case '/settings':
+      return '>> Phân quyền';
+    default:
+      return '/';
+  }
+};
