@@ -116,7 +116,24 @@ export default function DepartmentPage() {
 
   const columns = [
     {
+      title: 'Mã phòng ban',
+      dataIndex: 'code',
+      key: 'code'
+    },
+    {
+      title: 'Tên phòng ban',
+      dataIndex: 'name',
+      key: 'name'
+    },
+    {
+      title: 'Tổng số nhân viên',
+      key: 'employeesId',
+      dataIndex: 'employeesId',
+      render: (_, record) => <span className="department__total-emp">{record.employeesId?.length || 0} nhân viên</span>
+    },
+    {
       title: 'Hành động',
+      fixed: 'right',
       render: (_, item) => (
         <div className="department__row-action">
           <div className="action manipulated__action">
@@ -138,22 +155,6 @@ export default function DepartmentPage() {
           </div>
         </div>
       )
-    },
-    {
-      title: 'Mã phòng ban',
-      dataIndex: 'code',
-      key: 'code'
-    },
-    {
-      title: 'Tên phòng ban',
-      dataIndex: 'name',
-      key: 'name'
-    },
-    {
-      title: 'Tổng số nhân viên',
-      key: 'employeesId',
-      dataIndex: 'employeesId',
-      render: (_, record) => <span className="department__total-emp">{record.employeesId?.length || 0} nhân viên</span>
     }
   ];
 

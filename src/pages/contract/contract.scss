@@ -13,7 +13,10 @@
     margin-bottom: 15px;
 }
 .contract__action{
-    >*{
-        margin-right: 7px;
+    text-align: center;
+    &:hover {
+        span {
+            color: var(--primary-color);
+        }
     }
 }

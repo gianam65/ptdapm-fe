@@ -265,61 +265,51 @@ const EmployeesPage = () => {
 
   const columns = [
     {
-      title: 'Hành động',
-      render: (_, item) => (
-        <div className="action manipulated__action employee__actions">
-          <div onClick={() => handleCodeEmployee(item.codeEmployee)} className="action__edit">
-            <Tooltip title="Sửa">
-              <EditOutlined />
-            </Tooltip>
-          </div>
-          <div onClick={() => handleID(item._id)} className="action__delete">
-            <Tooltip title="Xoá">
-              <DeleteOutlined />
-            </Tooltip>
-          </div>
-        </div>
-      )
+      title: 'Mã nhân viên',
+      key: 'codeEmployee',
+      dataIndex: 'codeEmployee',
+      width: 200,
+      render: codeEmployee => <span className="employee__position">{codeEmployee}</span>
     },
     {
       title: 'Tên nhân viên',
       dataIndex: 'name',
       key: 'name',
+      width: 200,
       render: text => <span className="employee__name">{text}</span>
     },
     {
       title: 'Email',
       dataIndex: 'email',
-      key: 'email'
+      key: 'email',
+      width: 300
     },
     {
       title: 'Điện thoại',
       dataIndex: 'phoneNumber',
       key: 'phoneNumber',
+      width: 150,
       render: phoneNumber => <span className="employee__phone">{phoneNumber}</span>
     },
     {
       title: 'Địa chỉ',
       key: 'address',
       dataIndex: 'address',
+      width: 150,
       render: address => <span className="employee__address">{address}</span>
     },
     {
       title: 'Bậc lương',
       dataIndex: 'salaryRank',
       key: 'salaryRank',
+      width: 100,
       render: salaryRank => <span className="employee__salary">{salaryRank}</span>
-    },
-    {
-      title: 'Mã nhân viên',
-      key: 'codeEmployee',
-      dataIndex: 'codeEmployee',
-      render: codeEmployee => <span className="employee__position">{codeEmployee}</span>
     },
     {
       title: 'Tình trạng hoạt động',
       key: 'status',
       dataIndex: 'status',
+      width: 200,
       render: status => (
         <span
           className={classNames('employee__status', {
@@ -336,13 +326,34 @@ const EmployeesPage = () => {
       title: 'Chức vụ',
       key: 'position',
       dataIndex: 'position',
+      width: 150,
       render: item => item
     },
     {
       title: 'Ngày làm việc',
       key: 'startDate',
       dataIndex: 'startDate',
+      width: 150,
       render: startDate => <span className="employee__birthday">{removeTimeFromDate(startDate)}</span>
+    },
+    {
+      title: 'Hành động',
+      width: 120,
+      render: (_, item) => (
+        <div className="action manipulated__action employee__actions">
+          <div onClick={() => handleCodeEmployee(item.codeEmployee)} className="action__edit">
+            <Tooltip title="Sửa">
+              <EditOutlined />
+            </Tooltip>
+          </div>
+          <div onClick={() => handleID(item._id)} className="action__delete">
+            <Tooltip title="Xoá">
+              <DeleteOutlined />
+            </Tooltip>
+          </div>
+        </div>
+      ),
+      fixed: 'right'
     }
   ];
 
@@ -419,7 +430,7 @@ const EmployeesPage = () => {
         <Table
           columns={columns}
           dataSource={provideDatasource()}
-          scroll={{ y: 'calc(100vh - 420px)' }}
+          scroll={{ y: 'calc(100vh - 420px)', x: 'max-content' }}
           rowKey={record => record._id}
           pagination={true}
         />
