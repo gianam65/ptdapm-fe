@@ -14,6 +14,7 @@ import { PlusOutlined, EditOutlined, DeleteOutlined, CloudUploadOutlined } from 
 import Button from '../../components/button/button';
 import classNames from 'classnames';
 import dayjs from 'dayjs';
+import moment from 'moment';
 
 const HEADERS = [
   { label: 'Tên nhân viên', key: 'name' },
@@ -51,8 +52,8 @@ const EmployeesPage = () => {
   const [phone, setPhone] = useState('');
   const [address, setAddress] = useState('');
   const [salaryRanks, setSalaryRanks] = useState(1);
-  const [department, setDepartment] = useState();
-  const [benefit, setBenefit] = useState();
+  const [department, setDepartment] = useState('');
+  const [benefit, setBenefit] = useState('');
   const [startDate, setStartDate] = useState();
   const [position, setPosition] = useState();
   const [id, setID] = useState();
@@ -60,7 +61,7 @@ const EmployeesPage = () => {
   useEffect(() => {
     Promise.all([fetchEmployees(activePage), getDepartment(), getBenefit()]);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [textSearch]);
 
   const getBenefit = () => {
     const url = `${getAPIHostName()}/benefits`;
@@ -81,6 +82,8 @@ const EmployeesPage = () => {
         setPageLoading(false);
       });
   };
+
+  console.log(textSearch);
 
   const getDepartment = () => {
     const url = `${getAPIHostName()}/departments`;
@@ -132,7 +135,7 @@ const EmployeesPage = () => {
 
   const fetchEmployees = activePage => {
     setPageLoading(true);
-    const url = `${getAPIHostName()}/employees`;
+    const url = `${getAPIHostName()}/employees?text=${textSearch}`;
     httpGet(url)
       .then(res => {
         if (res.success) {
@@ -155,7 +158,7 @@ const EmployeesPage = () => {
     const address = employeesAddressRef.current.input.value;
     const position = employeesPositionRef.current.input.value;
     setPageLoading(true);
-    const url = `${getAPIHostName()}/employees`;
+    const url = `${getAPIHostName()}/employees?department=${department}&benefit=${benefit}`;
     httpPost(
       url,
       { name, codeEmployee, email, phoneNumber, gender: employeeGender, address, salaryRanks, position },
@@ -191,9 +194,15 @@ const EmployeesPage = () => {
     return listEmployees.find(emp => emp.codeEmployee === code);
   };
 
+  console.log(getSelectedUser());
+
+  console.log(startDate);
+
   const handleUpdateEmployees = () => {
     setPageLoading(true);
-    const url = `${getAPIHostName()}/employees`;
+    const url = `${getAPIHostName()}/employees?department=${
+      department || (getSelectedUser() && getSelectedUser().departMentId[0]._id)
+    }&benefit=${benefit || (getSelectedUser() && getSelectedUser().benefitId[0])}`;
     let buildBodyToUpdate = {
       name: name || (getSelectedUser() && getSelectedUser().name),
       email: email || (getSelectedUser() && getSelectedUser().email),
@@ -207,12 +216,6 @@ const EmployeesPage = () => {
         convertDateStringToUnixDateTime(getSelectedUser() && getSelectedUser().startDate),
       position: position || (getSelectedUser() && getSelectedUser().position)
     };
-    if (department) {
-      buildBodyToUpdate = { ...buildBodyToUpdate, department };
-    }
-    if (benefit) {
-      buildBodyToUpdate = { ...buildBodyToUpdate, benefit };
-    }
 
     httpPost(url, buildBodyToUpdate, accessToken)
       .then(res => {
@@ -437,7 +440,7 @@ const EmployeesPage = () => {
           type="search"
           placeholder="Tìm kiếm"
           className="employees__search-inp"
-          onChange={e => setTextSearch(e.target.value)}
+          onOk={e => setTextSearch(e.target.value)}
         />
         <Button className="employees__search-btn" rightIcon={<PlusOutlined />} onClick={() => setIsModalOpen(true)}>
           Thêm nhân viên
@@ -548,13 +551,14 @@ const EmployeesPage = () => {
             />
             <div className="add__employees-label">Ngày bắt đầu:</div>
             <DatePicker
+              defaultValue={moment(getSelectedUser() && getSelectedUser().startDate)}
               size={'middle'}
-              value={dayjs((getSelectedUser() && getSelectedUser().startDate) || startDate, 'YYYY-MM-DD')}
               format="YYYY-MM-DD HH:mm"
-              onChange={(_, dateString) => {
-                const unixDateTime = convertDateStringToUnixDateTime(dateString);
-                setStartDate(unixDateTime);
-              }}
+              // onChange={(_, dateString) => {
+              //   const unixDateTime = convertDateStringToUnixDateTime(dateString);
+              //   setStartDate(unixDateTime);
+              // }}
+              onChange={dateString => setStartDate(dateString)}
             />
           </div>
           <div className="add__employees_right">
@@ -585,7 +589,12 @@ const EmployeesPage = () => {
               defaultValue={salaryRanks}
             />
             <div className="add__employees-selects">
-              <Select onChange={value => setDepartment(value)} placeholder="Phòng ban" style={{ width: 120 }}>
+              <Select
+                value={department || (getSelectedUser() && getSelectedUser().departMentId[0]._id)}
+                onChange={value => setDepartment(value)}
+                placeholder="Phòng ban"
+                style={{ width: 120 }}
+              >
                 {departmentList.map((list, idx) => {
                   return (
                     <Option key={idx} value={list._id}>
@@ -594,7 +603,12 @@ const EmployeesPage = () => {
                   );
                 })}
               </Select>
-              <Select onChange={value => setBenefit(value)} placeholder="Quyền lợi" style={{ width: 120 }}>
+              <Select
+                value={benefit || (getSelectedUser() && getSelectedUser().benefitId[0])}
+                onChange={value => setBenefit(value)}
+                placeholder="Quyền lợi"
+                style={{ width: 120 }}
+              >
                 {benefitList.map((list, idx) => {
                   return (
                     <Option key={idx} value={list._id}>
