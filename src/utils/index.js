@@ -48,7 +48,7 @@ export const randomText = length => {
   for (let i = 0; i < length; i++) {
     result += characters.charAt(Math.floor(Math.random() * charactersLength));
   }
-  return `employee_${result}`;
+  return result;
 };
 
 export const translateStatus = status => {

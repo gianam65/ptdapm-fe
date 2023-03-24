@@ -1,12 +1,6 @@
 import './header.scss';
 import { Dropdown, Modal, notification } from 'antd';
-import {
-  UserOutlined,
-  EllipsisOutlined,
-  FormOutlined,
-  SecurityScanOutlined,
-  SafetyCertificateOutlined
-} from '@ant-design/icons';
+import { EllipsisOutlined, FormOutlined, SecurityScanOutlined, SafetyCertificateOutlined } from '@ant-design/icons';
 import HomeIcon from '../svg/homeIcon';
 import { useRecoilValue, useRecoilState } from 'recoil';
 import {
@@ -20,7 +14,7 @@ import {
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useState, useRef, useEffect } from 'react';
 import CustomInput from '../custom-input/custom-input';
-import { getAPIHostName, convertRouteToVNS } from '../../utils';
+import { getAPIHostName, convertRouteToVNS, fallbackToDefaultAvatar } from '../../utils';
 import { httpPut, httpGet } from '../../services/request';
 
 const items = [
@@ -169,9 +163,7 @@ const Header = () => {
         {currentAccountAvatar || accountAvatar ? (
           <img src={currentAccountAvatar || accountAvatar} alt="account avatar" className="header__user-img" />
         ) : (
-          <div className="header__user-ava">
-            <UserOutlined />
-          </div>
+          <img src={fallbackToDefaultAvatar(accountAvatar)} alt="account__avatar" className="header__user-img" />
         )}
         <Dropdown
           overlayClassName="header__action-dropdown"
