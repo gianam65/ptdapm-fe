@@ -139,11 +139,8 @@ export default function ContractPage() {
     },
     {
       title: 'Chức vụ',
-      dataIndex: 'role',
-      key: 'role',
-      render: role => {
-        return role ? role : 'Giảng viên';
-      }
+      dataIndex: 'position',
+      key: 'position',
     },
     {
       title: 'Tên hợp đồng',
