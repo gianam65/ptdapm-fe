@@ -14,6 +14,7 @@
     .settings__action {
         cursor: pointer;
         display: block;
+        text-align: center;
         width: 100%;
         &:hover {
             .settings__down, .settings__up {

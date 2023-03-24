@@ -143,13 +143,13 @@ const SettingsPage = () => {
           onChange={e => setSearchValue(e.target.value)}
           className="department__search-inp"
         />
-        <Button
+        {/* <Button
           className="department__search-btn"
           // onClick={() => openModalUpSertDepartment()}
           rightIcon={<PlusOutlined />}
         >
           Thêm tài khoản
-        </Button>
+        </Button> */}
       </div>
       <Table
         dataSource={provideDataSource()}
