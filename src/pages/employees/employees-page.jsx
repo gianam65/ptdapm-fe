@@ -417,9 +417,6 @@ const EmployeesPage = () => {
       <div className="employees__action">
         <Search
           type="search"
-          style={{
-            width: 200
-          }}
           placeholder="Tìm kiếm"
           className="employees__search-inp"
           onChange={e => setTextSearch(e.target.value)}

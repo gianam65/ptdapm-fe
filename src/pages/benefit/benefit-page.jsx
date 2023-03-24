@@ -1,6 +1,6 @@
-import React, { useRef, useState } from 'react';
+import { useRef, useState } from 'react';
 import { useEffect } from 'react';
-import { Table, Popover, notification, Modal, Input, InputNumber, Select, Tooltip } from 'antd';
+import { Table, notification, Modal, Input, InputNumber, Select, Tooltip } from 'antd';
 import Button from '../../components/button/button';
 import './benefit-page.scss';
 import { httpGet, httpDelete, httpPost, httpPut } from '../../services/request';
@@ -9,7 +9,8 @@ import { useSetRecoilState, useRecoilValue } from 'recoil';
 import { loadingState } from '../../recoil/store/app';
 import CustomInput from '../../components/custom-input/custom-input';
 import { accessTokenState } from '../../recoil/store/account';
-import { ExclamationCircleFilled, PlusOutlined, MoreOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons';
+import { ExclamationCircleFilled, PlusOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons';
+import { removeTimeFromDate } from '../../utils';
 
 const { Search } = Input;
 const BenefitPage = () => {
@@ -37,8 +38,8 @@ const BenefitPage = () => {
   function SelectComponent() {
     return (
       <Select defaultValue="Active" style={{ width: 120 }} onChange={handleChange}>
-        <Option value="Active">Active</Option>
-        <Option value="Unactive">Unactive</Option>
+        <Option value="Active">Kích hoạt</Option>
+        <Option value="Unactive">Chưa kích hoạt</Option>
       </Select>
     );
   }
@@ -57,7 +58,7 @@ const BenefitPage = () => {
         })
         .catch(() => {
           notification.error({
-            title: 'Error',
+            title: 'Thất bại',
             message: 'Can not get benefit data'
           });
           setPageLoading(false);
@@ -147,74 +148,38 @@ const BenefitPage = () => {
     const month = benefitMonthRef.current.value;
     const status = selectedStatus;
     const url = `${getAPIHostName()}/benefits`;
-    console.log(name, description, standardLeave, month, status)
     httpPost(url, { name, description, standardLeave, month, status }, accessToken)
       .then(res => {
         if (res.success) {
-          console.log(res.data)
           setBenefitList(oldBenefitList => [res.data, ...oldBenefitList]);
 
           notification.success({
-            title: 'Success',
+            title: 'Thành công',
             message: 'Thêm quyền lợi thành công'
           });
           setOpenUpSertBenefit(false);
         } else {
           notification.error({
-            title: 'Error',
+            title: 'Thất bại',
             message: res.message || 'Thêm quyền lợi thất bại'
           });
         }
       })
       .catch(err => {
         notification.error({
-          title: 'Error',
+          title: 'Thất bại',
           message: err || 'Thêm quyền lợi thất bại'
         });
         setOpenUpSertBenefit(false);
       });
   };
-  // const content = id => {
-  //   return (
-  //     <div className="benefit__action-menu">
-  //       <Button className={'benefit__button'} onClick={() => openModalUpSertBenefit(id)}>
-  //         Sửa
-  //       </Button>
-  //       <Button className={'benefit__button'} onClick={() => showConfirm(id)}>
-  //         Xóa
-  //       </Button>
-  //     </div>
-  //   );
-  // };
+
   const columns = [
-    {
-      title: 'Hành động',
-      render: (_, item) => {
-        return (
-          <div className="benefit__action">
-            <div className="action__edit">
-              <Tooltip title="Sửa">
-                <EditOutlined onClick={() => openModalUpSertBenefit(item._id)} />
-              </Tooltip>
-            </div>
-            <div
-              className="action__delete"
-              onClick={() => {
-                showConfirm(item._id);
-              }}
-            >
-              <Tooltip title="Xoá">
-                <DeleteOutlined />
-              </Tooltip>
-            </div>
-          </div>
-        );
-      }
-    },
     {
       title: 'Tên',
       dataIndex: 'name',
-      key: 'name'
+      key: 'name',
+      width: 220
     },
     {
       title: 'Miêu tả',
@@ -236,7 +201,37 @@ const BenefitPage = () => {
       dataIndex: 'status',
       key: 'status'
     },
-
+    {
+      title: 'Ngày tạo',
+      dataIndex: 'createdAt',
+      key: 'createdAt',
+      render: data => <span>{removeTimeFromDate(data)}</span>
+    },
+    {
+      title: 'Hành động',
+      fixed: 'right',
+      render: (_, item) => {
+        return (
+          <div className="benefit__action">
+            <div className="action__edit">
+              <Tooltip title="Sửa">
+                <EditOutlined onClick={() => openModalUpSertBenefit(item._id)} />
+              </Tooltip>
+            </div>
+            <div
+              className="action__delete"
+              onClick={() => {
+                showConfirm(item._id);
+              }}
+            >
+              <Tooltip title="Xoá">
+                <DeleteOutlined />
+              </Tooltip>
+            </div>
+          </div>
+        );
+      }
+    }
   ];
 
   const getDataSource = () => {
@@ -282,8 +277,7 @@ const BenefitPage = () => {
             updateId ? handleUpdateBenefit(updateId) : hanldeAddBenefit();
           }}
           onCancel={() => setOpenUpSertBenefit(false)}
-
-          okText={updateId ? "Sửa" : "Thêm"}
+          okText={updateId ? 'Sửa' : 'Thêm'}
           cancelText="Huỷ"
         >
           <div className="benefit__modal-list">
@@ -314,7 +308,7 @@ const BenefitPage = () => {
           </div>
         </Modal>
       </div>
-    </div >
+    </div>
   );
 };
 
