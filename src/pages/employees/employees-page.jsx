@@ -1,5 +1,5 @@
 import './employees-page.scss';
-import { Table, notification, Modal, Tooltip, InputNumber, Select, Input, DatePicker } from 'antd';
+import { Table, notification, Modal, Tooltip, InputNumber, Select, Input, DatePicker, message } from 'antd';
 import { useEffect, useState, useRef } from 'react';
 import { httpGet, httpPost, httpDelete } from '../../services/request';
 import { getAPIHostName } from '../../utils';
@@ -432,6 +432,9 @@ const EmployeesPage = () => {
     );
   };
 
+
+
+
   return (
     <div className="employess__section">
       <div className="file__actions">
@@ -473,19 +476,19 @@ const EmployeesPage = () => {
         okText="Thêm"
         cancelText="Huỷ"
         open={isModalOpen}
-        onOk={() => handleAddEmployees()}
+        onOk={() => { handleAddEmployees() }}
         onCancel={() => setIsModalOpen(false)}
       >
         <div className="add_employees_modal">
           <div className="add__employees_left">
             <div className="add__employees-label">Tên:</div>
-            <CustomInput ref={employeesNameRef} placeholder="Tên nhân viên" />
+            <CustomInput maxLength={50} ref={employeesNameRef} placeholder="Tên nhân viên" />
             <div className="add__employees-label">Email:</div>
-            <CustomInput ref={employeesEmailRef} placeholder="Email" />
+            <CustomInput maxLength={50} type="email" ref={employeesEmailRef} placeholder="Email" />
             <div className="add__employees-label">Điện thoại:</div>
-            <CustomInput ref={employeesPhoneRef} placeholder="Điện thoại" />
+            <CustomInput type="number" maxLength={10} ref={employeesPhoneRef} placeholder="Điện thoại" />
             <div className="add__employees-label">Chức vụ:</div>
-            <CustomInput ref={employeesPositionRef} placeholder="Chức vụ" />
+            <CustomInput maxLength={50} ref={employeesPositionRef} placeholder="Chức vụ" />
             <div className="add__employees-selects">
               <Select onChange={value => setDepartment(value)} placeholder="Phòng ban" style={{ width: 120 }}>
                 {departmentList.map((list, idx) => {
@@ -518,9 +521,9 @@ const EmployeesPage = () => {
               </Option>
             </Select>
             <div className="add__employees-label">Mã nhân viên:</div>
-            <CustomInput ref={employeesCodeRef} placeholder="Mã nhân viên" value={randomText(6)} disabled />
+            <CustomInput maxLength={50} ref={employeesCodeRef} placeholder="Mã nhân viên" value={randomText(6)} disabled />
             <div className="add__employees-label">Địa chỉ: </div>
-            <CustomInput ref={employeesAddressRef} placeholder="Địa chỉ" />
+            <CustomInput maxLength={50} ref={employeesAddressRef} placeholder="Địa chỉ" />
             <div className="add__employees-label">Bậc lương: </div>
             <InputNumber type={'number'} defaultValue={salaryRanks} onChange={value => setSalaryRanks(value)} />
           </div>
@@ -539,18 +542,22 @@ const EmployeesPage = () => {
           <div className="add__employees_left">
             <div className="add__employees-label">Tên:</div>
             <CustomInput
+              maxLength={50}
               value={name || (getSelectedUser() && getSelectedUser().name)}
               onChange={e => setName(e.target.value)}
               placeholder="Tên nhân viên"
             />
             <div className="add__employees-label">Email:</div>
             <CustomInput
+              maxLength={50}
               value={email || (getSelectedUser() && getSelectedUser().email)}
               onChange={e => setEmail(e.target.value)}
               placeholder="Email"
             />
             <div className="add__employees-label">Điện thoại:</div>
             <CustomInput
+              maxLength={10}
+              type="number"
               value={phone || (getSelectedUser() && getSelectedUser().phoneNumber)}
               onChange={e => setPhone(e.target.value)}
               placeholder="Điện thoại"
