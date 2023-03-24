@@ -1,5 +1,5 @@
 import './employees-page.scss';
-import { Table, notification, Modal, Tooltip, InputNumber, Select, Input, DatePicker, message } from 'antd';
+import { Table, notification, Modal, Tooltip, InputNumber, Select, Input, DatePicker } from 'antd';
 import { useEffect, useState, useRef } from 'react';
 import { httpGet, httpPost, httpDelete } from '../../services/request';
 import { getAPIHostName } from '../../utils';
