@@ -1,5 +1,5 @@
 import { Chart } from 'react-chartjs-2';
-import { Button } from 'antd/es/radio';
+// import { Button } from 'antd/es/radio';
 import {
   BarElement,
   Chart as ChartJS,
@@ -50,7 +50,7 @@ const options = {
 export default function ReportPage() {
   const [reportList, setReportList] = useState([]);
   const setPageLoading = useSetRecoilState(loadingState);
-  const [type, setType] = useState('bar');
+  // const [type, setType] = useState('bar');
 
   useEffect(() => {
     const getEmployee = () => {
@@ -146,10 +146,10 @@ export default function ReportPage() {
 
   const data = {
     labels: seperateDataByDate().map(item => item.workingAt),
-    type: type,
+    type: 'bar',
     datasets: [
       {
-        type: type,
+        type: 'bar',
         label: 'Nhân viên',
         backgroundColor: 'rgb(54, 162, 235)',
         data: seperateDataByDate().map((_, key) => key),

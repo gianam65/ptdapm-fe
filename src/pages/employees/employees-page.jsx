@@ -13,6 +13,7 @@ import { accessTokenState } from '../../recoil/store/account';
 import { PlusOutlined, EditOutlined, DeleteOutlined, CloudUploadOutlined } from '@ant-design/icons';
 import Button from '../../components/button/button';
 import classNames from 'classnames';
+import dayjs from 'dayjs';
 
 const HEADERS = [
   { label: 'Tên nhân viên', key: 'name' },
@@ -43,6 +44,7 @@ const EmployeesPage = () => {
   const employeesEmailRef = useRef(null);
   const employeesPhoneRef = useRef(null);
   const employeesAddressRef = useRef(null);
+  const employeesPositionRef = useRef(null);
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [code, setCode] = useState('');
@@ -52,6 +54,7 @@ const EmployeesPage = () => {
   const [department, setDepartment] = useState();
   const [benefit, setBenefit] = useState();
   const [startDate, setStartDate] = useState();
+  const [position, setPosition] = useState();
   const [id, setID] = useState();
   const [textSearch, setTextSearch] = useState('');
   useEffect(() => {
@@ -150,9 +153,14 @@ const EmployeesPage = () => {
     const email = employeesEmailRef.current.input.value;
     const phoneNumber = employeesPhoneRef.current.input.value;
     const address = employeesAddressRef.current.input.value;
+    const position = employeesPositionRef.current.input.value;
     setPageLoading(true);
     const url = `${getAPIHostName()}/employees`;
-    httpPost(url, { name, codeEmployee, email, phoneNumber, gender: employeeGender, address, salaryRanks }, accessToken)
+    httpPost(
+      url,
+      { name, codeEmployee, email, phoneNumber, gender: employeeGender, address, salaryRanks, position },
+      accessToken
+    )
       .then(res => {
         if (res.success) {
           notification.success({
@@ -174,26 +182,38 @@ const EmployeesPage = () => {
       });
   };
 
-  const handleCodeEmployee = codeEmployee => {
+  const handleOpenUpdateModal = codeEmployee => {
     setCode(codeEmployee);
     setEditModalOpen(true);
+  };
+
+  const getSelectedUser = () => {
+    return listEmployees.find(emp => emp.codeEmployee === code);
   };
 
   const handleUpdateEmployees = () => {
     setPageLoading(true);
     const url = `${getAPIHostName()}/employees`;
     let buildBodyToUpdate = {
-      name: name,
-      email: email,
-      codeEmployee: code,
-      phoneNumber: phone,
-      gender: employeeGender,
-      address: address,
-      deparment: department,
-      benefit: benefit,
-      salaryRanks: salaryRanks,
-      startDate: startDate
+      name: name || (getSelectedUser() && getSelectedUser().name),
+      email: email || (getSelectedUser() && getSelectedUser().email),
+      codeEmployee: code || (getSelectedUser() && getSelectedUser().code),
+      phoneNumber: phone || (getSelectedUser() && getSelectedUser().phoneNumber),
+      gender: employeeGender || (getSelectedUser() && getSelectedUser().gender),
+      address: address || (getSelectedUser() && getSelectedUser().address),
+      salaryRanks: salaryRanks || (getSelectedUser() && getSelectedUser().salaryRank),
+      startDate:
+        convertDateStringToUnixDateTime(startDate) ||
+        convertDateStringToUnixDateTime(getSelectedUser() && getSelectedUser().startDate),
+      position: position || (getSelectedUser() && getSelectedUser().position)
     };
+    if (department) {
+      buildBodyToUpdate = { ...buildBodyToUpdate, department };
+    }
+    if (benefit) {
+      buildBodyToUpdate = { ...buildBodyToUpdate, benefit };
+    }
+
     httpPost(url, buildBodyToUpdate, accessToken)
       .then(res => {
         if (res.success) {
@@ -341,7 +361,7 @@ const EmployeesPage = () => {
       width: 120,
       render: (_, item) => (
         <div className="action manipulated__action employee__actions">
-          <div onClick={() => handleCodeEmployee(item.codeEmployee)} className="action__edit">
+          <div onClick={() => handleOpenUpdateModal(item.codeEmployee)} className="action__edit">
             <Tooltip title="Sửa">
               <EditOutlined />
             </Tooltip>
@@ -415,9 +435,6 @@ const EmployeesPage = () => {
       <div className="employees__action">
         <Search
           type="search"
-          style={{
-            width: 200
-          }}
           placeholder="Tìm kiếm"
           className="employees__search-inp"
           onChange={e => setTextSearch(e.target.value)}
@@ -452,6 +469,8 @@ const EmployeesPage = () => {
             <CustomInput ref={employeesEmailRef} placeholder="Email" />
             <div className="add__employees-label">Điện thoại:</div>
             <CustomInput ref={employeesPhoneRef} placeholder="Điện thoại" />
+            <div className="add__employees-label">Chức vụ:</div>
+            <CustomInput ref={employeesPositionRef} placeholder="Chức vụ" />
             <div className="add__employees-selects">
               <Select placeholder="Phòng ban" style={{ width: 120 }}>
                 {departmentList.map((list, idx) => {
@@ -504,14 +523,33 @@ const EmployeesPage = () => {
         <div className="update__emp-container">
           <div className="add__employees_left">
             <div className="add__employees-label">Tên:</div>
-            <CustomInput onChange={e => setName(e.target.value)} placeholder="Tên nhân viên" />
+            <CustomInput
+              value={name || (getSelectedUser() && getSelectedUser().name)}
+              onChange={e => setName(e.target.value)}
+              placeholder="Tên nhân viên"
+            />
             <div className="add__employees-label">Email:</div>
-            <CustomInput onChange={e => setEmail(e.target.value)} placeholder="Email" />
+            <CustomInput
+              value={email || (getSelectedUser() && getSelectedUser().email)}
+              onChange={e => setEmail(e.target.value)}
+              placeholder="Email"
+            />
             <div className="add__employees-label">Điện thoại:</div>
-            <CustomInput onChange={e => setPhone(e.target.value)} placeholder="Điện thoại" />
+            <CustomInput
+              value={phone || (getSelectedUser() && getSelectedUser().phoneNumber)}
+              onChange={e => setPhone(e.target.value)}
+              placeholder="Điện thoại"
+            />
+            <div className="add__employees-label">Chức vụ:</div>
+            <CustomInput
+              value={position || (getSelectedUser() && getSelectedUser().position)}
+              onChange={e => setPosition(e.target.value)}
+              placeholder="Chức vụ"
+            />
             <div className="add__employees-label">Ngày bắt đầu:</div>
             <DatePicker
               size={'middle'}
+              value={dayjs((getSelectedUser() && getSelectedUser().startDate) || startDate, 'YYYY-MM-DD')}
               format="YYYY-MM-DD HH:mm"
               onChange={(_, dateString) => {
                 const unixDateTime = convertDateStringToUnixDateTime(dateString);
@@ -521,7 +559,11 @@ const EmployeesPage = () => {
           </div>
           <div className="add__employees_right">
             <div className="add__employees-label">Giới tính:</div>
-            <Select placeholder="Giới tính" onChange={e => setEmployeeGender(e)}>
+            <Select
+              placeholder="Giới tính"
+              value={employeeGender || (getSelectedUser() && getSelectedUser().gender)}
+              onChange={e => setEmployeeGender(e)}
+            >
               <Option key={'male__gender'} value={'nam'}>
                 Nam
               </Option>
@@ -530,9 +572,18 @@ const EmployeesPage = () => {
               </Option>
             </Select>
             <div className="add__employees-label">Địa chỉ: </div>
-            <CustomInput onChange={e => setAddress(e.target.value)} placeholder="Địa chỉ" />
+            <CustomInput
+              value={address || (getSelectedUser() && getSelectedUser().address)}
+              onChange={e => setAddress(e.target.value)}
+              placeholder="Địa chỉ"
+            />
             <div className="add__employees-label">Bậc lương: </div>
-            <InputNumber onChange={value => setSalaryRanks(value)} type={'number'} defaultValue={salaryRanks} />
+            <InputNumber
+              value={salaryRanks || (getSelectedUser() && getSelectedUser().salaryRank)}
+              onChange={value => setSalaryRanks(value)}
+              type={'number'}
+              defaultValue={salaryRanks}
+            />
             <div className="add__employees-selects">
               <Select onChange={value => setDepartment(value)} placeholder="Phòng ban" style={{ width: 120 }}>
                 {departmentList.map((list, idx) => {

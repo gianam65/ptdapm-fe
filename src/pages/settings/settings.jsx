@@ -6,10 +6,13 @@ import { loadingState } from '../../recoil/store/app';
 import { accessTokenState } from '../../recoil/store/account';
 import { useSetRecoilState, useRecoilValue } from 'recoil';
 import { Table, Tooltip, Modal, notification } from 'antd';
-import { DoubleRightOutlined, PlusOutlined } from '@ant-design/icons';
+import {
+  DoubleRightOutlined
+  // , PlusOutlined
+} from '@ant-design/icons';
 import classNames from 'classnames';
 import CustomInput from '../../components/custom-input/custom-input';
-import Button from '../../components/button/button';
+// import Button from '../../components/button/button';
 
 const SettingsPage = () => {
   const [users, setUsers] = useState([]);
@@ -143,13 +146,13 @@ const SettingsPage = () => {
           onChange={e => setSearchValue(e.target.value)}
           className="department__search-inp"
         />
-        <Button
+        {/* <Button
           className="department__search-btn"
           // onClick={() => openModalUpSertDepartment()}
           rightIcon={<PlusOutlined />}
         >
           Thêm tài khoản
-        </Button>
+        </Button> */}
       </div>
       <Table
         dataSource={provideDataSource()}
