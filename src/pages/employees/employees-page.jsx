@@ -57,7 +57,6 @@ const EmployeesPage = () => {
   const [position, setPosition] = useState();
   const [id, setID] = useState();
   const [textSearch, setTextSearch] = useState('');
-  const [message, setMessage] = useState()
   useEffect(() => {
     Promise.all([fetchEmployees(activePage), getDepartment(), getBenefit()]);
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -462,13 +461,7 @@ const EmployeesPage = () => {
         okText="Thêm"
         cancelText="Huỷ"
         open={isModalOpen}
-        onOk={() => {
-          if (!email) {
-            setMessage("email không đúng")
-          } else {
-            handleAddEmployees()
-          }
-        }}
+        onOk={() => { handleAddEmployees() }}
         onCancel={() => setIsModalOpen(false)}
       >
         <div className="add_employees_modal">
