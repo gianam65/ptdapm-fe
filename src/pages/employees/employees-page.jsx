@@ -201,7 +201,7 @@ const EmployeesPage = () => {
   const handleUpdateEmployees = () => {
     setPageLoading(true);
     const url = `${getAPIHostName()}/employees?department=${
-      department || (getSelectedUser() && getSelectedUser().departMentId[0]._id)
+      department || (getSelectedUser() && getSelectedUser().departMentId[0]?._id)
     }&benefit=${benefit || (getSelectedUser() && getSelectedUser().benefitId[0])}`;
     let buildBodyToUpdate = {
       name: name || (getSelectedUser() && getSelectedUser().name),
