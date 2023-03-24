@@ -590,7 +590,7 @@ const EmployeesPage = () => {
             />
             <div className="add__employees-selects">
               <Select
-                value={department || (getSelectedUser() && getSelectedUser().departMentId[0]._id)}
+                value={department || (getSelectedUser() && getSelectedUser().departMentId[0]?._id)}
                 onChange={value => setDepartment(value)}
                 placeholder="Phòng ban"
                 style={{ width: 120 }}
