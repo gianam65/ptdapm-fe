@@ -19,7 +19,7 @@ const BenefitPage = () => {
   const [searchValue, setSearchValue] = useState('');
   const [selectedStatus, setSelectedStatus] = useState('Active');
   const [isLoadingTable, setIsLoadingTable] = useState(false);
-
+  const [benefitInfor,setBenefitInfor] = useState({})
   const setPageLoading = useSetRecoilState(loadingState);
   const accessToken = useRecoilValue(accessTokenState);
 
@@ -68,8 +68,10 @@ const BenefitPage = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const openModalUpSertBenefit = id => {
-    setUpdateId(id);
+  const openModalUpSertBenefit = item => {
+    console.log(item)
+    setBenefitInfor(item)
+    setUpdateId(item?._id);
     setOpenUpSertBenefit(true);
   };
 
@@ -172,13 +174,13 @@ const BenefitPage = () => {
         setOpenUpSertBenefit(false);
       });
   };
-  const content = id => {
+  const content = item => {
     return (
       <div className="benefit__action-menu">
-        <Button className={'benefit__button'} onClick={() => openModalUpSertBenefit(id)}>
+        <Button className={'benefit__button'} onClick={() => openModalUpSertBenefit(item)}>
           Sửa
         </Button>
-        <Button className={'benefit__button'} onClick={() => showConfirm(id)}>
+        <Button className={'benefit__button'} onClick={() => showConfirm(item._id)}>
           Xóa
         </Button>
       </div>
@@ -215,7 +217,7 @@ const BenefitPage = () => {
       render: (_, item) => {
         return (
           <div className="benefit__action">
-            <Popover placement="topLeft" content={content(item._id)} trigger="click" onClick={() => {}}>
+            <Popover placement="topLeft" content={content(item)} trigger="click" onClick={() => {}}>
               <MoreOutlined />
             </Popover>
           </div>
@@ -273,21 +275,21 @@ const BenefitPage = () => {
             <div className="benefit__modal-left">
               <div id="benefit__modal-name" className="benefit__modal-item">
                 <div className="benefit__modal-label">Name:</div>
-                <CustomInput ref={benefitNameRef} placeholder="Enter benefit name" />
+                <CustomInput  value={benefitInfor?.name}  ref={benefitNameRef} placeholder="Enter benefit name" />
               </div>
               <div id="benefit__modal-description" className="benefit__modal-item">
                 <div className="benefit__modal-label">Description:</div>
-                <CustomInput ref={benefitDescriptionRef} placeholder="Enter description" />
+                <CustomInput value={benefitInfor?.description} ref={benefitDescriptionRef} placeholder="Enter description" />
               </div>
             </div>
             <div className="benefit__modal-right">
               <div id="benefit__modal-standard" className="benefit__modal-item">
                 <div className="benefit__modal-label">Standard Leave:</div>
-                <InputNumber ref={benefitStandardRef} style={{ width: 120 }} />
+                <InputNumber value={benefitInfor?.standardLeave} ref={benefitStandardRef} style={{ width: 120 }} />
               </div>
               <div id="benefit__modal-month" className="benefit__modal-item">
                 <div className="benefit__modal-label">Month:</div>
-                <InputNumber ref={benefitMonthRef} style={{ width: 120 }} min={1} />
+                <InputNumber value={benefitInfor?.month} ref={benefitMonthRef} style={{ width: 120 }} min={1} />
               </div>
               <div id="benefit__modal-status" className="benefit__modal-item">
                 <div className="benefit__modal-label">Status:</div>

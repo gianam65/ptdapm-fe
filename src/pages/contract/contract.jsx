@@ -18,7 +18,7 @@ export default function ContractPage() {
   const [listcontract, setListContract] = useState([]);
   const setPageLoading = useSetRecoilState(loadingState);
   const [listEmployees, setListEmployees] = useState([]);
-
+  
   const handleChangeContractDate = (_, dateString) => {
     setContractInfor({ ...contractInfor, contract_date: dateString });
   };
@@ -191,11 +191,8 @@ export default function ContractPage() {
     },
     {
       title: 'Chức vụ',
-      dataIndex: 'role',
-      key: 'role',
-      render: role => {
-        return role ? role : 'Giảng viên';
-      }
+      dataIndex: 'position',
+      key: 'position',
     },
     {
       title: 'Tên hợp đồng',
