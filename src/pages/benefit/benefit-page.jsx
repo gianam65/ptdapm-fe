@@ -70,9 +70,14 @@ const BenefitPage = () => {
   }, []);
 
   const openModalUpSertBenefit = item => {
-    console.log(item)
+    console.log("openModalUpSertBenefit",item)
     setBenefitInfor(item)
     setUpdateId(item._id);
+    benefitNameRef.current = item.name
+    benefitDescriptionRef.current = item.description
+    benefitStandardRef.current = item.standardLeave
+    benefitMonthRef.current = item.month
+
     setOpenUpSertBenefit(true);
   };
 
@@ -286,21 +291,21 @@ const BenefitPage = () => {
             <div className="benefit__modal-left">
               <div id="benefit__modal-name" className="benefit__modal-item">
                 <div className="benefit__modal-label">Tên quyền lợi:</div>
-                <CustomInput value={benefitInfor.name} ref={benefitNameRef} placeholder="Enter benefit name" />
+                <CustomInput ref={benefitNameRef} placeholder="Enter benefit name" />
               </div>
               <div id="benefit__modal-description" className="benefit__modal-item">
                 <div className="benefit__modal-label">Mô tả:</div>
-                <CustomInput value={benefitInfor.description} ref={benefitDescriptionRef} placeholder="Enter description" />
+                <CustomInput ref={benefitDescriptionRef} placeholder="Enter description" />
               </div>
             </div>
             <div className="benefit__modal-right">
               <div id="benefit__modal-standard" className="benefit__modal-item">
                 <div className="benefit__modal-label">Tiêu chuẩn:</div>
-                <InputNumber value={benefitInfor.standardLeave} ref={benefitStandardRef} style={{ width: 120 }} />
+                <InputNumber ref={benefitStandardRef} style={{ width: 120 }} />
               </div>
               <div id="benefit__modal-month" className="benefit__modal-item">
                 <div className="benefit__modal-label">Tháng:</div>
-                <InputNumber value={benefitInfor.month} ref={benefitMonthRef} style={{ width: 120 }} min={1} />
+                <InputNumber ref={benefitMonthRef} style={{ width: 120 }} min={1} />
               </div>
               <div id="benefit__modal-status" className="benefit__modal-item">
                 <div className="benefit__modal-label">Trạng thái:</div>
