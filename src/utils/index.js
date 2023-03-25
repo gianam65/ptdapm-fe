@@ -64,7 +64,7 @@ export const translateStatus = status => {
       return 'Đã ký';
     case 'pending':
       return 'Đang chờ';
-    case 'cancel':
+    case 'cancelled':
       return 'Đã huỷ';
     default:
       return 'Làm việc tại trường';
