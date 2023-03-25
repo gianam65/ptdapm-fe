@@ -20,7 +20,7 @@ const BenefitPage = () => {
   const [searchValue, setSearchValue] = useState('');
   const [selectedStatus, setSelectedStatus] = useState('Active');
   const [isLoadingTable, setIsLoadingTable] = useState(false);
-
+  const [benefitInfor,setBenefitInfor] = useState({})
   const setPageLoading = useSetRecoilState(loadingState);
   const accessToken = useRecoilValue(accessTokenState);
 
@@ -69,8 +69,10 @@ const BenefitPage = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const openModalUpSertBenefit = id => {
-    setUpdateId(id);
+  const openModalUpSertBenefit = item => {
+    console.log(item)
+    setBenefitInfor(item)
+    setUpdateId(item._id);
     setOpenUpSertBenefit(true);
   };
 
@@ -215,7 +217,7 @@ const BenefitPage = () => {
           <div className="benefit__action">
             <div className="action__edit">
               <Tooltip title="Sửa">
-                <EditOutlined onClick={() => openModalUpSertBenefit(item._id)} />
+                <EditOutlined onClick={() => openModalUpSertBenefit(item)} />
               </Tooltip>
             </div>
             <div
@@ -284,21 +286,21 @@ const BenefitPage = () => {
             <div className="benefit__modal-left">
               <div id="benefit__modal-name" className="benefit__modal-item">
                 <div className="benefit__modal-label">Tên quyền lợi:</div>
-                <CustomInput ref={benefitNameRef} placeholder="Enter benefit name" />
+                <CustomInput value={benefitInfor.name} ref={benefitNameRef} placeholder="Enter benefit name" />
               </div>
               <div id="benefit__modal-description" className="benefit__modal-item">
                 <div className="benefit__modal-label">Mô tả:</div>
-                <CustomInput ref={benefitDescriptionRef} placeholder="Enter description" />
+                <CustomInput value={benefitInfor.description} ref={benefitDescriptionRef} placeholder="Enter description" />
               </div>
             </div>
             <div className="benefit__modal-right">
               <div id="benefit__modal-standard" className="benefit__modal-item">
                 <div className="benefit__modal-label">Tiêu chuẩn:</div>
-                <InputNumber ref={benefitStandardRef} style={{ width: 120 }} />
+                <InputNumber value={benefitInfor.standardLeave} ref={benefitStandardRef} style={{ width: 120 }} />
               </div>
               <div id="benefit__modal-month" className="benefit__modal-item">
                 <div className="benefit__modal-label">Tháng:</div>
-                <InputNumber ref={benefitMonthRef} style={{ width: 120 }} min={1} />
+                <InputNumber value={benefitInfor.month} ref={benefitMonthRef} style={{ width: 120 }} min={1} />
               </div>
               <div id="benefit__modal-status" className="benefit__modal-item">
                 <div className="benefit__modal-label">Trạng thái:</div>
