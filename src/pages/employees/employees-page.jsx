@@ -1,5 +1,5 @@
 import './employees-page.scss';
-import { Table, notification, Modal, Tooltip, InputNumber, Select, Input, DatePicker, message } from 'antd';
+import { Table, notification, Modal, Tooltip, InputNumber, Select, Input, DatePicker } from 'antd';
 import { useEffect, useState, useRef } from 'react';
 import { httpGet, httpPost, httpDelete } from '../../services/request';
 import { getAPIHostName } from '../../utils';
@@ -13,7 +13,6 @@ import { accessTokenState } from '../../recoil/store/account';
 import { PlusOutlined, EditOutlined, DeleteOutlined, CloudUploadOutlined } from '@ant-design/icons';
 import Button from '../../components/button/button';
 import classNames from 'classnames';
-import dayjs from 'dayjs';
 import moment from 'moment';
 
 const HEADERS = [
@@ -432,9 +431,6 @@ const EmployeesPage = () => {
     );
   };
 
-
-
-
   return (
     <div className="employess__section">
       <div className="file__actions">
@@ -476,7 +472,9 @@ const EmployeesPage = () => {
         okText="Thêm"
         cancelText="Huỷ"
         open={isModalOpen}
-        onOk={() => { handleAddEmployees() }}
+        onOk={() => {
+          handleAddEmployees();
+        }}
         onCancel={() => setIsModalOpen(false)}
       >
         <div className="add_employees_modal">
@@ -521,7 +519,13 @@ const EmployeesPage = () => {
               </Option>
             </Select>
             <div className="add__employees-label">Mã nhân viên:</div>
-            <CustomInput maxLength={50} ref={employeesCodeRef} placeholder="Mã nhân viên" value={randomText(6)} disabled />
+            <CustomInput
+              maxLength={50}
+              ref={employeesCodeRef}
+              placeholder="Mã nhân viên"
+              value={randomText(6)}
+              disabled
+            />
             <div className="add__employees-label">Địa chỉ: </div>
             <CustomInput maxLength={50} ref={employeesAddressRef} placeholder="Địa chỉ" />
             <div className="add__employees-label">Bậc lương: </div>
