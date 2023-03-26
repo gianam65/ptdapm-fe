@@ -20,7 +20,7 @@ const BenefitPage = () => {
   const [searchValue, setSearchValue] = useState('');
   const [selectedStatus, setSelectedStatus] = useState('Active');
   const [isLoadingTable, setIsLoadingTable] = useState(false);
-
+  const [benefitInfor,setBenefitInfor] = useState({})
   const setPageLoading = useSetRecoilState(loadingState);
   const accessToken = useRecoilValue(accessTokenState);
 
@@ -69,8 +69,15 @@ const BenefitPage = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const openModalUpSertBenefit = id => {
-    setUpdateId(id);
+  const openModalUpSertBenefit = item => {
+    console.log("openModalUpSertBenefit",item)
+    setBenefitInfor(item)
+    setUpdateId(item._id);
+    benefitNameRef.current = item.name
+    benefitDescriptionRef.current = item.description
+    benefitStandardRef.current = item.standardLeave
+    benefitMonthRef.current = item.month
+
     setOpenUpSertBenefit(true);
   };
 
@@ -215,7 +222,7 @@ const BenefitPage = () => {
           <div className="benefit__action">
             <div className="action__edit">
               <Tooltip title="Sửa">
-                <EditOutlined onClick={() => openModalUpSertBenefit(item._id)} />
+                <EditOutlined onClick={() => openModalUpSertBenefit(item)} />
               </Tooltip>
             </div>
             <div
