@@ -2,8 +2,7 @@ import defaultAvatar from '../assets/images/default_avatar.jpg';
 import process from 'process/browser';
 
 export const getAPIHostName = () => {
-  // setup env please
-  return process.env.NODE_ENV !== 'development' ? 'http://localhost:8001/api/v1' : 'http://manhpham.site:8001/api/v1';
+  return process.env.NODE_ENV === 'development' ? 'http://localhost:8001/api/v1' : 'http://manhpham.site:8001/api/v1';
 };
 
 export const normalizeDate = date => {
@@ -63,7 +62,7 @@ export const translateStatus = status => {
       return 'Đã ký';
     case 'pending':
       return 'Đang chờ';
-    case 'cancel':
+    case 'cancelled':
       return 'Đã huỷ';
     default:
       return 'Làm việc tại trường';

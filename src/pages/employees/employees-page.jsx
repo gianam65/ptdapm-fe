@@ -13,7 +13,7 @@ import { accessTokenState } from '../../recoil/store/account';
 import { PlusOutlined, EditOutlined, DeleteOutlined, CloudUploadOutlined } from '@ant-design/icons';
 import Button from '../../components/button/button';
 import classNames from 'classnames';
-import dayjs from 'dayjs';
+import moment from 'moment';
 
 const HEADERS = [
   { label: 'Tên nhân viên', key: 'name' },
@@ -51,17 +51,16 @@ const EmployeesPage = () => {
   const [phone, setPhone] = useState('');
   const [address, setAddress] = useState('');
   const [salaryRanks, setSalaryRanks] = useState(1);
-  const [department, setDepartment] = useState();
-  const [benefit, setBenefit] = useState();
+  const [department, setDepartment] = useState('');
+  const [benefit, setBenefit] = useState('');
   const [startDate, setStartDate] = useState();
   const [position, setPosition] = useState();
   const [id, setID] = useState();
   const [textSearch, setTextSearch] = useState('');
-  const [number, setNumber] = useState("")
   useEffect(() => {
     Promise.all([fetchEmployees(activePage), getDepartment(), getBenefit()]);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [textSearch]);
 
   const getBenefit = () => {
     const url = `${getAPIHostName()}/benefits`;
@@ -82,6 +81,8 @@ const EmployeesPage = () => {
         setPageLoading(false);
       });
   };
+
+  console.log(textSearch);
 
   const getDepartment = () => {
     const url = `${getAPIHostName()}/departments`;
@@ -133,19 +134,46 @@ const EmployeesPage = () => {
 
   const fetchEmployees = activePage => {
     setPageLoading(true);
-    const url = `${getAPIHostName()}/employees`;
+    const url = `${getAPIHostName()}/employees?text=${textSearch ? textSearch : ''}`;
     httpGet(url)
       .then(res => {
         if (res.success) {
-          const { employeeList } = res.data;
+          const { employeeList, totalEmployee } = res.data;
           setListEmployees(employeeList);
           setActivePage(activePage);
+          console.log(totalEmployee);
         }
         setPageLoading(false);
       })
       .catch(() => {
         setPageLoading(false);
       });
+  };
+
+  const clearData = () => {
+    employeesNameRef.current.input.value.reset();
+    employeesCodeRef.current.input.value.reset();
+    employeesEmailRef.current.input.value.reset();
+    employeesAddressRef.current.input.value.reset();
+    employeesPhoneRef.current.input.value.reset();
+    employeesPositionRef.current.input.value.reset();
+    setEmployeeGender('');
+    setSalaryRanks(1);
+    setDepartment('');
+    setBenefit('');
+  };
+
+  const clearDataUpdate = () => {
+    setName('');
+    setEmail('');
+    setPhone('');
+    setPosition('');
+    setStartDate('');
+    setEmployeeGender('');
+    setAddress('');
+    setSalaryRanks('');
+    setDepartment('');
+    setPosition('');
   };
 
   const handleAddEmployees = () => {
@@ -156,7 +184,7 @@ const EmployeesPage = () => {
     const address = employeesAddressRef.current.input.value;
     const position = employeesPositionRef.current.input.value;
     setPageLoading(true);
-    const url = `${getAPIHostName()}/employees`;
+    const url = `${getAPIHostName()}/employees?department=${department}&benefit=${benefit}`;
     httpPost(
       url,
       { name, codeEmployee, email, phoneNumber, gender: employeeGender, address, salaryRanks, position },
@@ -170,6 +198,7 @@ const EmployeesPage = () => {
           });
           fetchEmployees();
           setIsModalOpen(false);
+          clearData();
         } else {
           notification.error({
             title: 'Thất bại',
@@ -194,7 +223,9 @@ const EmployeesPage = () => {
 
   const handleUpdateEmployees = () => {
     setPageLoading(true);
-    const url = `${getAPIHostName()}/employees`;
+    const url = `${getAPIHostName()}/employees?department=${
+      department || (getSelectedUser() && getSelectedUser().departMentId[0]?._id)
+    }&benefit=${benefit || (getSelectedUser() && getSelectedUser().benefitId[0])}`;
     let buildBodyToUpdate = {
       name: name || (getSelectedUser() && getSelectedUser().name),
       email: email || (getSelectedUser() && getSelectedUser().email),
@@ -202,18 +233,12 @@ const EmployeesPage = () => {
       phoneNumber: phone || (getSelectedUser() && getSelectedUser().phoneNumber),
       gender: employeeGender || (getSelectedUser() && getSelectedUser().gender),
       address: address || (getSelectedUser() && getSelectedUser().address),
-      salaryRanks: salaryRanks || (getSelectedUser() && getSelectedUser().salaryRank),
+      salaryRank: salaryRanks || (getSelectedUser() && getSelectedUser().salaryRank),
       startDate:
         convertDateStringToUnixDateTime(startDate) ||
         convertDateStringToUnixDateTime(getSelectedUser() && getSelectedUser().startDate),
       position: position || (getSelectedUser() && getSelectedUser().position)
     };
-    if (department) {
-      buildBodyToUpdate = { ...buildBodyToUpdate, department };
-    }
-    if (benefit) {
-      buildBodyToUpdate = { ...buildBodyToUpdate, benefit };
-    }
 
     httpPost(url, buildBodyToUpdate, accessToken)
       .then(res => {
@@ -223,6 +248,7 @@ const EmployeesPage = () => {
             message: 'Cập nhật nhân viên thành công'
           });
           setEditModalOpen(false);
+          clearDataUpdate();
           fetchEmployees();
         } else {
           notification.error({
@@ -262,27 +288,6 @@ const EmployeesPage = () => {
         setPageLoading(false);
       });
   };
-
-  // Hàm này sửa sau, data chưa nhiều nên k cần search trên DB
-  // const fetchSearchEmployees = activePage => {
-  //   setPageLoading(true);
-  //   const url = `${getAPIHostName()}/employees?text=${textSearch}&is_deleted=false&page=${activePage}`;
-  //   httpGet(url, accessToken)
-  //     .then(res => {
-  //       if (res.success) {
-  //         const { employeeList } = res.data;
-  //         setListEmployees(employeeList);
-  //       } else {
-  //         notification.error({
-  //           title: 'Error'
-  //         });
-  //       }
-  //       setPageLoading(false);
-  //     })
-  //     .catch(() => {
-  //       setPageLoading(false);
-  //     });
-  // };
 
   const columns = [
     {
@@ -326,6 +331,27 @@ const EmployeesPage = () => {
       width: 100,
       render: salaryRank => <span className="employee__salary">{salaryRank}</span>
     },
+    // {
+    //   title: 'Phòng Ban',
+    //   key: 'department',
+    //   dataIndex: 'department',
+    //   width: 150,
+    //   render: deparment => <span className="employee__salary">{department}</span>
+    // },
+    {
+      title: 'Chức vụ',
+      key: 'position',
+      dataIndex: 'position',
+      width: 150,
+      render: item => item
+    },
+    {
+      title: 'Ngày làm việc',
+      key: 'startDate',
+      dataIndex: 'startDate',
+      width: 150,
+      render: startDate => <span className="employee__birthday">{removeTimeFromDate(startDate)}</span>
+    },
     {
       title: 'Tình trạng hoạt động',
       key: 'status',
@@ -342,20 +368,6 @@ const EmployeesPage = () => {
           {translateStatus(status)}
         </span>
       )
-    },
-    {
-      title: 'Chức vụ',
-      key: 'position',
-      dataIndex: 'position',
-      width: 150,
-      render: item => item
-    },
-    {
-      title: 'Ngày làm việc',
-      key: 'startDate',
-      dataIndex: 'startDate',
-      width: 150,
-      render: startDate => <span className="employee__birthday">{removeTimeFromDate(startDate)}</span>
     },
     {
       title: 'Hành động',
@@ -417,10 +429,8 @@ const EmployeesPage = () => {
         item.code?.indexOf(textSearch) >= 0
     );
   };
-  
-  const restrictAlphabets = (e) => {
-    setNumber(e.target.value.replace(/\D/g, ''))
-  }
+
+
 
 
   return (
@@ -443,7 +453,7 @@ const EmployeesPage = () => {
           type="search"
           placeholder="Tìm kiếm"
           className="employees__search-inp"
-          onChange={e => setTextSearch(e.target.value)}
+          onSearch={value => setTextSearch(value)}
         />
         <Button className="employees__search-btn" rightIcon={<PlusOutlined />} onClick={() => setIsModalOpen(true)}>
           Thêm nhân viên
@@ -464,7 +474,9 @@ const EmployeesPage = () => {
         okText="Thêm"
         cancelText="Huỷ"
         open={isModalOpen}
-        onOk={() => { handleAddEmployees() }}
+        onOk={() => {
+          handleAddEmployees();
+        }}
         onCancel={() => setIsModalOpen(false)}
       >
         <div className="add_employees_modal">
@@ -478,7 +490,7 @@ const EmployeesPage = () => {
             <div className="add__employees-label">Chức vụ:</div>
             <CustomInput maxLength={50} ref={employeesPositionRef} placeholder="Chức vụ" />
             <div className="add__employees-selects">
-              <Select placeholder="Phòng ban" style={{ width: 120 }}>
+              <Select onChange={value => setDepartment(value)} placeholder="Phòng ban" style={{ width: 120 }}>
                 {departmentList.map((list, idx) => {
                   return (
                     <Option key={idx} value={list._id}>
@@ -487,7 +499,7 @@ const EmployeesPage = () => {
                   );
                 })}
               </Select>
-              <Select placeholder="Quyền lợi" style={{ width: 120 }}>
+              <Select onChange={value => setBenefit(value)} placeholder="Quyền lợi" style={{ width: 120 }}>
                 {benefitList.map((list, idx) => {
                   return (
                     <Option key={idx} value={list._id}>
@@ -509,7 +521,13 @@ const EmployeesPage = () => {
               </Option>
             </Select>
             <div className="add__employees-label">Mã nhân viên:</div>
-            <CustomInput maxLength={50} ref={employeesCodeRef} placeholder="Mã nhân viên" value={randomText(6)} disabled />
+            <CustomInput
+              maxLength={50}
+              ref={employeesCodeRef}
+              placeholder="Mã nhân viên"
+              value={randomText(6)}
+              disabled
+            />
             <div className="add__employees-label">Địa chỉ: </div>
             <CustomInput maxLength={50} ref={employeesAddressRef} placeholder="Địa chỉ" />
             <div className="add__employees-label">Bậc lương: </div>
@@ -558,13 +576,14 @@ const EmployeesPage = () => {
             />
             <div className="add__employees-label">Ngày bắt đầu:</div>
             <DatePicker
+              defaultValue={moment(getSelectedUser() && getSelectedUser().startDate)}
               size={'middle'}
-              value={dayjs((getSelectedUser() && getSelectedUser().startDate) || startDate, 'YYYY-MM-DD')}
               format="YYYY-MM-DD HH:mm"
-              onChange={(_, dateString) => {
-                const unixDateTime = convertDateStringToUnixDateTime(dateString);
-                setStartDate(unixDateTime);
-              }}
+              // onChange={(_, dateString) => {
+              //   const unixDateTime = convertDateStringToUnixDateTime(dateString);
+              //   setStartDate(unixDateTime);
+              // }}
+              onChange={dateString => setStartDate(dateString)}
             />
           </div>
           <div className="add__employees_right">
@@ -595,7 +614,12 @@ const EmployeesPage = () => {
               defaultValue={salaryRanks}
             />
             <div className="add__employees-selects">
-              <Select onChange={value => setDepartment(value)} placeholder="Phòng ban" style={{ width: 120 }}>
+              <Select
+                value={department || (getSelectedUser() && getSelectedUser().departMentId[0]?._id)}
+                onChange={value => setDepartment(value)}
+                placeholder="Phòng ban"
+                style={{ width: 120 }}
+              >
                 {departmentList.map((list, idx) => {
                   return (
                     <Option key={idx} value={list._id}>
@@ -604,7 +628,12 @@ const EmployeesPage = () => {
                   );
                 })}
               </Select>
-              <Select onChange={value => setBenefit(value)} placeholder="Quyền lợi" style={{ width: 120 }}>
+              <Select
+                value={benefit || (getSelectedUser() && getSelectedUser()?.benefitId[0])}
+                onChange={value => setBenefit(value)}
+                placeholder="Quyền lợi"
+                style={{ width: 120 }}
+              >
                 {benefitList.map((list, idx) => {
                   return (
                     <Option key={idx} value={list._id}>
