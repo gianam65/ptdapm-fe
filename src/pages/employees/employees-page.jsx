@@ -57,6 +57,7 @@ const EmployeesPage = () => {
   const [position, setPosition] = useState();
   const [id, setID] = useState();
   const [textSearch, setTextSearch] = useState('');
+  const [number, setNumber] = useState('')
   useEffect(() => {
     Promise.all([fetchEmployees(activePage), getDepartment(), getBenefit()]);
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -430,7 +431,9 @@ const EmployeesPage = () => {
     );
   };
 
-
+  const restrictAlphabets = (e) => {
+    setNumber(e.target.value.replace(/\D/g, ''))
+  }
 
 
   return (
