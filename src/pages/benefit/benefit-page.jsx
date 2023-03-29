@@ -20,7 +20,7 @@ const BenefitPage = () => {
   const [searchValue, setSearchValue] = useState('');
   const [selectedStatus, setSelectedStatus] = useState('Active');
   const [isLoadingTable, setIsLoadingTable] = useState(false);
-  const [benefitInfor,setBenefitInfor] = useState({})
+  const [benefitInfor, setBenefitInfor] = useState({});
   const setPageLoading = useSetRecoilState(loadingState);
   const accessToken = useRecoilValue(accessTokenState);
 
@@ -70,8 +70,7 @@ const BenefitPage = () => {
   }, []);
 
   const openModalUpSertBenefit = item => {
-    console.log(item)
-    setBenefitInfor(item)
+    setBenefitInfor(item);
     setUpdateId(item._id);
     setOpenUpSertBenefit(true);
   };
@@ -290,7 +289,7 @@ const BenefitPage = () => {
               </div>
               <div id="benefit__modal-description" className="benefit__modal-item">
                 <div className="benefit__modal-label">Mô tả:</div>
-                <CustomInput value={benefitInfor.description} ref={benefitDescriptionRef} placeholder="Enter description" />
+                <CustomInput value={benefitInfor.description} ref={benefitDescriptionRef} placeholder="Nhập mô tả" />
               </div>
             </div>
             <div className="benefit__modal-right">

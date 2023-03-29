@@ -1,8 +1,9 @@
 import { useRecoilValue } from 'recoil';
 import { useEffect, useState } from 'react';
-import { accessTokenState } from '../../recoil/store/account';
+import { accessTokenState, accountRoleState } from '../../recoil/store/account';
 import { useLocation, useNavigate } from 'react-router-dom';
-// import { privateRoutes } from '../../routes';
+import { getPriorityRole } from '../../utils';
+import { privateRoutes } from '../../routes';
 
 const PUBLIC_ROUTES = ['/login'];
 const ProtectedComponents = ({ children }) => {
@@ -10,6 +11,7 @@ const ProtectedComponents = ({ children }) => {
   const navigate = useNavigate();
   const { pathname } = location;
   const accessToken = useRecoilValue(accessTokenState);
+  const accountRole = useRecoilValue(accountRoleState);
   const [isRender, setIsRender] = useState(false);
 
   useEffect(() => {
@@ -18,6 +20,10 @@ const ProtectedComponents = ({ children }) => {
         navigate('/');
       } else {
         setIsRender(true);
+      }
+      // Do not make code like this. TERRIBLE LOGIC
+      if (getPriorityRole(accountRole) !== 'Admin' && privateRoutes.includes(pathname)) {
+        navigate('/');
       }
     } else {
       if (!PUBLIC_ROUTES.includes(pathname)) {

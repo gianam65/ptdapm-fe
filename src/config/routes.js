@@ -7,7 +7,8 @@ const routes = {
   department: '/department',
   benefit: '/benefit',
   settings: '/settings',
-  contract:'/contract'
+  contract: '/contract',
+  notifcation: '/notification'
 };
 
 export default routes;
