@@ -70,13 +70,14 @@ const BenefitPage = () => {
   }, []);
 
   const openModalUpSertBenefit = item => {
-    setBenefitInfor(item);
-    setUpdateId(item._id);
-    benefitNameRef.current = item.name;
-    benefitDescriptionRef.current = item.description;
-    benefitStandardRef.current = item.standardLeave;
-    benefitMonthRef.current = item.month;
-
+    if (item) {
+      setUpdateId(item._id);
+      setBenefitInfor(item);
+      benefitNameRef.current = item.name;
+      benefitDescriptionRef.current = item.description;
+      benefitStandardRef.current = item.standardLeave;
+      benefitMonthRef.current = item.month;
+    }
     setOpenUpSertBenefit(true);
   };
 
@@ -294,7 +295,7 @@ const BenefitPage = () => {
               </div>
               <div id="benefit__modal-description" className="benefit__modal-item">
                 <div className="benefit__modal-label">Mô tả:</div>
-                <CustomInput value={benefitInfor.description} ref={benefitDescriptionRef} placeholder="Nhập mô tả" />
+                <CustomInput ref={benefitDescriptionRef} placeholder="Nhập mô tả" />
               </div>
             </div>
             <div className="benefit__modal-right">

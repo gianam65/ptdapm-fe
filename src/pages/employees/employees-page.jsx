@@ -24,7 +24,8 @@ const HEADERS = [
   { label: 'Giới tính', key: 'gender' },
   { label: 'Mã nhân viên', key: 'codeEmployee' },
   { label: 'Tình trạng hoạt động', key: 'status' },
-  { label: 'Ngày sinh', key: 'BirthOfDate' }
+  { label: 'Ngày sinh', key: 'BirthOfDate' },
+  { label: 'Khoa', key: 'faculty' }
 ];
 const { Search } = Input;
 const { Option } = Select;
@@ -45,6 +46,7 @@ const EmployeesPage = () => {
   const employeesPhoneRef = useRef(null);
   const employeesAddressRef = useRef(null);
   const employeesPositionRef = useRef(null);
+  const employeesFacultyRef = useRef(null)
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [code, setCode] = useState('');
@@ -56,6 +58,7 @@ const EmployeesPage = () => {
   const [startDate, setStartDate] = useState();
   const [position, setPosition] = useState();
   const [id, setID] = useState();
+  const [faculty,setFaculty]= useState('')
   const [textSearch, setTextSearch] = useState('');
 
   useEffect(() => {
@@ -158,6 +161,7 @@ const EmployeesPage = () => {
     employeesAddressRef.current.input.value.reset();
     employeesPhoneRef.current.input.value.reset();
     employeesPositionRef.current.input.value.reset();
+    employeesFacultyRef.current.input.value.reset();
     setEmployeeGender('');
     setSalaryRanks(1);
     setDepartment('');
@@ -184,11 +188,12 @@ const EmployeesPage = () => {
     const phoneNumber = employeesPhoneRef.current.input.value;
     const address = employeesAddressRef.current.input.value;
     const position = employeesPositionRef.current.input.value;
+    const faculty = employeesFacultyRef.current.input.value
     setPageLoading(true);
     const url = `${getAPIHostName()}/employees?department=${department}&benefit=${benefit}`;
     httpPost(
       url,
-      { name, codeEmployee, email, phoneNumber, gender: employeeGender, address, salaryRanks, position },
+      { name, codeEmployee, email, phoneNumber, gender: employeeGender, address, salaryRanks, position,faculty },
       accessToken
     )
       .then(res => {
@@ -238,7 +243,8 @@ const EmployeesPage = () => {
       startDate:
         convertDateStringToUnixDateTime(startDate) ||
         convertDateStringToUnixDateTime(getSelectedUser() && getSelectedUser().startDate),
-      position: position || (getSelectedUser() && getSelectedUser().position)
+      position: position || (getSelectedUser() && getSelectedUser().position),
+      faculty: faculty || (getSelectedUser() && getSelectedUser().faculty)
     };
 
     httpPost(url, buildBodyToUpdate, accessToken)
@@ -347,6 +353,12 @@ const EmployeesPage = () => {
       render: item => item
     },
     {
+      title:'Khoa',
+      key:'faculty',
+      dataIndex:'faculty',
+      width:150,
+    },
+    {
       title: 'Ngày làm việc',
       key: 'startDate',
       dataIndex: 'startDate',
@@ -406,6 +418,7 @@ const EmployeesPage = () => {
         phoneNumber: listEmployees[i].phoneNumber,
         address: listEmployees[i].address,
         salaryRank: listEmployees[i].salaryRank,
+        faculty:listEmployees[i].faculty,
         gender: listEmployees[i].gender,
         codeEmployee: listEmployees[i].codeEmployee,
         status: listEmployees[i].status,
@@ -530,6 +543,8 @@ const EmployeesPage = () => {
             <CustomInput maxLength={50} ref={employeesAddressRef} placeholder="Địa chỉ" />
             <div className="add__employees-label">Bậc lương: </div>
             <InputNumber type={'number'} defaultValue={salaryRanks} onChange={value => setSalaryRanks(value)} />
+            <div className="add__employees-label">Khoa: </div>
+            <CustomInput maxLength={50} ref={employeesFacultyRef} placeholder="Tên khoa" />
           </div>
         </div>
       </Modal>
@@ -641,6 +656,13 @@ const EmployeesPage = () => {
                 })}
               </Select>
             </div>
+            <div className="add__employees-label">Khoa:</div>
+            <CustomInput
+              maxLength={50}
+              value={faculty || (getSelectedUser() && getSelectedUser().faculty)}
+              onChange={e => setFaculty(e.target.value)}
+              placeholder="Tên Khoa"
+            />
           </div>
         </div>
       </Modal>
