@@ -16,35 +16,58 @@ export default function DepartmentPage() {
   const [searchValue, setSearchValue] = useState('');
   const [isLoadingTable, setIsLoadingTable] = useState(false);
   const [openUpSertDepartment, setOpenUpSertDepartment] = useState(false);
+  const [openAddPositon,setOpenAddPostion] = useState(false)
   const [updateId, setUpdateId] = useState();
+  const [departmentId, setDepartmenId] = useState()
   const setPageLoading = useSetRecoilState(loadingState);
   const departmentNameRef = useRef(null);
   const departmentCodeRef = useRef(null);
-  useEffect(() => {
-    const getDepartment = () => {
-      const url = `${getAPIHostName()}/departments`;
-      setPageLoading(true);
-      httpGet(url)
-        .then(res => {
-          if (res.success) {
-            const { departmentList } = res.data;
-            setDepartmentList(departmentList);
-          }
-          setPageLoading(false);
-        })
-        .catch(() => {
-          notification.error({
-            title: 'Lỗi',
-            message: 'Không thể lấy thông tin phòng ban'
-          });
-          setPageLoading(false);
+  const positionNameRef = useRef(null)
+  
+  const getDepartment = () => {
+    const url = `${getAPIHostName()}/departments`;
+    setPageLoading(true);
+    httpGet(url)
+      .then(res => {
+        if (res.success) {
+          const { departmentList } = res.data;
+          setDepartmentList(departmentList);
+        }
+        setPageLoading(false);
+      })
+      .catch(() => {
+        notification.error({
+          title: 'Lỗi',
+          message: 'Không thể lấy thông tin phòng ban'
         });
-    };
-    getDepartment();
-
+        setPageLoading(false);
+      });
+  };
+  useEffect(() => {
+    getDepartment()
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-
+  const handleAddPostion = ()=>{
+    const position = positionNameRef.current.input.value
+    const url = `${getAPIHostName()}/departments/${departmentId}/position`
+    console.log(url)
+    httpPost(url,{name:position},accessToken)
+    .then(res=>{
+      if(res.success){
+        getDepartment()
+        notification.success({
+          title: 'Thành công',
+          message: 'Cập nhật vị trí phòng ban thành công'
+        });
+      }
+    })
+    .catch(()=>{
+      notification.error({
+        title: 'Thất bại',
+        message: 'Cập nhật vị trí phòng ban thất bại'
+      });
+    })
+  }
   const openModalUpSertDepartment = id => {
     setUpdateId(id);
     setOpenUpSertDepartment(true);
@@ -152,6 +175,17 @@ export default function DepartmentPage() {
                 <DeleteOutlined />
               </Tooltip>
             </div>
+            <div
+              className="action__add-position"
+              onClick={() => {
+                setDepartmenId(item._id)
+              setOpenAddPostion(true)
+              }}
+            >
+              <Tooltip title="Thêm vị trí">
+                <PlusOutlined/>
+              </Tooltip>
+            </div>
           </div>
         </div>
       )
@@ -237,6 +271,17 @@ export default function DepartmentPage() {
         <CustomInput ref={departmentNameRef} placeholder="Vui lòng nhập tên phòng ban" />
         <div className="add__department-label">Mã phòng ban:</div>
         <CustomInput ref={departmentCodeRef} placeholder="Vui lòng nhập mã phòng ban" />
+      </Modal>
+      <Modal
+        title="Thêm vị trí"
+        open={openAddPositon}
+        onOk={handleAddPostion}
+        onCancel={() => setOpenAddPostion(false)}
+        okText="Thêm"
+        cancelText="Huỷ"
+      >
+        <div className="add__department-label">Thêm vị trí:</div>
+        <CustomInput ref={positionNameRef} placeholder="Vui lòng nhập tên vị trí" />
       </Modal>
     </div>
   );
