@@ -8,6 +8,7 @@ import DepartmentPage from '../pages/department/department';
 import SettingsPage from '../pages/settings/settings';
 import BenefitPage from '../pages/benefit/benefit-page';
 import ContractPage from '../pages/contract/contract';
+import NotificationPage from '../pages/notification/notification';
 import {
   PieChartOutlined,
   AppstoreOutlined,
@@ -68,6 +69,13 @@ const publicRoutes = [
     needShowSideMenu: true
   },
   {
+    path: config.routes.notifcation,
+    pageIcon: <DollarOutlined />,
+    element: <NotificationPage />,
+    label: 'Thông báo',
+    needShowSideMenu: true
+  },
+  {
     path: config.routes.settings,
     element: <SettingsPage />,
     pageIcon: <SettingOutlined />,
@@ -82,12 +90,6 @@ const publicRoutes = [
   }
 ];
 
-const privateRoutes = [
-  config.routes.home,
-  config.routes.report,
-  config.routes.employee,
-  config.routes.benefit,
-  config.routes.department
-];
+const privateRoutes = [config.routes.notifcation, config.routes.settings];
 
 export { publicRoutes, privateRoutes };
