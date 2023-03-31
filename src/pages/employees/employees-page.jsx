@@ -60,7 +60,7 @@ const EmployeesPage = () => {
   const [id, setID] = useState();
   const [faculty,setFaculty]= useState('')
   const [textSearch, setTextSearch] = useState('');
-
+  const [number, setNumber] = useState('')
   useEffect(() => {
     Promise.all([fetchEmployees(activePage), getDepartment(), getBenefit()]);
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -444,6 +444,10 @@ const EmployeesPage = () => {
     );
   };
 
+  const restrictAlphabets = (e) => {
+    setNumber(e.target.value.replace(/\D/g, ''))
+  }
+
   return (
     <div className="employess__section">
       <div className="file__actions">
@@ -497,7 +501,7 @@ const EmployeesPage = () => {
             <div className="add__employees-label">Email:</div>
             <CustomInput maxLength={50} type="email" ref={employeesEmailRef} placeholder="Email" />
             <div className="add__employees-label">Điện thoại:</div>
-            <CustomInput type="number" maxLength={10} ref={employeesPhoneRef} placeholder="Điện thoại" />
+            <CustomInput value={number} onChange={restrictAlphabets.bind()} type="number" maxLength={10} ref={employeesPhoneRef} placeholder="Điện thoại" />
             <div className="add__employees-label">Chức vụ:</div>
             <CustomInput maxLength={50} ref={employeesPositionRef} placeholder="Chức vụ" />
             <div className="add__employees-selects">
