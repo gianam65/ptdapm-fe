@@ -435,7 +435,6 @@ const EmployeesPage = () => {
     setNumber(e.target.value.replace(/\D/g, ''))
   }
 
-
   return (
     <div className="employess__section">
       <div className="file__actions">
