@@ -18,7 +18,7 @@ const BenefitPage = () => {
   const [openUpSertBenefit, setOpenUpSertBenefit] = useState(false);
   const [updateId, setUpdateId] = useState();
   const [searchValue, setSearchValue] = useState('');
-  const [selectedStatus, setSelectedStatus] = useState('Active');
+  const [selectedStatus, setSelectedStatus] = useState('Kích hoạt');
   const [isLoadingTable, setIsLoadingTable] = useState(false);
 
   const setPageLoading = useSetRecoilState(loadingState);
@@ -37,9 +37,9 @@ const BenefitPage = () => {
 
   function SelectComponent() {
     return (
-      <Select defaultValue="Active" style={{ width: 120 }} onChange={handleChange}>
-        <Option value="Active">Kích hoạt</Option>
-        <Option value="Unactive">Chưa kích hoạt</Option>
+      <Select defaultValue=" Kích hoạt" style={{ width: 120 }} onChange={handleChange}>
+        <Option value="Kích hoạt">Kích hoạt</Option>
+        <Option value="Chưa kích hoạt">Chưa kích hoạt</Option>
       </Select>
     );
   }
@@ -102,7 +102,9 @@ const BenefitPage = () => {
       },
       onCancel() {
         return;
-      }
+      },
+      cancelText: "Huỷ",
+      okText: "Xác nhận"
     });
   };
   const handleUpdateBenefit = idUpdate => {
