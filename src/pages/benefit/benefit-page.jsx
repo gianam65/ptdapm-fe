@@ -37,7 +37,7 @@ const BenefitPage = () => {
 
   function SelectComponent() {
     return (
-      <Select defaultValue="Active" style={{ width: 120 }} onChange={handleChange}>
+      <Select defaultValue="Kích hoạt" style={{ width: 120 }} onChange={handleChange}>
         <Option value="Active">Kích hoạt</Option>
         <Option value="Unactive">Chưa kích hoạt</Option>
       </Select>
@@ -109,7 +109,9 @@ const BenefitPage = () => {
       },
       onCancel() {
         return;
-      }
+      },
+      cancelText: "Hủy",
+      okText: "Xác nhận"
     });
   };
   const handleUpdateBenefit = idUpdate => {
