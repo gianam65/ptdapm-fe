@@ -21,7 +21,6 @@ export default function ContractPage() {
   const [startDateContract, setStartDateContract] = useState();
   const [endDateContract, setEndDateContract] = useState();
   const [dateContract, setContractDate] = useState();
-  console.log(listcontract,'hello')
 
   useEffect(() => {
     Promise.all([getEmployees(), getContract()]);
@@ -89,7 +88,7 @@ export default function ContractPage() {
         .then(res => {
           if (res.success) {
             getContract();
-            notification.success({  
+            notification.success({
               title: 'Thành công',
               message: 'Cập nhật hợp đồng thành công'
             });
@@ -117,7 +116,6 @@ export default function ContractPage() {
       key: 'status',
       width: 120,
       render: (_, record) => {
-        console.log(record.status)
         let color;
         if (record.status === 'pending') {
           color = 'geekblue';
@@ -142,7 +140,7 @@ export default function ContractPage() {
     {
       title: 'Chức vụ',
       dataIndex: 'position',
-      key: 'position',
+      key: 'position'
     },
     {
       title: 'Tên hợp đồng',

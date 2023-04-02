@@ -32,7 +32,6 @@ const { Option } = Select;
 const EmployeesPage = () => {
   const [departmentList, setDepartmentList] = useState([]);
   const [benefitList, setBenefitList] = useState([]);
-  const [activePage, setActivePage] = useState(1);
   const [listEmployees, setListEmployees] = useState([]);
   const setPageLoading = useSetRecoilState(loadingState);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -46,7 +45,7 @@ const EmployeesPage = () => {
   const employeesPhoneRef = useRef(null);
   const employeesAddressRef = useRef(null);
   const employeesPositionRef = useRef(null);
-  const employeesFacultyRef = useRef(null)
+  const employeesFacultyRef = useRef(null);
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [code, setCode] = useState('');
@@ -58,13 +57,15 @@ const EmployeesPage = () => {
   const [startDate, setStartDate] = useState();
   const [position, setPosition] = useState();
   const [id, setID] = useState();
-  const [faculty,setFaculty]= useState('')
+  const [faculty, setFaculty] = useState('');
   const [textSearch, setTextSearch] = useState('');
-  const [number, setNumber] = useState('')
+  const [number, setNumber] = useState('');
   useEffect(() => {
-    Promise.all([fetchEmployees(activePage), getDepartment(), getBenefit()]);
+    fetchEmployees();
+    getDepartment();
+    getBenefit();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [textSearch]);
+  }, []);
 
   const getBenefit = () => {
     const url = `${getAPIHostName()}/benefits`;
@@ -85,8 +86,6 @@ const EmployeesPage = () => {
         setPageLoading(false);
       });
   };
-
-  console.log(textSearch);
 
   const getDepartment = () => {
     const url = `${getAPIHostName()}/departments`;
@@ -136,16 +135,14 @@ const EmployeesPage = () => {
       });
   };
 
-  const fetchEmployees = activePage => {
+  const fetchEmployees = () => {
     setPageLoading(true);
-    const url = `${getAPIHostName()}/employees?text=${textSearch ? textSearch : ''}`;
+    const url = `${getAPIHostName()}/employees`;
     httpGet(url)
       .then(res => {
         if (res.success) {
-          const { employeeList, totalEmployee } = res.data;
+          const { employeeList } = res.data;
           setListEmployees(employeeList);
-          setActivePage(activePage);
-          console.log(totalEmployee);
         }
         setPageLoading(false);
       })
@@ -188,12 +185,12 @@ const EmployeesPage = () => {
     const phoneNumber = employeesPhoneRef.current.input.value;
     const address = employeesAddressRef.current.input.value;
     const position = employeesPositionRef.current.input.value;
-    const faculty = employeesFacultyRef.current.input.value
+    const faculty = employeesFacultyRef.current.input.value;
     setPageLoading(true);
     const url = `${getAPIHostName()}/employees?department=${department}&benefit=${benefit}`;
     httpPost(
       url,
-      { name, codeEmployee, email, phoneNumber, gender: employeeGender, address, salaryRanks, position,faculty },
+      { name, codeEmployee, email, phoneNumber, gender: employeeGender, address, salaryRanks, position, faculty },
       accessToken
     )
       .then(res => {
@@ -338,13 +335,6 @@ const EmployeesPage = () => {
       width: 100,
       render: salaryRank => <span className="employee__salary">{salaryRank}</span>
     },
-    // {
-    //   title: 'Phòng Ban',
-    //   key: 'department',
-    //   dataIndex: 'department',
-    //   width: 150,
-    //   render: deparment => <span className="employee__salary">{department}</span>
-    // },
     {
       title: 'Chức vụ',
       key: 'position',
@@ -353,10 +343,10 @@ const EmployeesPage = () => {
       render: item => item
     },
     {
-      title:'Khoa',
-      key:'faculty',
-      dataIndex:'faculty',
-      width:150,
+      title: 'Khoa',
+      key: 'faculty',
+      dataIndex: 'faculty',
+      width: 150
     },
     {
       title: 'Ngày làm việc',
@@ -418,11 +408,11 @@ const EmployeesPage = () => {
         phoneNumber: listEmployees[i].phoneNumber,
         address: listEmployees[i].address,
         salaryRank: listEmployees[i].salaryRank,
-        faculty:listEmployees[i].faculty,
+        faculty: listEmployees[i].faculty,
         gender: listEmployees[i].gender,
         codeEmployee: listEmployees[i].codeEmployee,
-        status: listEmployees[i].status,
-        BirthOfDate: removeTimeFromDate(listEmployees[i].BirthOfDate)
+        status: translateStatus(listEmployees[i].status),
+        BirthOfDate: removeTimeFromDate(listEmployees[i].startDate)
       };
 
       data = [...data, record];
@@ -439,14 +429,13 @@ const EmployeesPage = () => {
         item.name?.indexOf(textSearch) >= 0 ||
         item.address?.indexOf(textSearch) >= 0 ||
         item.email?.indexOf(textSearch) >= 0 ||
-        item.phoneNumber?.indexOf(textSearch) >= 0 ||
         item.code?.indexOf(textSearch) >= 0
     );
   };
 
-  const restrictAlphabets = (e) => {
-    setNumber(e.target.value.replace(/\D/g, ''))
-  }
+  const restrictAlphabets = e => {
+    setNumber(e.target.value.replace(/\D/g, ''));
+  };
 
   return (
     <div className="employess__section">
@@ -468,7 +457,7 @@ const EmployeesPage = () => {
           type="search"
           placeholder="Tìm kiếm"
           className="employees__search-inp"
-          onSearch={value => setTextSearch(value)}
+          onChange={e => setTextSearch(e.target.value)}
         />
         <Button className="employees__search-btn" rightIcon={<PlusOutlined />} onClick={() => setIsModalOpen(true)}>
           Thêm nhân viên
@@ -501,7 +490,14 @@ const EmployeesPage = () => {
             <div className="add__employees-label">Email:</div>
             <CustomInput maxLength={50} type="email" ref={employeesEmailRef} placeholder="Email" />
             <div className="add__employees-label">Điện thoại:</div>
-            <CustomInput value={number} onChange={restrictAlphabets.bind()} type="number" maxLength={10} ref={employeesPhoneRef} placeholder="Điện thoại" />
+            <CustomInput
+              value={number}
+              onChange={restrictAlphabets.bind()}
+              type="number"
+              maxLength={10}
+              ref={employeesPhoneRef}
+              placeholder="Điện thoại"
+            />
             <div className="add__employees-label">Chức vụ:</div>
             <CustomInput maxLength={50} ref={employeesPositionRef} placeholder="Chức vụ" />
             <div className="add__employees-selects">

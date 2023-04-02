@@ -2,7 +2,7 @@ import defaultAvatar from '../assets/images/default_avatar.jpg';
 import process from 'process/browser';
 
 export const getAPIHostName = () => {
-  return process.env.NODE_ENV !== 'development' ? 'http://localhost:8001/api/v1' : 'http://manhpham.site:8001/api/v1';
+  return process.env.NODE_ENV === 'development' ? 'http://localhost:8001/api/v1' : 'http://manhpham.site:8001/api/v1';
 };
 
 export const normalizeDate = date => {
@@ -92,6 +92,8 @@ export const convertRouteToVNS = route => {
       return '>> Quyền lợi';
     case '/settings':
       return '>> Phân quyền';
+    case '/notification':
+      return '>> Thông báo';
     default:
       return '/';
   }

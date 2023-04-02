@@ -18,11 +18,11 @@ const BenefitPage = () => {
   const [openUpSertBenefit, setOpenUpSertBenefit] = useState(false);
   const [updateId, setUpdateId] = useState();
   const [searchValue, setSearchValue] = useState('');
-  const [selectedStatus, setSelectedStatus] = useState('Active');
+  const [selectedStatus, setSelectedStatus] = useState('Kích hoạt');
   const [isLoadingTable, setIsLoadingTable] = useState(false);
-  const [benefitInfor, setBenefitInfor] = useState({});
   const setPageLoading = useSetRecoilState(loadingState);
   const accessToken = useRecoilValue(accessTokenState);
+  const [selectedBenefit, setSelectedBenefit] = useState({});
 
   const benefitNameRef = useRef(null);
   const benefitDescriptionRef = useRef(null);
@@ -37,9 +37,9 @@ const BenefitPage = () => {
 
   function SelectComponent() {
     return (
-      <Select defaultValue="Kích hoạt" style={{ width: 120 }} onChange={handleChange}>
-        <Option value="Active">Kích hoạt</Option>
-        <Option value="Unactive">Chưa kích hoạt</Option>
+      <Select defaultValue="Kích hoạt" onChange={handleChange}>
+        <Option value="Kích hoạt">Kích hoạt</Option>
+        <Option value="Chưa kích hoạt">Chưa kích hoạt</Option>
       </Select>
     );
   }
@@ -72,11 +72,7 @@ const BenefitPage = () => {
   const openModalUpSertBenefit = item => {
     if (item) {
       setUpdateId(item._id);
-      setBenefitInfor(item);
-      benefitNameRef.current = item.name;
-      benefitDescriptionRef.current = item.description;
-      benefitStandardRef.current = item.standardLeave;
-      benefitMonthRef.current = item.month;
+      setSelectedBenefit(item);
     }
     setOpenUpSertBenefit(true);
   };
@@ -110,8 +106,8 @@ const BenefitPage = () => {
       onCancel() {
         return;
       },
-      cancelText: "Hủy",
-      okText: "Xác nhận"
+      cancelText: 'Hủy',
+      okText: 'Xác nhận'
     });
   };
   const handleUpdateBenefit = idUpdate => {
@@ -285,7 +281,10 @@ const BenefitPage = () => {
           onOk={() => {
             updateId ? handleUpdateBenefit(updateId) : hanldeAddBenefit();
           }}
-          onCancel={() => setOpenUpSertBenefit(false)}
+          onCancel={() => {
+            setSelectedBenefit({});
+            setOpenUpSertBenefit(false);
+          }}
           okText={updateId ? 'Sửa' : 'Thêm'}
           cancelText="Huỷ"
         >
@@ -293,25 +292,38 @@ const BenefitPage = () => {
             <div className="benefit__modal-left">
               <div id="benefit__modal-name" className="benefit__modal-item">
                 <div className="benefit__modal-label">Tên quyền lợi:</div>
-                <CustomInput ref={benefitNameRef} placeholder="Enter benefit name" />
+                <CustomInput defaultValue={selectedBenefit.name} ref={benefitNameRef} placeholder="Tên quyền lợi" />
               </div>
               <div id="benefit__modal-description" className="benefit__modal-item">
                 <div className="benefit__modal-label">Mô tả:</div>
-                <CustomInput ref={benefitDescriptionRef} placeholder="Nhập mô tả" />
+                <CustomInput
+                  defaultValue={selectedBenefit.description}
+                  ref={benefitDescriptionRef}
+                  placeholder="Nhập mô tả"
+                />
+              </div>
+              <div id="benefit__modal-status" className="benefit__modal-item">
+                <div className="benefit__modal-label">Trạng thái:</div>
+                <SelectComponent />
               </div>
             </div>
             <div className="benefit__modal-right">
               <div id="benefit__modal-standard" className="benefit__modal-item">
                 <div className="benefit__modal-label">Tiêu chuẩn:</div>
-                <InputNumber ref={benefitStandardRef} style={{ width: 120 }} />
+                <InputNumber
+                  defaultValue={selectedBenefit.standardLeave}
+                  ref={benefitStandardRef}
+                  style={{ width: 120 }}
+                />
               </div>
               <div id="benefit__modal-month" className="benefit__modal-item">
                 <div className="benefit__modal-label">Tháng:</div>
-                <InputNumber ref={benefitMonthRef} style={{ width: 120 }} min={1} />
-              </div>
-              <div id="benefit__modal-status" className="benefit__modal-item">
-                <div className="benefit__modal-label">Trạng thái:</div>
-                <SelectComponent />
+                <InputNumber
+                  defaultValue={selectedBenefit.month}
+                  ref={benefitMonthRef}
+                  style={{ width: 120 }}
+                  min={1}
+                />
               </div>
             </div>
           </div>
