@@ -1,0 +1,14 @@
+.notification__container {
+  height: 100%;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  .notification__edit {
+    .rdw-editor-main {
+      background-color: white !important;
+      height: calc(100vh - 300px);
+      padding-left: 10px;
+    }
+  }
+}
