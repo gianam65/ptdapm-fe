@@ -53,6 +53,15 @@ const EmployeesPage = () => {
   const [textSearch, setTextSearch] = useState('');
   const [number, setNumber] = useState('');
   const [selectedEmployee, setSelectedEmployee] = useState({});
+
+  const checkEmpty = obj => {
+    for (let prop in obj) {
+      if (obj.hasOwnProperty(prop) && obj[prop]?.length === 0) {
+        return true;
+      }
+    }
+    return false;
+  };
   useEffect(() => {
     fetchEmployees();
     getDepartment();
@@ -521,6 +530,7 @@ const EmployeesPage = () => {
         onCancel={() => setEditModalOpen(false)}
         okText="Sửa"
         cancelText="Huỷ"
+        okButtonProps={{ disabled: checkEmpty(selectedEmployee) }}
       >
         <div className="update__emp-container">
           <div className="add__employees_left">

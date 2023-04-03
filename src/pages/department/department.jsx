@@ -46,6 +46,14 @@ export default function DepartmentPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  const checkEmpty = () => {
+    if(selectedDepartment.name?.length===0 || selectedDepartment.code?.length===0){
+      return true
+    }else{
+      return false
+    }
+  };
+  
   const openModalUpSertDepartment = id => {
     setUpdateId(id);
     setSelectedDepartment(departmentList.find(dp => dp._id === id) || {});
@@ -234,6 +242,7 @@ export default function DepartmentPage() {
         onCancel={() => setOpenUpSertDepartment(false)}
         okText="Thêm"
         cancelText="Huỷ"
+        okButtonProps={{disabled:checkEmpty(selectedDepartment)}}
       >
         <div className="add__department-label">Tên phòng ban:</div>
         <CustomInput
