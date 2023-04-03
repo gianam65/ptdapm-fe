@@ -59,6 +59,7 @@ const EmployeesPage = () => {
   const [textSearch, setTextSearch] = useState('');
   const [number, setNumber] = useState('');
   const [selectedEmployee, setSelectedEmployee] = useState({});
+  
   useEffect(() => {
     fetchEmployees();
     getDepartment();
@@ -66,6 +67,11 @@ const EmployeesPage = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+ const checkEmpty =  () =>{
+   const {name,address,phoneNumber,position,email,faculty}=selectedEmployee
+   let arr = [name,address,phoneNumber,position,email,faculty]
+   return arr.some(item=>item?.length===0)
+  }
   const getBenefit = () => {
     const url = `${getAPIHostName()}/benefits`;
     setPageLoading(true);
@@ -558,6 +564,7 @@ const EmployeesPage = () => {
         onCancel={() => setEditModalOpen(false)}
         okText="Sửa"
         cancelText="Huỷ"
+        okButtonProps={{disabled:checkEmpty()}}
       >
         <div className="update__emp-container">
           <div className="add__employees_left">

@@ -247,6 +247,7 @@ export default function DepartmentPage() {
         onCancel={() => setOpenUpSertDepartment(false)}
         okText={updateId ? 'Sửa' : 'Thêm'}
         cancelText="Huỷ"
+        okButtonProps={{disabled:selectedDepartment.name?.length===0||selectedDepartment.code?.length===0}}
       >
         <div className="add__department-label">Tên phòng ban:</div>
         <CustomInput

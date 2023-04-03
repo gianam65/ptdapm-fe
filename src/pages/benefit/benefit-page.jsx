@@ -302,7 +302,7 @@ const BenefitPage = () => {
           scroll={{ y: 'calc(100vh - 320px)' }}
         ></Table>
         <Modal
-          title=""
+          title="Cập nhật quyền lợi"
           open={openUpSertBenefit}
           onOk={() => {
             updateId ? handleUpdateBenefit(updateId) : hanldeAddBenefit();
@@ -313,6 +313,7 @@ const BenefitPage = () => {
           }}
           okText={updateId ? 'Sửa' : 'Thêm'}
           cancelText="Huỷ"
+          okButtonProps={{disabled:selectedBenefit.name?.length===0||selectedBenefit.description?.length===0}}
         >
           <div className="benefit__modal-list">
             <div className="benefit__modal-left">
