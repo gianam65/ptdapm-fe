@@ -243,7 +243,7 @@ export default function ContractPage() {
       <Modal
         title="Thông tin hợp đồng"
         open={isModalOpen}
-        okText={contractInfor.status === 'completed' ? 'Đóng' : 'Cập nhật'}
+        okText={contractInfor.status === 'completed' || contractInfor.status === 'cancelled'  ? 'Đóng' : 'Cập nhật'}
         cancelText={'Huỷ'}
         onOk={handleUpdateContract}
         onCancel={handleCancel}
