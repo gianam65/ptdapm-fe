@@ -256,15 +256,12 @@ export default function ContractPage() {
               <Button key="back" onClick={handleCancel}>
                 Huỷ
               </Button>,
-              <Button key="submit" type="primary" onClick={handleUpdateContract}>
+              <Button key="submit" type="primary" onClick={handleUpdateContract} disabled={!(checkEndDayContract && checkStartDayContract)}>
                 Cập nhật
               </Button>,
             ]
           )
         }
-        okButtonProps={{
-          disabled: !(checkEndDayContract && checkStartDayContract)
-        }}
       >
         <div className="edit__contract-label">Tên hợp đồng</div>
 
