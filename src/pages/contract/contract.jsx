@@ -1,5 +1,5 @@
 import './contract.scss';
-import { Table, Tag, Modal, DatePicker, notification, Tooltip } from 'antd';
+import { Table, Tag, Modal, DatePicker, notification, Tooltip,Button } from 'antd';
 import { EyeOutlined, EditOutlined } from '@ant-design/icons';
 import { useEffect, useState } from 'react';
 import CustomInput from '../../components/custom-input/custom-input';
@@ -242,9 +242,6 @@ export default function ContractPage() {
        <Modal
         title="Thông tin hợp đồng"
         open={isModalOpen}
-        okText={contractInfor.status === 'completed' || contractInfor.status === 'cancelled' ? 'Đóng' : 'Cập nhật'}
-        cancelText={'Huỷ'}
-        onOk={handleUpdateContract}
         onCancel={handleCancel}
         footer={
           contractInfor.status === 'completed'||contractInfor.status === 'cancelled' ? (
@@ -270,7 +267,7 @@ export default function ContractPage() {
           onChange={e => {
             setContractInfor({ ...contractInfor, contract_name: e.target.value });
           }}
-          disabled={contractInfor.status === 'completed'}
+          disabled={contractInfor.status === 'completed' || contractInfor.status==='cancelled'}
         ></CustomInput>
 
         <div className="edit__contract-label">Tên nhân viên</div>
@@ -282,7 +279,7 @@ export default function ContractPage() {
           onChange={e => {
             setContractInfor({ ...contractInfor, position: e.target.value });
           }}
-          disabled={contractInfor.status === 'completed'}
+          disabled={contractInfor.status === 'completed' || contractInfor.status==='cancelled'}
         ></CustomInput>
 
         <div className="edit__contract-row">
@@ -292,7 +289,7 @@ export default function ContractPage() {
               value={dayjs(dateContract || contractInfor.contract_date, 'YYYY-MM-DD')}
               onChange={(_, dateString) => setContractDate(dateString)}
               format="YYYY-MM-DD HH:mm"
-              disabled={contractInfor.status === 'completed'}
+              disabled={contractInfor.status === 'completed' || contractInfor.status==='cancelled'}
             />
           </div>
           <div>
@@ -305,7 +302,7 @@ export default function ContractPage() {
                   : null
               }
               onChange={(_, dateString) => setStartDateContract(dateString)}
-              disabled={contractInfor.status === 'completed'}
+              disabled={contractInfor.status === 'completed' || contractInfor.status==='cancelled'}
             />
           </div>
           <div>
@@ -318,7 +315,7 @@ export default function ContractPage() {
                   : null
               }
               onChange={(_, dateString) => setEndDateContract(dateString)}
-              disabled={contractInfor.status === 'completed'}
+              disabled={contractInfor.status === 'completed' || contractInfor.status==='cancelled'}
             />
           </div>
         </div>
@@ -329,7 +326,7 @@ export default function ContractPage() {
           onChange={e => {
             setContractInfor({ ...contractInfor, email: e.target.value });
           }}
-          disabled={contractInfor.status === 'completed'}
+          disabled={contractInfor.status === 'completed' || contractInfor.status==='cancelled'}
         ></CustomInput>
         <div></div>
       </Modal>
