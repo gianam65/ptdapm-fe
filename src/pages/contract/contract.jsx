@@ -239,16 +239,29 @@ export default function ContractPage() {
         loading={isLoadingTable}
         scroll={{ y: 'calc(100vh - 320px)', x: 'max-content' }}
       />
-      <Modal
+       <Modal
         title="Thông tin hợp đồng"
         open={isModalOpen}
         okText={contractInfor.status === 'completed' || contractInfor.status === 'cancelled' ? 'Đóng' : 'Cập nhật'}
         cancelText={'Huỷ'}
         onOk={handleUpdateContract}
         onCancel={handleCancel}
-        okButtonProps={{
-          disabled: !(checkEndDayContract && checkStartDayContract)
-        }}
+        footer={
+          contractInfor.status === 'completed'||contractInfor.status === 'cancelled' ? (
+            <Button key="submit" type="primary" onClick={handleCancel}>
+              Đóng
+            </Button>
+          ) : (
+            [
+              <Button key="back" onClick={handleCancel}>
+                Huỷ
+              </Button>,
+              <Button key="submit" type="primary" onClick={handleUpdateContract} disabled={!(checkEndDayContract && checkStartDayContract)}>
+                Cập nhật
+              </Button>,
+            ]
+          )
+        }
       >
         <div className="edit__contract-label">Tên hợp đồng</div>
 
