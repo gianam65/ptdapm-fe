@@ -1,5 +1,5 @@
 import './contract.scss';
-import { Table, Tag, Modal, DatePicker, notification, Tooltip, Button } from 'antd';
+import { Table, Tag, Modal, DatePicker, notification, Tooltip } from 'antd';
 import { EyeOutlined, EditOutlined } from '@ant-design/icons';
 import { useEffect, useState } from 'react';
 import CustomInput from '../../components/custom-input/custom-input';
@@ -42,8 +42,8 @@ export default function ContractPage() {
       });
   };
 
-  const checkStartDayContract = Boolean(startDateContract || contractInfor.start_date)
-  const checkEndDayContract = Boolean(endDateContract || contractInfor.end_date)
+  const checkStartDayContract = Boolean(startDateContract || contractInfor.start_date);
+  const checkEndDayContract = Boolean(endDateContract || contractInfor.end_date);
 
   const getContract = () => {
     const url = `${getAPIHostName()}/contracts`;
@@ -77,7 +77,7 @@ export default function ContractPage() {
     setStartDateContract(null);
     setEndDateContract(null);
   };
-  
+
   const handleUpdateContract = () => {
     if (contractInfor.status === 'pending') {
       const url = `${getAPIHostName()}/contracts/${contractInfor._id}`;
@@ -87,34 +87,33 @@ export default function ContractPage() {
         start_date: convertDateStringToUnixDateTime(startDateContract),
         end_date: convertDateStringToUnixDateTime(endDateContract)
       };
-      if(buildBody.contract_name.length === 0){
+      if (buildBody.contract_name.length === 0) {
         notification.error({
-          title:'Error',
-          message:'Tên hợp đồng không được để trống'
-        })
-      }else{
-      httpPut(url, buildBody)
-        .then(res => {
-          if (res.success) {
-            getContract();
-            notification.success({
-              title: 'Thành công',
-              message: 'Cập nhật hợp đồng thành công'
-            });
-          }
-        })
-        .catch(() => {
-          notification.error({
-            title: 'Thất bại',
-            message: 'Cập nhật hợp đồng không thành công'
-          });
-          setPageLoading(false);
+          title: 'Error',
+          message: 'Tên hợp đồng không được để trống'
         });
+      } else {
+        httpPut(url, buildBody)
+          .then(res => {
+            if (res.success) {
+              getContract();
+              notification.success({
+                title: 'Thành công',
+                message: 'Cập nhật hợp đồng thành công'
+              });
+            }
+          })
+          .catch(() => {
+            notification.error({
+              title: 'Thất bại',
+              message: 'Cập nhật hợp đồng không thành công'
+            });
+            setPageLoading(false);
+          });
         setIsModalOpen(false);
       }
     }
     refreshState();
-   
   };
 
   const handleCancel = () => {
@@ -187,7 +186,7 @@ export default function ContractPage() {
       render: (_, record) => {
         return (
           <div className="contract__action">
-            {record.status === 'completed' || record.status === 'cancelled'? (
+            {record.status === 'completed' || record.status === 'cancelled' ? (
               <Tooltip title="Xem">
                 <EyeOutlined
                   onClick={() => {
@@ -243,12 +242,12 @@ export default function ContractPage() {
       <Modal
         title="Thông tin hợp đồng"
         open={isModalOpen}
-        okText={contractInfor.status === 'completed' || contractInfor.status === 'cancelled'  ? 'Đóng' : 'Cập nhật'}
+        okText={contractInfor.status === 'completed' || contractInfor.status === 'cancelled' ? 'Đóng' : 'Cập nhật'}
         cancelText={'Huỷ'}
         onOk={handleUpdateContract}
         onCancel={handleCancel}
         okButtonProps={{
-          disabled: !(checkEndDayContract && checkStartDayContract),
+          disabled: !(checkEndDayContract && checkStartDayContract)
         }}
       >
         <div className="edit__contract-label">Tên hợp đồng</div>
