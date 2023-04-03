@@ -5,7 +5,13 @@ import { httpGet, httpPost, httpPut, httpDelete } from '../../services/request';
 import { getAPIHostName } from '../../utils';
 import { loadingState } from '../../recoil/store/app';
 import { useSetRecoilState, useRecoilValue } from 'recoil';
-import { removeTimeFromDate, randomText, translateStatus, convertDateStringToUnixDateTime } from '../../utils/';
+import {
+  removeTimeFromDate,
+  randomText,
+  translateStatus,
+  convertDateStringToUnixDateTime,
+  checkIsEmpty
+} from '../../utils/';
 import { CSVLink } from 'react-csv';
 import { CloudDownloadOutlined } from '@ant-design/icons';
 import CustomInput from '../../components/custom-input/custom-input';
@@ -101,6 +107,7 @@ const EmployeesPage = () => {
   };
 
   const handleChangeFile = e => {
+    console.log('e :>> ', e);
     const fileUploaded = e.target.files?.[0];
     if (!fileUploaded) return;
     const url = `${getAPIHostName()}/import_excel`;
@@ -116,14 +123,14 @@ const EmployeesPage = () => {
         } else {
           notification.error({
             title: 'Thất bại',
-            message: res.message || 'Thêm nhân viên từ file thất bại'
+            message: 'Thêm nhân viên từ file thất bại'
           });
         }
       })
       .catch(err => {
         notification.error({
           title: 'Thất bại',
-          message: err || 'Thêm nhân viên từ file thất bại'
+          message: 'Thêm nhân viên từ file thất bại'
         });
       });
   };
@@ -152,6 +159,21 @@ const EmployeesPage = () => {
     const address = employeesAddressRef.current.input.value;
     const position = employeesPositionRef.current.input.value;
     const faculty = employeesFacultyRef.current.input.value;
+    if (
+      checkIsEmpty(name) ||
+      checkIsEmpty(codeEmployee) ||
+      checkIsEmpty(phoneNumber) ||
+      checkIsEmpty(email) ||
+      checkIsEmpty(address) ||
+      checkIsEmpty(position) ||
+      checkIsEmpty(faculty)
+    ) {
+      notification.error({
+        title: 'Thất bại',
+        message: 'Vui lòng điền đầy đủ thông tin'
+      });
+      return;
+    }
     setPageLoading(true);
     const url = `${getAPIHostName()}/employees?department=${department}&benefit=${benefit}`;
     httpPost(
@@ -186,12 +208,27 @@ const EmployeesPage = () => {
   };
 
   const handleUpdateEmployees = () => {
-    setPageLoading(true);
     const benefitId = selectedEmployee.benefitId[0]?._id || selectedEmployee.benefitId[0];
     const departmentId = selectedEmployee.departMentId[0]?._id || selectedEmployee.departMentId[0];
     let url = `${getAPIHostName()}/employees/${selectedEmployee._id}?`;
     if (benefitId) url += `&benefit=${benefitId}`;
     if (departmentId) url += `&department=${departmentId}`;
+    if (
+      checkIsEmpty(selectedEmployee.name) ||
+      checkIsEmpty(selectedEmployee.codeEmployee) ||
+      checkIsEmpty(selectedEmployee.phoneNumber) ||
+      checkIsEmpty(selectedEmployee.email) ||
+      checkIsEmpty(selectedEmployee.address) ||
+      checkIsEmpty(selectedEmployee.position) ||
+      checkIsEmpty(selectedEmployee.faculty)
+    ) {
+      notification.error({
+        title: 'Thất bại',
+        message: 'Vui lòng điền đầy đủ thông tin'
+      });
+      return;
+    }
+    setPageLoading(true);
     let buildBodyToUpdate = {
       name: selectedEmployee.name,
       email: selectedEmployee.email,

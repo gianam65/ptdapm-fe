@@ -18,12 +18,10 @@ const ProtectedComponents = ({ children }) => {
     if (accessToken) {
       if (pathname === '/login') {
         navigate('/');
+      } else if (getPriorityRole(accountRole) !== 'Admin' && privateRoutes.includes(pathname)) {
+        navigate('/');
       } else {
         setIsRender(true);
-      }
-      // Do not make code like this. TERRIBLE LOGIC
-      if (getPriorityRole(accountRole) !== 'Admin' && privateRoutes.includes(pathname)) {
-        navigate('/');
       }
     } else {
       if (!PUBLIC_ROUTES.includes(pathname)) {

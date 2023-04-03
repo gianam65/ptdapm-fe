@@ -3,7 +3,13 @@ import { Dropdown, Modal, notification } from 'antd';
 import { EllipsisOutlined, SecurityScanOutlined, SafetyCertificateOutlined } from '@ant-design/icons';
 import HomeIcon from '../svg/homeIcon';
 import { useRecoilValue, useRecoilState } from 'recoil';
-import { accountNameState, accountAvatarState, accountIdState, accessTokenState } from '../../recoil/store/account';
+import {
+  accountNameState,
+  accountAvatarState,
+  accountIdState,
+  accessTokenState,
+  accountStatusState
+} from '../../recoil/store/account';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useState, useRef, useEffect } from 'react';
 import CustomInput from '../custom-input/custom-input';
@@ -29,6 +35,7 @@ const Header = () => {
   const [currentAccountName, setCurrentAccountName] = useState(accountName || '');
   const [currentAccountAvatar, setCurrentAccountAvatar] = useState(accountAvatar || '');
   const [accessToken, setAccessToken] = useRecoilState(accessTokenState);
+  const accountStatus = useRecoilValue(accountStatusState);
   const navigation = useNavigate();
   const location = useLocation();
   const { pathname } = location;
@@ -147,6 +154,9 @@ const Header = () => {
       <div className="header__user-info">
         <div className="name_and_status">
           <div className="header__user-name">{currentAccountName || accountName}</div>
+          <span className="header__user-status">
+            {accountStatus === 'Active' ? 'Đang hoạt động' : 'Chưa hoạt động'}
+          </span>
         </div>
         {currentAccountAvatar || accountAvatar ? (
           <img src={currentAccountAvatar || accountAvatar} alt="account avatar" className="header__user-img" />
