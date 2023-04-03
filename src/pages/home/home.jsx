@@ -81,6 +81,13 @@ const Home = () => {
   };
 
   const handlePreview = img => {
+    if (!img?.[0]?.type?.includes('image')) {
+      notification.error({
+        title: 'Lỗi',
+        message: 'File không đúng định dạng'
+      });
+      return;
+    }
     const imgSize = img[0].size;
     if (imgSize > 10e6) {
       notification.error({
