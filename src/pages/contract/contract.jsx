@@ -1,5 +1,5 @@
 import './contract.scss';
-import { Table, Tag, Modal, DatePicker, notification, Tooltip } from 'antd';
+import { Table, Tag, Modal, DatePicker, notification, Tooltip,Button } from 'antd';
 import { EyeOutlined, EditOutlined } from '@ant-design/icons';
 import { useEffect, useState } from 'react';
 import CustomInput from '../../components/custom-input/custom-input';
@@ -246,6 +246,22 @@ export default function ContractPage() {
         cancelText={'Huỷ'}
         onOk={handleUpdateContract}
         onCancel={handleCancel}
+        footer={
+          contractInfor.status === 'completed'||contractInfor.status === 'cancelled' ? (
+            <Button key="submit" type="primary" onClick={handleCancel}>
+              Đóng
+            </Button>
+          ) : (
+            [
+              <Button key="back" onClick={handleCancel}>
+                Huỷ
+              </Button>,
+              <Button key="submit" type="primary" onClick={handleUpdateContract}>
+                Cập nhật
+              </Button>,
+            ]
+          )
+        }
         okButtonProps={{
           disabled: !(checkEndDayContract && checkStartDayContract)
         }}
