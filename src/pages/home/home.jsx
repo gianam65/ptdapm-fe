@@ -3,7 +3,7 @@ import { useRecoilValue, useSetRecoilState, useRecoilState } from 'recoil';
 import { accessTokenState, accountIdState, accountNameState, accountAvatarState } from '../../recoil/store/account';
 import { useEffect, useState } from 'react';
 import { httpGet, httpPut } from '../../services/request';
-import { getAPIHostName, removeTimeFromDate, fallbackToDefaultAvatar } from '../../utils';
+import { getAPIHostName, removeTimeFromDate, fallbackToDefaultAvatar, translateStatus } from '../../utils';
 import { loadingState } from '../../recoil/store/app';
 import { notification, Input } from 'antd';
 import { CameraOutlined } from '@ant-design/icons';
@@ -81,6 +81,13 @@ const Home = () => {
   };
 
   const handlePreview = img => {
+    if (!img?.[0]?.type?.includes('image')) {
+      notification.error({
+        title: 'Lỗi',
+        message: 'File không đúng định dạng'
+      });
+      return;
+    }
     const imgSize = img[0].size;
     if (imgSize > 10e6) {
       notification.error({
@@ -134,7 +141,7 @@ const Home = () => {
             </div>
             <div>
               <div>Tình trạng hoạt động</div>
-              <Input size={'medium'} value={userInfor.status || 'Active'} disabled></Input>
+              <Input size={'medium'} value={translateStatus(userInfor.status) || 'Active'} disabled></Input>
             </div>
             <div>
               <div>Ngày vào làm</div>

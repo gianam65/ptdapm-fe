@@ -2,7 +2,7 @@ import './department.scss';
 import { PlusOutlined, EditOutlined, DeleteOutlined, ExclamationCircleFilled } from '@ant-design/icons';
 import Button from '../../components/button/button';
 import { Modal, Table, notification, Tooltip } from 'antd';
-import { getAPIHostName } from '../../utils/';
+import { getAPIHostName, checkIsEmpty } from '../../utils/';
 import { httpGet, httpDelete, httpPost, httpPut } from '../../services/request';
 import { useEffect, useState, useRef } from 'react';
 import { useRecoilValue, useSetRecoilState } from 'recoil';
@@ -20,6 +20,7 @@ export default function DepartmentPage() {
   const setPageLoading = useSetRecoilState(loadingState);
   const departmentNameRef = useRef(null);
   const departmentCodeRef = useRef(null);
+  const [selectedDepartment, setSelectedDepartment] = useState({});
   useEffect(() => {
     const getDepartment = () => {
       const url = `${getAPIHostName()}/departments`;
@@ -47,6 +48,7 @@ export default function DepartmentPage() {
 
   const openModalUpSertDepartment = id => {
     setUpdateId(id);
+    setSelectedDepartment(departmentList.find(dp => dp._id === id) || {});
     setOpenUpSertDepartment(true);
   };
 
@@ -55,7 +57,13 @@ export default function DepartmentPage() {
     const name = departmentNameRef.current.input.value;
     const code = departmentCodeRef.current.input.value;
     const url = `${getAPIHostName()}/departments/${id}`;
-
+    if (checkIsEmpty(name) || checkIsEmpty(code)) {
+      notification.error({
+        title: 'Thất bại',
+        message: 'Vui lòng điền đầy đủ thông tin'
+      });
+      return;
+    }
     httpPut(url, { name, code }, accessToken)
       .then(res => {
         if (res.success) {
@@ -163,6 +171,13 @@ export default function DepartmentPage() {
     const code = departmentCodeRef.current.input.value;
     const url = `${getAPIHostName()}/departments`;
 
+    if (checkIsEmpty(name) || checkIsEmpty(code)) {
+      notification.error({
+        title: 'Thất bại',
+        message: 'Vui lòng điền đầy đủ thông tin'
+      });
+      return;
+    }
     httpPost(url, { name, code }, accessToken)
       .then(res => {
         if (res.success) {
@@ -223,20 +238,30 @@ export default function DepartmentPage() {
       />
 
       <Modal
-        title="Tạo phòng ban"
+        title={updateId ? 'Sửa phòng ban' : 'Thêm phòng ban'}
         open={openUpSertDepartment}
         onOk={() => {
           updateId ? handleUpdateDepartment(updateId) : handleAddDepartment();
         }}
         wrapClassName="add__department-modal"
         onCancel={() => setOpenUpSertDepartment(false)}
-        okText="Thêm"
+        okText={updateId ? 'Sửa' : 'Thêm'}
         cancelText="Huỷ"
       >
         <div className="add__department-label">Tên phòng ban:</div>
-        <CustomInput ref={departmentNameRef} placeholder="Vui lòng nhập tên phòng ban" />
+        <CustomInput
+          onChange={e => setSelectedDepartment({ ...selectedDepartment, name: e.target.value })}
+          value={selectedDepartment.name}
+          ref={departmentNameRef}
+          placeholder="Vui lòng nhập tên phòng ban"
+        />
         <div className="add__department-label">Mã phòng ban:</div>
-        <CustomInput ref={departmentCodeRef} placeholder="Vui lòng nhập mã phòng ban" />
+        <CustomInput
+          onChange={e => setSelectedDepartment({ ...selectedDepartment, code: e.target.value })}
+          value={selectedDepartment.code}
+          ref={departmentCodeRef}
+          placeholder="Vui lòng nhập mã phòng ban"
+        />
       </Modal>
     </div>
   );

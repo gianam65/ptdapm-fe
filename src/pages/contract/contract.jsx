@@ -8,7 +8,7 @@ import { httpGet, httpPut } from '../../services/request';
 import { loadingState } from '../../recoil/store/app';
 import { useSetRecoilState } from 'recoil';
 import dayjs from 'dayjs';
-import { convertDateStringToUnixDateTime, removeTimeFromDate } from '../../utils';
+import { convertDateStringToUnixDateTime, removeTimeFromDate, checkIsEmpty } from '../../utils';
 
 export default function ContractPage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -21,7 +21,6 @@ export default function ContractPage() {
   const [startDateContract, setStartDateContract] = useState();
   const [endDateContract, setEndDateContract] = useState();
   const [dateContract, setContractDate] = useState();
-  console.log(listcontract,'hello')
 
   useEffect(() => {
     Promise.all([getEmployees(), getContract()]);
@@ -42,6 +41,9 @@ export default function ContractPage() {
         setIsLoadingTable(false);
       });
   };
+
+  const checkStartDayContract = Boolean(startDateContract || contractInfor.start_date);
+  const checkEndDayContract = Boolean(endDateContract || contractInfor.end_date);
 
   const getContract = () => {
     const url = `${getAPIHostName()}/contracts`;
@@ -85,26 +87,39 @@ export default function ContractPage() {
         start_date: convertDateStringToUnixDateTime(startDateContract),
         end_date: convertDateStringToUnixDateTime(endDateContract)
       };
+      if (
+        checkIsEmpty(convertDateStringToUnixDateTime(dateContract)) ||
+        checkIsEmpty(convertDateStringToUnixDateTime(startDateContract)) ||
+        checkIsEmpty(convertDateStringToUnixDateTime(contractInfor.contract_date)) ||
+        checkIsEmpty(convertDateStringToUnixDateTime(endDateContract))
+      ) {
+        notification.error({
+          title: 'Thất bại',
+          message: 'Vui lòng điền đầy đủ thông tin'
+        });
+        return;
+      }
       httpPut(url, buildBody)
         .then(res => {
           if (res.success) {
             getContract();
-            notification.success({  
+            notification.success({
               title: 'Thành công',
               message: 'Cập nhật hợp đồng thành công'
             });
           }
         })
-        .catch(() => {
+        .catch(err => {
+          console.log('err :>> ', err);
           notification.error({
             title: 'Thất bại',
             message: 'Cập nhật hợp đồng không thành công'
           });
           setPageLoading(false);
         });
+      setIsModalOpen(false);
     }
     refreshState();
-    setIsModalOpen(false);
   };
 
   const handleCancel = () => {
@@ -117,7 +132,6 @@ export default function ContractPage() {
       key: 'status',
       width: 120,
       render: (_, record) => {
-        console.log(record.status)
         let color;
         if (record.status === 'pending') {
           color = 'geekblue';
@@ -142,7 +156,7 @@ export default function ContractPage() {
     {
       title: 'Chức vụ',
       dataIndex: 'position',
-      key: 'position',
+      key: 'position'
     },
     {
       title: 'Tên hợp đồng',
@@ -178,7 +192,7 @@ export default function ContractPage() {
       render: (_, record) => {
         return (
           <div className="contract__action">
-            {record.status === 'completed' ? (
+            {record.status === 'completed' || record.status === 'cancelled' ? (
               <Tooltip title="Xem">
                 <EyeOutlined
                   onClick={() => {
@@ -234,10 +248,13 @@ export default function ContractPage() {
       <Modal
         title="Thông tin hợp đồng"
         open={isModalOpen}
-        okText={contractInfor.status === 'completed' ? 'Đóng' : 'Cập nhật'}
+        okText={contractInfor.status === 'completed' || contractInfor.status === 'cancelled' ? 'Đóng' : 'Cập nhật'}
         cancelText={'Huỷ'}
         onOk={handleUpdateContract}
         onCancel={handleCancel}
+        okButtonProps={{
+          disabled: !(checkEndDayContract && checkStartDayContract)
+        }}
       >
         <div className="edit__contract-label">Tên hợp đồng</div>
 
@@ -254,9 +271,9 @@ export default function ContractPage() {
 
         <div className="edit__contract-label">Chức vụ</div>
         <CustomInput
-          value={contractInfor.role}
+          value={contractInfor.position}
           onChange={e => {
-            setContractInfor({ ...contractInfor, role: e.target.value });
+            setContractInfor({ ...contractInfor, position: e.target.value });
           }}
           disabled={contractInfor.status === 'completed'}
         ></CustomInput>

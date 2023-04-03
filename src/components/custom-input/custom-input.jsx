@@ -7,6 +7,7 @@ const CustomInput = (
   {
     type = 'text', // password || search
     customClass,
+    defaultValue,
     ...props
   },
   ref
@@ -22,7 +23,7 @@ const CustomInput = (
       ) : type === 'search' ? (
         <Input.Search ref={ref} {...props} />
       ) : (
-        <Input ref={ref} {...props} />
+        <Input ref={ref} defaultValue={defaultValue} {...props} />
       )}
     </div>
   );

@@ -17,7 +17,8 @@ import {
   DollarOutlined,
   ClusterOutlined,
   SettingOutlined,
-  AuditOutlined
+  AuditOutlined,
+  BellOutlined
 } from '@ant-design/icons';
 const publicRoutes = [
   {
@@ -70,7 +71,7 @@ const publicRoutes = [
   },
   {
     path: config.routes.notifcation,
-    pageIcon: <DollarOutlined />,
+    pageIcon: <BellOutlined />,
     element: <NotificationPage />,
     label: 'Thông báo',
     needShowSideMenu: true

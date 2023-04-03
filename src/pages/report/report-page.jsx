@@ -79,7 +79,6 @@ export default function ReportPage() {
   }, []);
 
   const seperateDataByDate = () => {
-    console.log("reportList",reportList);
     const groupEmployeesByDateStartWorking = reportList.reduce(
       (acc, curr) => {
         if (curr.createdAt) {
@@ -103,8 +102,6 @@ export default function ReportPage() {
         result: []
       }
     ).result;
-
-    console.log("groupEmployeesByDateStartWorking",groupEmployeesByDateStartWorking);
 
     let result = groupEmployeesByDateStartWorking.sort((a, b) => {
       return Date.parse(a.workingAt) - Date.parse(b.workingAt) > 0 ? 1 : -1;

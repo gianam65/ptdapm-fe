@@ -1,15 +1,14 @@
 import './header.scss';
 import { Dropdown, Modal, notification } from 'antd';
-import { EllipsisOutlined, FormOutlined, SecurityScanOutlined, SafetyCertificateOutlined } from '@ant-design/icons';
+import { EllipsisOutlined, SecurityScanOutlined, SafetyCertificateOutlined } from '@ant-design/icons';
 import HomeIcon from '../svg/homeIcon';
 import { useRecoilValue, useRecoilState } from 'recoil';
 import {
   accountNameState,
-  accountStatusState,
-  // accountRoleState,
   accountAvatarState,
   accountIdState,
-  accessTokenState
+  accessTokenState,
+  accountStatusState
 } from '../../recoil/store/account';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useState, useRef, useEffect } from 'react';
@@ -18,15 +17,6 @@ import { getAPIHostName, convertRouteToVNS, fallbackToDefaultAvatar } from '../.
 import { httpPut, httpGet } from '../../services/request';
 
 const items = [
-  {
-    key: '/',
-    label: (
-      <span className="dropdown__item">
-        <FormOutlined />
-        Thay đổi thông tin
-      </span>
-    )
-  },
   {
     key: 'change_password',
     label: (
@@ -40,13 +30,12 @@ const items = [
 
 const Header = () => {
   const accountName = useRecoilValue(accountNameState);
-  const accountStatus = useRecoilValue(accountStatusState);
-  // const accountRole = useRecoilValue(accountRoleState);
   const accountAvatar = useRecoilValue(accountAvatarState);
   const accountId = useRecoilValue(accountIdState);
   const [currentAccountName, setCurrentAccountName] = useState(accountName || '');
   const [currentAccountAvatar, setCurrentAccountAvatar] = useState(accountAvatar || '');
   const [accessToken, setAccessToken] = useRecoilState(accessTokenState);
+  const accountStatus = useRecoilValue(accountStatusState);
   const navigation = useNavigate();
   const location = useLocation();
   const { pathname } = location;
@@ -101,6 +90,13 @@ const Header = () => {
         errorMessage: 'Mật khẩu mới và mật khẩu xác nhận không khớp'
       };
 
+    if (newPassword?.length < 6) {
+      return {
+        valid: false,
+        errorMessage: 'Mật khẩu mới phải ít nhất 6 kí tự'
+      };
+    }
+
     return { valid: true };
   };
 
@@ -117,7 +113,7 @@ const Header = () => {
       return;
     }
 
-    const url = `${getAPIHostName()}/users/${accountId}?changePassword=${true}`;
+    const url = `${getAPIHostName()}/users/change-password/${accountId}`;
     httpPut(
       url,
       {
@@ -127,7 +123,7 @@ const Header = () => {
       accessToken
     )
       .then(res => {
-        if (res.success) {
+        if (res.status) {
           notification.success({
             title: 'Thành công',
             message: res.message || 'Đổi mật khẩu thành công'
@@ -158,7 +154,9 @@ const Header = () => {
       <div className="header__user-info">
         <div className="name_and_status">
           <div className="header__user-name">{currentAccountName || accountName}</div>
-          <span className="header__user-status">{accountStatus}</span>
+          <span className="header__user-status">
+            {accountStatus === 'Active' ? 'Đang hoạt động' : 'Chưa hoạt động'}
+          </span>
         </div>
         {currentAccountAvatar || accountAvatar ? (
           <img src={currentAccountAvatar || accountAvatar} alt="account avatar" className="header__user-img" />
