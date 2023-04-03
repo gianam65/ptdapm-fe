@@ -418,7 +418,13 @@ const EmployeesPage = () => {
           className="employees__search-inp"
           onChange={e => setTextSearch(e.target.value)}
         />
-        <Button className="employees__search-btn" rightIcon={<PlusOutlined />} onClick={() => setIsModalOpen(true)}>
+        <Button
+          className="employees__search-btn"
+          rightIcon={<PlusOutlined />}
+          onClick={() => {
+            setIsModalOpen(true);
+          }}
+        >
           Thêm nhân viên
         </Button>
       </div>
