@@ -3,22 +3,21 @@ import { httpGet, httpPut } from '../../services/request';
 import { getAPIHostName, normalizeDate, getPriorityRole, fallbackToDefaultAvatar } from '../../utils';
 import { useEffect, useState } from 'react';
 import { loadingState } from '../../recoil/store/app';
-import { accessTokenState } from '../../recoil/store/account';
+import { accessTokenState, accountRoleState } from '../../recoil/store/account';
 import { useSetRecoilState, useRecoilValue } from 'recoil';
 import { Table, Tooltip, Modal, notification } from 'antd';
-import {
-  DoubleRightOutlined
-  // , PlusOutlined
-} from '@ant-design/icons';
+import { DoubleRightOutlined } from '@ant-design/icons';
 import classNames from 'classnames';
 import CustomInput from '../../components/custom-input/custom-input';
-// import Button from '../../components/button/button';
+import { useNavigate } from 'react-router-dom';
 
 const SettingsPage = () => {
   const [users, setUsers] = useState([]);
   const [searchValue, setSearchValue] = useState('');
   const setPageLoading = useSetRecoilState(loadingState);
+  const setRole = useSetRecoilState(accountRoleState);
   const accessToken = useRecoilValue(accessTokenState);
+  const navigate = useNavigate();
   useEffect(() => {
     const getUsers = () => {
       const url = `${getAPIHostName()}/users`;
@@ -121,6 +120,10 @@ const SettingsPage = () => {
               const updatedIdx = copyListUsers.findIndex(u => u._id === _id);
               copyListUsers.splice(updatedIdx, 1, res.data);
               setUsers(copyListUsers || []);
+              setRole(res.data.role);
+              if (getPriorityRole(res.data.role) !== 'Admin') {
+                navigate('/');
+              }
               notification.success({
                 title: 'Thành công',
                 message: 'Cập nhật quyền người dùng thành công'

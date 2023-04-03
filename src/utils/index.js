@@ -98,3 +98,7 @@ export const convertRouteToVNS = route => {
       return '/';
   }
 };
+
+export const checkIsEmpty = value => {
+  return value?.toString().trim() === '';
+};

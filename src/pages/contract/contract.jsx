@@ -8,7 +8,7 @@ import { httpGet, httpPut } from '../../services/request';
 import { loadingState } from '../../recoil/store/app';
 import { useSetRecoilState } from 'recoil';
 import dayjs from 'dayjs';
-import { convertDateStringToUnixDateTime, removeTimeFromDate } from '../../utils';
+import { convertDateStringToUnixDateTime, removeTimeFromDate, checkIsEmpty } from '../../utils';
 
 export default function ContractPage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -87,31 +87,37 @@ export default function ContractPage() {
         start_date: convertDateStringToUnixDateTime(startDateContract),
         end_date: convertDateStringToUnixDateTime(endDateContract)
       };
-      if (buildBody.contract_name.length === 0) {
+      if (
+        checkIsEmpty(convertDateStringToUnixDateTime(dateContract)) ||
+        checkIsEmpty(convertDateStringToUnixDateTime(startDateContract)) ||
+        checkIsEmpty(convertDateStringToUnixDateTime(contractInfor.contract_date)) ||
+        checkIsEmpty(convertDateStringToUnixDateTime(endDateContract))
+      ) {
         notification.error({
-          title: 'Error',
-          message: 'Tên hợp đồng không được để trống'
+          title: 'Thất bại',
+          message: 'Vui lòng điền đầy đủ thông tin'
         });
-      } else {
-        httpPut(url, buildBody)
-          .then(res => {
-            if (res.success) {
-              getContract();
-              notification.success({
-                title: 'Thành công',
-                message: 'Cập nhật hợp đồng thành công'
-              });
-            }
-          })
-          .catch(() => {
-            notification.error({
-              title: 'Thất bại',
-              message: 'Cập nhật hợp đồng không thành công'
-            });
-            setPageLoading(false);
-          });
-        setIsModalOpen(false);
+        return;
       }
+      httpPut(url, buildBody)
+        .then(res => {
+          if (res.success) {
+            getContract();
+            notification.success({
+              title: 'Thành công',
+              message: 'Cập nhật hợp đồng thành công'
+            });
+          }
+        })
+        .catch(err => {
+          console.log('err :>> ', err);
+          notification.error({
+            title: 'Thất bại',
+            message: 'Cập nhật hợp đồng không thành công'
+          });
+          setPageLoading(false);
+        });
+      setIsModalOpen(false);
     }
     refreshState();
   };
