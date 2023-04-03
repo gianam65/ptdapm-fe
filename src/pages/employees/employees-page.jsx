@@ -1,7 +1,7 @@
 import './employees-page.scss';
 import { Table, notification, Modal, Tooltip, InputNumber, Select, Input, DatePicker } from 'antd';
 import { useEffect, useState, useRef } from 'react';
-import { httpGet, httpPost, httpDelete } from '../../services/request';
+import { httpGet, httpPost, httpPut, httpDelete } from '../../services/request';
 import { getAPIHostName } from '../../utils';
 import { loadingState } from '../../recoil/store/app';
 import { useSetRecoilState, useRecoilValue } from 'recoil';
@@ -189,7 +189,7 @@ const EmployeesPage = () => {
     setPageLoading(true);
     const benefitId = selectedEmployee.benefitId[0]?._id || selectedEmployee.benefitId[0];
     const departmentId = selectedEmployee.departMentId[0]?._id || selectedEmployee.departMentId[0];
-    let url = `${getAPIHostName()}/employees?`;
+    let url = `${getAPIHostName()}/employees/${selectedEmployee._id}?`;
     if (benefitId) url += `&benefit=${benefitId}`;
     if (departmentId) url += `&department=${departmentId}`;
     let buildBodyToUpdate = {
@@ -205,7 +205,7 @@ const EmployeesPage = () => {
       faculty: selectedEmployee.faculty
     };
 
-    httpPost(url, buildBodyToUpdate, accessToken)
+    httpPut(url, buildBodyToUpdate, accessToken)
       .then(res => {
         if (res.success) {
           notification.success({
