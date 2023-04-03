@@ -10,7 +10,7 @@ import { loadingState } from '../../recoil/store/app';
 import CustomInput from '../../components/custom-input/custom-input';
 import { accessTokenState } from '../../recoil/store/account';
 import { ExclamationCircleFilled, PlusOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons';
-import { removeTimeFromDate } from '../../utils';
+import { removeTimeFromDate, checkIsEmpty } from '../../utils';
 
 const { Search } = Input;
 const BenefitPage = () => {
@@ -59,7 +59,7 @@ const BenefitPage = () => {
         .catch(() => {
           notification.error({
             title: 'Thất bại',
-            message: 'Can not get benefit data'
+            message: 'Không thể lấy dữ liệu'
           });
           setPageLoading(false);
         });
@@ -89,15 +89,15 @@ const BenefitPage = () => {
             if (res.success) {
               setBenefitList(oldBenefitList => oldBenefitList.filter(benefit => benefit._id !== idDelete));
               notification.success({
-                title: 'Success',
-                message: res.message || 'Xóa quyền lợi thành công'
+                title: 'Thành công',
+                message: 'Xóa quyền lợi thành công'
               });
             }
             setIsLoadingTable(false);
           })
           .catch(() => {
             notification.error({
-              title: 'Error',
+              title: 'Lỗi',
               message: 'Xóa quyền lợi thất bại'
             });
             setIsLoadingTable(false);
@@ -117,6 +117,19 @@ const BenefitPage = () => {
     const standard = benefitStandardRef.current.value;
     const month = benefitMonthRef.current.value;
     const status = selectedStatus;
+    if (
+      checkIsEmpty(name) ||
+      checkIsEmpty(description) ||
+      checkIsEmpty(standard) ||
+      checkIsEmpty(month) ||
+      checkIsEmpty(status)
+    ) {
+      notification.error({
+        title: 'Thất bại',
+        message: 'Vui lòng điền đầy đủ thông tin'
+      });
+      return;
+    }
     const url = `${getAPIHostName()}/benefits/${idUpdate}`;
     httpPut(url, { name, description, standard, month, status }, accessToken)
       .then(res => {
@@ -132,7 +145,7 @@ const BenefitPage = () => {
             return oldBenefitList;
           });
           notification.success({
-            title: 'Success',
+            title: 'Thành công',
             message: 'Cập nhật quyền lợi thành công'
           });
           setOpenUpSertBenefit(false);
@@ -140,8 +153,8 @@ const BenefitPage = () => {
       })
       .catch(() => {
         notification.error({
-          title: 'Error',
-          message: 'Failed to update benefit'
+          title: 'Lỗi',
+          message: 'Cập nhật quyền lợi thất bại'
         });
         setOpenUpSertBenefit(false);
       });
@@ -152,6 +165,19 @@ const BenefitPage = () => {
     const standardLeave = benefitStandardRef.current.value;
     const month = benefitMonthRef.current.value;
     const status = selectedStatus;
+    if (
+      checkIsEmpty(name) ||
+      checkIsEmpty(description) ||
+      checkIsEmpty(standardLeave) ||
+      checkIsEmpty(month) ||
+      checkIsEmpty(status)
+    ) {
+      notification.error({
+        title: 'Thất bại',
+        message: 'Vui lòng điền đầy đủ thông tin'
+      });
+      return;
+    }
     const url = `${getAPIHostName()}/benefits`;
     httpPost(url, { name, description, standardLeave, month, status }, accessToken)
       .then(res => {
@@ -166,14 +192,14 @@ const BenefitPage = () => {
         } else {
           notification.error({
             title: 'Thất bại',
-            message: res.message || 'Thêm quyền lợi thất bại'
+            message: 'Thêm quyền lợi thất bại'
           });
         }
       })
       .catch(err => {
         notification.error({
           title: 'Thất bại',
-          message: err || 'Thêm quyền lợi thất bại'
+          message: 'Thêm quyền lợi thất bại'
         });
         setOpenUpSertBenefit(false);
       });
