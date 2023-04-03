@@ -1,5 +1,5 @@
 import './contract.scss';
-import { Table, Tag, Modal, DatePicker, notification, Tooltip } from 'antd';
+import { Table, Tag, Modal, DatePicker, notification, Tooltip, Button } from 'antd';
 import { EyeOutlined, EditOutlined } from '@ant-design/icons';
 import { useEffect, useState } from 'react';
 import CustomInput from '../../components/custom-input/custom-input';
@@ -42,6 +42,9 @@ export default function ContractPage() {
       });
   };
 
+  const checkStartDayContract = Boolean(startDateContract || contractInfor.start_date)
+  const checkEndDayContract = Boolean(endDateContract || contractInfor.end_date)
+
   const getContract = () => {
     const url = `${getAPIHostName()}/contracts`;
     setPageLoading(true);
@@ -74,7 +77,7 @@ export default function ContractPage() {
     setStartDateContract(null);
     setEndDateContract(null);
   };
-
+  
   const handleUpdateContract = () => {
     if (contractInfor.status === 'pending') {
       const url = `${getAPIHostName()}/contracts/${contractInfor._id}`;
@@ -244,6 +247,9 @@ export default function ContractPage() {
         cancelText={'Huỷ'}
         onOk={handleUpdateContract}
         onCancel={handleCancel}
+        okButtonProps={{
+          disabled: !(checkEndDayContract && checkStartDayContract),
+        }}
       >
         <div className="edit__contract-label">Tên hợp đồng</div>
 
