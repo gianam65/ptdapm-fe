@@ -20,6 +20,7 @@ export default function DepartmentPage() {
   const setPageLoading = useSetRecoilState(loadingState);
   const departmentNameRef = useRef(null);
   const departmentCodeRef = useRef(null);
+  const [selectedDepartment, setSelectedDepartment] = useState({});
   useEffect(() => {
     const getDepartment = () => {
       const url = `${getAPIHostName()}/departments`;
@@ -47,6 +48,7 @@ export default function DepartmentPage() {
 
   const openModalUpSertDepartment = id => {
     setUpdateId(id);
+    setSelectedDepartment(departmentList.find(dp => dp._id === id) || {});
     setOpenUpSertDepartment(true);
   };
 
@@ -234,9 +236,19 @@ export default function DepartmentPage() {
         cancelText="Huỷ"
       >
         <div className="add__department-label">Tên phòng ban:</div>
-        <CustomInput ref={departmentNameRef} placeholder="Vui lòng nhập tên phòng ban" />
+        <CustomInput
+          onChange={e => setSelectedDepartment({ ...selectedDepartment, name: e.target.value })}
+          value={selectedDepartment.name}
+          ref={departmentNameRef}
+          placeholder="Vui lòng nhập tên phòng ban"
+        />
         <div className="add__department-label">Mã phòng ban:</div>
-        <CustomInput ref={departmentCodeRef} placeholder="Vui lòng nhập mã phòng ban" />
+        <CustomInput
+          onChange={e => setSelectedDepartment({ ...selectedDepartment, code: e.target.value })}
+          value={selectedDepartment.code}
+          ref={departmentCodeRef}
+          placeholder="Vui lòng nhập mã phòng ban"
+        />
       </Modal>
     </div>
   );

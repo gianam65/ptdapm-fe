@@ -252,9 +252,9 @@ export default function ContractPage() {
 
         <div className="edit__contract-label">Chức vụ</div>
         <CustomInput
-          value={contractInfor.role}
+          value={contractInfor.position}
           onChange={e => {
-            setContractInfor({ ...contractInfor, role: e.target.value });
+            setContractInfor({ ...contractInfor, position: e.target.value });
           }}
           disabled={contractInfor.status === 'completed'}
         ></CustomInput>

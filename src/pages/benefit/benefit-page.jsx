@@ -292,12 +292,18 @@ const BenefitPage = () => {
             <div className="benefit__modal-left">
               <div id="benefit__modal-name" className="benefit__modal-item">
                 <div className="benefit__modal-label">Tên quyền lợi:</div>
-                <CustomInput defaultValue={selectedBenefit.name} ref={benefitNameRef} placeholder="Tên quyền lợi" />
+                <CustomInput
+                  onChange={e => setSelectedBenefit({ ...selectedBenefit, name: e.target.value })}
+                  value={selectedBenefit.name}
+                  ref={benefitNameRef}
+                  placeholder="Tên quyền lợi"
+                />
               </div>
               <div id="benefit__modal-description" className="benefit__modal-item">
                 <div className="benefit__modal-label">Mô tả:</div>
                 <CustomInput
-                  defaultValue={selectedBenefit.description}
+                  onChange={e => setSelectedBenefit({ ...selectedBenefit, description: e.target.value })}
+                  value={selectedBenefit.description}
                   ref={benefitDescriptionRef}
                   placeholder="Nhập mô tả"
                 />
@@ -311,7 +317,10 @@ const BenefitPage = () => {
               <div id="benefit__modal-standard" className="benefit__modal-item">
                 <div className="benefit__modal-label">Tiêu chuẩn:</div>
                 <InputNumber
-                  defaultValue={selectedBenefit.standardLeave}
+                  onChange={e => {
+                    setSelectedBenefit({ ...selectedBenefit, standardLeave: e });
+                  }}
+                  value={selectedBenefit.standardLeave}
                   ref={benefitStandardRef}
                   style={{ width: 120 }}
                 />
@@ -319,7 +328,8 @@ const BenefitPage = () => {
               <div id="benefit__modal-month" className="benefit__modal-item">
                 <div className="benefit__modal-label">Tháng:</div>
                 <InputNumber
-                  defaultValue={selectedBenefit.month}
+                  onChange={e => setSelectedBenefit({ ...selectedBenefit, month: e })}
+                  value={selectedBenefit.month}
                   ref={benefitMonthRef}
                   style={{ width: 120 }}
                   min={1}

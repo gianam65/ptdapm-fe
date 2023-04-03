@@ -13,7 +13,7 @@ import { accessTokenState } from '../../recoil/store/account';
 import { PlusOutlined, EditOutlined, DeleteOutlined, CloudUploadOutlined } from '@ant-design/icons';
 import Button from '../../components/button/button';
 import classNames from 'classnames';
-import moment from 'moment';
+import dayjs from 'dayjs';
 
 const HEADERS = [
   { label: 'Tên nhân viên', key: 'name' },
@@ -46,20 +46,13 @@ const EmployeesPage = () => {
   const employeesAddressRef = useRef(null);
   const employeesPositionRef = useRef(null);
   const employeesFacultyRef = useRef(null);
-  const [name, setName] = useState('');
-  const [email, setEmail] = useState('');
-  const [code, setCode] = useState('');
-  const [phone, setPhone] = useState('');
-  const [address, setAddress] = useState('');
   const [salaryRanks, setSalaryRanks] = useState(1);
   const [department, setDepartment] = useState('');
   const [benefit, setBenefit] = useState('');
-  const [startDate, setStartDate] = useState();
-  const [position, setPosition] = useState();
   const [id, setID] = useState();
-  const [faculty, setFaculty] = useState('');
   const [textSearch, setTextSearch] = useState('');
   const [number, setNumber] = useState('');
+  const [selectedEmployee, setSelectedEmployee] = useState({});
   useEffect(() => {
     fetchEmployees();
     getDepartment();
@@ -151,33 +144,6 @@ const EmployeesPage = () => {
       });
   };
 
-  const clearData = () => {
-    employeesNameRef.current.input.value.reset();
-    employeesCodeRef.current.input.value.reset();
-    employeesEmailRef.current.input.value.reset();
-    employeesAddressRef.current.input.value.reset();
-    employeesPhoneRef.current.input.value.reset();
-    employeesPositionRef.current.input.value.reset();
-    employeesFacultyRef.current.input.value.reset();
-    setEmployeeGender('');
-    setSalaryRanks(1);
-    setDepartment('');
-    setBenefit('');
-  };
-
-  const clearDataUpdate = () => {
-    setName('');
-    setEmail('');
-    setPhone('');
-    setPosition('');
-    setStartDate('');
-    setEmployeeGender('');
-    setAddress('');
-    setSalaryRanks('');
-    setDepartment('');
-    setPosition('');
-  };
-
   const handleAddEmployees = () => {
     const name = employeesNameRef.current.input.value;
     const codeEmployee = employeesCodeRef.current.input.value;
@@ -201,7 +167,6 @@ const EmployeesPage = () => {
           });
           fetchEmployees();
           setIsModalOpen(false);
-          clearData();
         } else {
           notification.error({
             title: 'Thất bại',
@@ -216,32 +181,28 @@ const EmployeesPage = () => {
   };
 
   const handleOpenUpdateModal = codeEmployee => {
-    setCode(codeEmployee);
+    setSelectedEmployee(listEmployees.find(e => e.codeEmployee === codeEmployee) || {});
     setEditModalOpen(true);
-  };
-
-  const getSelectedUser = () => {
-    return listEmployees.find(emp => emp.codeEmployee === code);
   };
 
   const handleUpdateEmployees = () => {
     setPageLoading(true);
-    const url = `${getAPIHostName()}/employees?department=${
-      department || (getSelectedUser() && getSelectedUser().departMentId[0]?._id)
-    }&benefit=${benefit || (getSelectedUser() && getSelectedUser().benefitId[0])}`;
+    const benefitId = selectedEmployee.benefitId[0]?._id || selectedEmployee.benefitId[0];
+    const departmentId = selectedEmployee.departMentId[0]?._id || selectedEmployee.departMentId[0];
+    let url = `${getAPIHostName()}/employees?`;
+    if (benefitId) url += `&benefit=${benefitId}`;
+    if (departmentId) url += `&department=${departmentId}`;
     let buildBodyToUpdate = {
-      name: name || (getSelectedUser() && getSelectedUser().name),
-      email: email || (getSelectedUser() && getSelectedUser().email),
-      codeEmployee: code || (getSelectedUser() && getSelectedUser().code),
-      phoneNumber: phone || (getSelectedUser() && getSelectedUser().phoneNumber),
-      gender: employeeGender || (getSelectedUser() && getSelectedUser().gender),
-      address: address || (getSelectedUser() && getSelectedUser().address),
-      salaryRank: salaryRanks || (getSelectedUser() && getSelectedUser().salaryRank),
-      startDate:
-        convertDateStringToUnixDateTime(startDate) ||
-        convertDateStringToUnixDateTime(getSelectedUser() && getSelectedUser().startDate),
-      position: position || (getSelectedUser() && getSelectedUser().position),
-      faculty: faculty || (getSelectedUser() && getSelectedUser().faculty)
+      name: selectedEmployee.name,
+      email: selectedEmployee.email,
+      codeEmployee: selectedEmployee.codeEmployee,
+      phoneNumber: selectedEmployee.phoneNumber,
+      gender: selectedEmployee.gender,
+      address: selectedEmployee.address,
+      salaryRank: selectedEmployee.salaryRank,
+      startDate: convertDateStringToUnixDateTime(selectedEmployee.startDate),
+      position: selectedEmployee.position,
+      faculty: selectedEmployee.faculty
     };
 
     httpPost(url, buildBodyToUpdate, accessToken)
@@ -252,7 +213,6 @@ const EmployeesPage = () => {
             message: 'Cập nhật nhân viên thành công'
           });
           setEditModalOpen(false);
-          clearDataUpdate();
           fetchEmployees();
         } else {
           notification.error({
@@ -269,8 +229,7 @@ const EmployeesPage = () => {
 
   const handleDeleteEmployees = () => {
     setPageLoading(true);
-    const selectedUser = listEmployees.find(employee => employee._id === id);
-    const url = `${getAPIHostName()}/employees/delete/${id}/${selectedUser.contractId}`;
+    const url = `${getAPIHostName()}/employees/delete/${id}/${selectedEmployee.contractId}`;
     httpDelete(url, accessToken)
       .then(res => {
         if (res.success) {
@@ -562,49 +521,47 @@ const EmployeesPage = () => {
             <div className="add__employees-label">Tên:</div>
             <CustomInput
               maxLength={50}
-              value={name || (getSelectedUser() && getSelectedUser().name)}
-              onChange={e => setName(e.target.value)}
+              value={selectedEmployee.name}
+              onChange={e => setSelectedEmployee({ ...selectedEmployee, name: e.target.value })}
               placeholder="Tên nhân viên"
             />
             <div className="add__employees-label">Email:</div>
             <CustomInput
               maxLength={50}
-              value={email || (getSelectedUser() && getSelectedUser().email)}
-              onChange={e => setEmail(e.target.value)}
+              value={selectedEmployee.email}
+              onChange={e => setSelectedEmployee({ ...selectedEmployee, email: e.target.value })}
               placeholder="Email"
             />
             <div className="add__employees-label">Điện thoại:</div>
             <CustomInput
               maxLength={10}
               type="number"
-              value={phone || (getSelectedUser() && getSelectedUser().phoneNumber)}
-              onChange={e => setPhone(e.target.value)}
+              value={selectedEmployee.phoneNumber}
+              onChange={e => setSelectedEmployee({ ...selectedEmployee, phoneNumber: e.target.value })}
               placeholder="Điện thoại"
             />
             <div className="add__employees-label">Chức vụ:</div>
             <CustomInput
-              value={position || (getSelectedUser() && getSelectedUser().position)}
-              onChange={e => setPosition(e.target.value)}
+              value={selectedEmployee.position}
+              onChange={e => setSelectedEmployee({ ...selectedEmployee, position: e.target.value })}
               placeholder="Chức vụ"
             />
             <div className="add__employees-label">Ngày bắt đầu:</div>
             <DatePicker
-              defaultValue={moment(getSelectedUser() && getSelectedUser().startDate)}
+              value={dayjs(selectedEmployee.startDate)}
               size={'middle'}
-              format="YYYY-MM-DD HH:mm"
-              // onChange={(_, dateString) => {
-              //   const unixDateTime = convertDateStringToUnixDateTime(dateString);
-              //   setStartDate(unixDateTime);
-              // }}
-              onChange={dateString => setStartDate(dateString)}
+              format="YYYY-MM-DD"
+              onChange={(_, dateString) => {
+                setSelectedEmployee({ ...selectedEmployee, startDate: dateString });
+              }}
             />
           </div>
           <div className="add__employees_right">
             <div className="add__employees-label">Giới tính:</div>
             <Select
               placeholder="Giới tính"
-              value={employeeGender || (getSelectedUser() && getSelectedUser().gender)}
-              onChange={e => setEmployeeGender(e)}
+              value={selectedEmployee.gender}
+              onChange={e => setSelectedEmployee({ ...selectedEmployee, gender: e })}
             >
               <Option key={'male__gender'} value={'nam'}>
                 Nam
@@ -615,23 +572,26 @@ const EmployeesPage = () => {
             </Select>
             <div className="add__employees-label">Địa chỉ: </div>
             <CustomInput
-              value={address || (getSelectedUser() && getSelectedUser().address)}
-              onChange={e => setAddress(e.target.value)}
+              value={selectedEmployee.address}
+              onChange={e => setSelectedEmployee({ ...selectedEmployee, address: e.target.value })}
               placeholder="Địa chỉ"
             />
             <div className="add__employees-label">Bậc lương: </div>
             <InputNumber
-              value={salaryRanks || (getSelectedUser() && getSelectedUser().salaryRank)}
-              onChange={value => setSalaryRanks(value)}
+              value={selectedEmployee.salaryRank}
+              onChange={value => setSelectedEmployee({ ...selectedEmployee, salaryRank: value })}
               type={'number'}
-              defaultValue={salaryRanks}
             />
             <div className="add__employees-selects">
               <Select
-                value={department || (getSelectedUser() && getSelectedUser().departMentId[0]?._id)}
-                onChange={value => setDepartment(value)}
+                value={selectedEmployee?.departMentId?.[0]?._id}
+                onChange={value => {
+                  setSelectedEmployee({
+                    ...selectedEmployee,
+                    departMentId: departmentList.filter(dp => dp._id === value)
+                  });
+                }}
                 placeholder="Phòng ban"
-                style={{ width: 120 }}
               >
                 {departmentList.map((list, idx) => {
                   return (
@@ -642,10 +602,14 @@ const EmployeesPage = () => {
                 })}
               </Select>
               <Select
-                value={benefit || (getSelectedUser() && getSelectedUser()?.benefitId[0])}
-                onChange={value => setBenefit(value)}
+                value={selectedEmployee?.benefitId?.[0]?._id || selectedEmployee?.benefitId?.[0]}
+                onChange={value => {
+                  setSelectedEmployee({
+                    ...selectedEmployee,
+                    benefitId: benefitList.filter(bnf => bnf._id === value)
+                  });
+                }}
                 placeholder="Quyền lợi"
-                style={{ width: 120 }}
               >
                 {benefitList.map((list, idx) => {
                   return (
@@ -659,8 +623,8 @@ const EmployeesPage = () => {
             <div className="add__employees-label">Khoa:</div>
             <CustomInput
               maxLength={50}
-              value={faculty || (getSelectedUser() && getSelectedUser().faculty)}
-              onChange={e => setFaculty(e.target.value)}
+              value={selectedEmployee.faculty}
+              onChange={e => setSelectedEmployee({ ...selectedEmployee, faculty: e.target.value })}
               placeholder="Tên Khoa"
             />
           </div>
