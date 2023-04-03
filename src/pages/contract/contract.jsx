@@ -84,6 +84,12 @@ export default function ContractPage() {
         start_date: convertDateStringToUnixDateTime(startDateContract),
         end_date: convertDateStringToUnixDateTime(endDateContract)
       };
+      if(buildBody.contract_name.length === 0){
+        notification.error({
+          title:'Error',
+          message:'Tên hợp đồng không được để trống'
+        })
+      }else{
       httpPut(url, buildBody)
         .then(res => {
           if (res.success) {
@@ -101,9 +107,11 @@ export default function ContractPage() {
           });
           setPageLoading(false);
         });
+        setIsModalOpen(false);
+      }
     }
     refreshState();
-    setIsModalOpen(false);
+   
   };
 
   const handleCancel = () => {
@@ -176,7 +184,7 @@ export default function ContractPage() {
       render: (_, record) => {
         return (
           <div className="contract__action">
-            {record.status === 'completed' ? (
+            {record.status === 'completed' || record.status === 'cancelled'? (
               <Tooltip title="Xem">
                 <EyeOutlined
                   onClick={() => {
