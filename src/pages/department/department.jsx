@@ -218,11 +218,15 @@ export default function DepartmentPage() {
           type="search"
           placeholder="Tìm kiếm"
           onChange={e => setSearchValue(e.target.value)}
+          value={searchValue}
           className="department__search-inp"
         />
         <Button
           className="department__search-btn"
-          onClick={() => openModalUpSertDepartment()}
+          onClick={() => {
+            setSearchValue('');
+            openModalUpSertDepartment();
+          }}
           rightIcon={<PlusOutlined />}
         >
           Thêm phòng ban

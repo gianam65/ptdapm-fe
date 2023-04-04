@@ -70,6 +70,7 @@ const BenefitPage = () => {
   }, []);
 
   const openModalUpSertBenefit = item => {
+    setSearchValue('');
     if (item) {
       setUpdateId(item._id);
       setSelectedBenefit(item);
@@ -278,6 +279,7 @@ const BenefitPage = () => {
             <Search
               className="benefit__top-search-input"
               placeholder="Tìm kiếm"
+              value={searchValue}
               onChange={e => setSearchValue(e.target.value)}
             />
           </div>

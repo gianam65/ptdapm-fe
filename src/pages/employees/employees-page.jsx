@@ -107,7 +107,6 @@ const EmployeesPage = () => {
   };
 
   const handleChangeFile = e => {
-    console.log('e :>> ', e);
     const fileUploaded = e.target.files?.[0];
     if (!fileUploaded) return;
     const url = `${getAPIHostName()}/import_excel`;
@@ -453,12 +452,14 @@ const EmployeesPage = () => {
           type="search"
           placeholder="Tìm kiếm"
           className="employees__search-inp"
+          value={textSearch}
           onChange={e => setTextSearch(e.target.value)}
         />
         <Button
           className="employees__search-btn"
           rightIcon={<PlusOutlined />}
           onClick={() => {
+            setTextSearch('');
             setIsModalOpen(true);
           }}
         >
