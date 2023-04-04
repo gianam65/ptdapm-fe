@@ -43,11 +43,12 @@ function Notification() {
       mailContent += contentText.text + '<br/>';
     }
 
-    if (!mailContent) {
+    if (!mailContent || mailContent === '<br/>') {
       notification.error({
         title: 'Thất bại',
         message: 'Vui lòng nhập nội dung thông báo'
       });
+      return;
     }
     const emails = listEmployees.map(le => le.email);
     setPageLoading(true);
