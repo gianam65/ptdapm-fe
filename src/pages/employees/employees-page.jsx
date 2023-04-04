@@ -427,7 +427,7 @@ const EmployeesPage = () => {
         item.name?.indexOf(textSearch) >= 0 ||
         item.address?.indexOf(textSearch) >= 0 ||
         item.email?.indexOf(textSearch) >= 0 ||
-        item.code?.indexOf(textSearch) >= 0
+        item.codeEmployee?.indexOf(textSearch) >= 0
     );
   };
 
