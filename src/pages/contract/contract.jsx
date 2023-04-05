@@ -1,5 +1,5 @@
 import './contract.scss';
-import { Table, Tag, Modal, DatePicker, notification, Tooltip } from 'antd';
+import { Table, Tag, Modal, DatePicker, notification, Tooltip,Button } from 'antd';
 import { EyeOutlined, EditOutlined } from '@ant-design/icons';
 import { useEffect, useState } from 'react';
 import CustomInput from '../../components/custom-input/custom-input';
@@ -248,14 +248,24 @@ export default function ContractPage() {
       />
       <Modal
         title="Thông tin hợp đồng"
-        open={isModalOpen}
-        okText={contractInfor.status === 'completed' || contractInfor.status === 'cancelled' ? 'Đóng' : 'Cập nhật'}
-        cancelText={'Huỷ'}
-        onOk={handleUpdateContract}
+        open={isModalOpen}  
         onCancel={handleCancel}
-        okButtonProps={{
-          disabled: !(checkEndDayContract && checkStartDayContract)
-        }}
+        footer={
+          contractInfor.status === 'completed' || contractInfor.status ==='cancelled' ? (
+            <Button key="submit" type="primary" onClick={handleCancel}>
+              Đóng
+            </Button>
+          ) : (
+            [
+              <Button key="back" onClick={handleCancel}>
+                Huỷ
+              </Button>,
+              <Button key="submit" type="primary" onClick={handleUpdateContract} disabled={!(checkEndDayContract && checkStartDayContract)}>
+                Cập nhật
+              </Button>,
+            ]
+          )
+        }
       >
         <div className="edit__contract-label">Tên hợp đồng</div>
 
