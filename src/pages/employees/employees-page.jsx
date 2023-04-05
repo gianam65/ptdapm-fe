@@ -10,7 +10,8 @@ import {
   randomText,
   translateStatus,
   convertDateStringToUnixDateTime,
-  checkIsEmpty
+  checkIsEmpty,
+  locale
 } from '../../utils/';
 import { CSVLink } from 'react-csv';
 import { CloudDownloadOutlined } from '@ant-design/icons';
@@ -172,10 +173,32 @@ const EmployeesPage = () => {
       });
       return;
     }
+    if (!email.includes('@')) {
+      notification.error({
+        title: 'Thất bại',
+        message: 'Email chưa đúng định dạng'
+      });
+      return;
+    }
+    if (phoneNumber.toString().length !== 10) {
+      notification.error({
+        title: 'Thất bại',
+        message: 'Số điện thoại phải đủ 10 kí tự'
+      });
+      return;
+    }
+    if (!phoneNumber.toString().startsWith('0')) {
+      notification.error({
+        title: 'Thất bại',
+        message: 'Số điện thoại chưa đúng định dạng'
+      });
+      return;
+    }
     setPageLoading(true);
     let url = `${getAPIHostName()}/employees?`;
     if (department) url += `&department=${department}`;
     if (benefit) url += `&benefit=${benefit}`;
+    if (url.endsWith('?')) url = url.replace('', '?');
 
     httpPost(
       url,
@@ -215,6 +238,7 @@ const EmployeesPage = () => {
     let url = `${getAPIHostName()}/employees/${selectedEmployee._id}?`;
     if (benefitId) url += `&benefit=${benefitId}`;
     if (departmentId) url += `&department=${departmentId}`;
+    if (url.endsWith('?')) url = url.replace('?', '');
     if (
       checkIsEmpty(selectedEmployee.name) ||
       checkIsEmpty(selectedEmployee.codeEmployee) ||
@@ -490,6 +514,7 @@ const EmployeesPage = () => {
           scroll={{ y: 'calc(100vh - 420px)', x: 'max-content' }}
           rowKey={record => record._id}
           pagination={true}
+          locale={locale}
         />
       </div>
       <Modal
@@ -538,12 +563,16 @@ const EmployeesPage = () => {
               value={employeePosition}
               placeholder="Chức vụ"
             />
-            <div className="add__employees-selects">
+            <div className="add__employees-selectts">
+              <div className="add__employees-label">Phòng ban:</div>
               <Select
                 value={department}
                 onChange={value => setDepartment(value)}
                 placeholder="Phòng ban"
-                style={{ width: 120 }}
+                showSearch
+                optionFilterProp="children"
+                filterOption={(input, option) => (option?.children ?? '').toLowerCase().includes(input.toLowerCase())}
+                notFoundContent={'Không có dữ liệu'}
               >
                 {departmentList.map((list, idx) => {
                   return (
@@ -553,11 +582,15 @@ const EmployeesPage = () => {
                   );
                 })}
               </Select>
+              <div className="add__employees-label">Quyền lợi:</div>
               <Select
                 value={benefit}
                 onChange={value => setBenefit(value)}
                 placeholder="Quyền lợi"
-                style={{ width: 120 }}
+                showSearch
+                optionFilterProp="children"
+                filterOption={(input, option) => (option?.children ?? '').toLowerCase().includes(input.toLowerCase())}
+                notFoundContent={'Không có dữ liệu'}
               >
                 {benefitList.map((list, idx) => {
                   return (
@@ -682,7 +715,11 @@ const EmployeesPage = () => {
               type={'number'}
             />
             <div className="add__employees-selects">
+              <div className="add__employees-label">Phòng ban:</div>
               <Select
+                showSearch
+                optionFilterProp="children"
+                filterOption={(input, option) => (option?.children ?? '').toLowerCase().includes(input.toLowerCase())}
                 value={selectedEmployee?.departMentId?.[0]?._id}
                 onChange={value => {
                   setSelectedEmployee({
@@ -700,7 +737,11 @@ const EmployeesPage = () => {
                   );
                 })}
               </Select>
+              <div className="add__employees-label">Quyền lợi:</div>
               <Select
+                showSearch
+                optionFilterProp="children"
+                filterOption={(input, option) => (option?.children ?? '').toLowerCase().includes(input.toLowerCase())}
                 value={selectedEmployee?.benefitId?.[0]?._id || selectedEmployee?.benefitId?.[0]}
                 onChange={value => {
                   setSelectedEmployee({

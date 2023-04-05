@@ -123,18 +123,23 @@ const Header = () => {
       accessToken
     )
       .then(res => {
-        if (res.status) {
+        if (res.success) {
           notification.success({
             title: 'Thành công',
-            message: res.message || 'Đổi mật khẩu thành công'
+            message: 'Đổi mật khẩu thành công'
           });
           setAccessToken('');
+        } else {
+          notification.error({
+            title: 'Thất bại',
+            message: 'Đổi mật khẩu thất bại'
+          });
         }
       })
-      .catch(err => {
+      .catch(() => {
         notification.error({
           title: 'Thất bại',
-          message: err || 'Đổi mật khẩu thất bại'
+          message: 'Đổi mật khẩu thất bại'
         });
       });
   };

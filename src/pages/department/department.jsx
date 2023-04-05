@@ -2,7 +2,7 @@ import './department.scss';
 import { PlusOutlined, EditOutlined, DeleteOutlined, ExclamationCircleFilled } from '@ant-design/icons';
 import Button from '../../components/button/button';
 import { Modal, Table, notification, Tooltip } from 'antd';
-import { getAPIHostName, checkIsEmpty } from '../../utils/';
+import { getAPIHostName, checkIsEmpty, locale } from '../../utils/';
 import { httpGet, httpDelete, httpPost, httpPut } from '../../services/request';
 import { useEffect, useState, useRef } from 'react';
 import { useRecoilValue, useSetRecoilState } from 'recoil';
@@ -238,6 +238,7 @@ export default function DepartmentPage() {
         columns={columns}
         rowKey={record => record._id}
         dataSource={getDataSource()}
+        locale={locale}
         scroll={{ y: 'calc(100vh - 320px)' }}
       />
 

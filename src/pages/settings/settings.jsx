@@ -1,6 +1,6 @@
 import './settings.scss';
 import { httpGet, httpPut } from '../../services/request';
-import { getAPIHostName, normalizeDate, getPriorityRole, fallbackToDefaultAvatar } from '../../utils';
+import { getAPIHostName, normalizeDate, getPriorityRole, fallbackToDefaultAvatar, locale } from '../../utils';
 import { useEffect, useState } from 'react';
 import { loadingState } from '../../recoil/store/app';
 import { accessTokenState, accountRoleState } from '../../recoil/store/account';
@@ -149,15 +149,9 @@ const SettingsPage = () => {
           onChange={e => setSearchValue(e.target.value)}
           className="department__search-inp"
         />
-        {/* <Button
-          className="department__search-btn"
-          // onClick={() => openModalUpSertDepartment()}
-          rightIcon={<PlusOutlined />}
-        >
-          Thêm tài khoản
-        </Button> */}
       </div>
       <Table
+        locale={locale}
         dataSource={provideDataSource()}
         columns={columns}
         rowKey={record => record._id}
