@@ -10,7 +10,8 @@ import {
   randomText,
   translateStatus,
   convertDateStringToUnixDateTime,
-  checkIsEmpty
+  checkIsEmpty,
+  locale
 } from '../../utils/';
 import { CSVLink } from 'react-csv';
 import { CloudDownloadOutlined } from '@ant-design/icons';
@@ -45,13 +46,12 @@ const EmployeesPage = () => {
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [employeeGender, setEmployeeGender] = useState('nam');
   const accessToken = useRecoilValue(accessTokenState);
-  const employeesNameRef = useRef(null);
   const employeesCodeRef = useRef(null);
-  const employeesEmailRef = useRef(null);
-  const employeesPhoneRef = useRef(null);
-  const employeesAddressRef = useRef(null);
-  const employeesPositionRef = useRef(null);
-  const employeesFacultyRef = useRef(null);
+  const [employeeName, setEmployeeName] = useState('');
+  const [employeeEmail, setEmployeeEmail] = useState('');
+  const [employeeAddress, setEmployeeAddress] = useState('');
+  const [employeePosition, setEmployeePosition] = useState('');
+  const [employeeFaculty, setEmployeeFaculty] = useState('');
   const [salaryRanks, setSalaryRanks] = useState(1);
   const [department, setDepartment] = useState('');
   const [benefit, setBenefit] = useState('');
@@ -107,7 +107,6 @@ const EmployeesPage = () => {
   };
 
   const handleChangeFile = e => {
-    console.log('e :>> ', e);
     const fileUploaded = e.target.files?.[0];
     if (!fileUploaded) return;
     const url = `${getAPIHostName()}/import_excel`;
@@ -152,13 +151,13 @@ const EmployeesPage = () => {
   };
 
   const handleAddEmployees = () => {
-    const name = employeesNameRef.current.input.value;
+    const name = employeeName;
     const codeEmployee = employeesCodeRef.current.input.value;
-    const email = employeesEmailRef.current.input.value;
-    const phoneNumber = employeesPhoneRef.current.input.value;
-    const address = employeesAddressRef.current.input.value;
-    const position = employeesPositionRef.current.input.value;
-    const faculty = employeesFacultyRef.current.input.value;
+    const email = employeeEmail;
+    const phoneNumber = number;
+    const address = employeeAddress;
+    const position = employeePosition;
+    const faculty = employeeFaculty;
     if (
       checkIsEmpty(name) ||
       checkIsEmpty(codeEmployee) ||
@@ -174,8 +173,33 @@ const EmployeesPage = () => {
       });
       return;
     }
+    if (!email.includes('@')) {
+      notification.error({
+        title: 'Thất bại',
+        message: 'Email chưa đúng định dạng'
+      });
+      return;
+    }
+    if (phoneNumber.toString().length !== 10) {
+      notification.error({
+        title: 'Thất bại',
+        message: 'Số điện thoại phải đủ 10 kí tự'
+      });
+      return;
+    }
+    if (!phoneNumber.toString().startsWith('0')) {
+      notification.error({
+        title: 'Thất bại',
+        message: 'Số điện thoại chưa đúng định dạng'
+      });
+      return;
+    }
     setPageLoading(true);
-    const url = `${getAPIHostName()}/employees?department=${department}&benefit=${benefit}`;
+    let url = `${getAPIHostName()}/employees?`;
+    if (department) url += `&department=${department}`;
+    if (benefit) url += `&benefit=${benefit}`;
+    if (url.endsWith('?')) url = url.replace('', '?');
+
     httpPost(
       url,
       { name, codeEmployee, email, phoneNumber, gender: employeeGender, address, salaryRanks, position, faculty },
@@ -188,6 +212,7 @@ const EmployeesPage = () => {
             message: 'Thêm nhân viên thành công'
           });
           fetchEmployees();
+          refreshInputValue('');
           setIsModalOpen(false);
         } else {
           notification.error({
@@ -213,6 +238,7 @@ const EmployeesPage = () => {
     let url = `${getAPIHostName()}/employees/${selectedEmployee._id}?`;
     if (benefitId) url += `&benefit=${benefitId}`;
     if (departmentId) url += `&department=${departmentId}`;
+    if (url.endsWith('?')) url = url.replace('?', '');
     if (
       checkIsEmpty(selectedEmployee.name) ||
       checkIsEmpty(selectedEmployee.codeEmployee) ||
@@ -425,12 +451,26 @@ const EmployeesPage = () => {
         item.name?.indexOf(textSearch) >= 0 ||
         item.address?.indexOf(textSearch) >= 0 ||
         item.email?.indexOf(textSearch) >= 0 ||
-        item.code?.indexOf(textSearch) >= 0
+        item.codeEmployee?.indexOf(textSearch) >= 0
     );
   };
 
   const restrictAlphabets = e => {
     setNumber(e.target.value.replace(/\D/g, ''));
+  };
+
+  const refreshInputValue = () => {
+    setEmployeeName('');
+    setEmployeeEmail('');
+    setEmployeeAddress('');
+    setEmployeeFaculty('');
+    setNumber('');
+    setEmployeePosition('');
+    setEmployeeGender('');
+    setSalaryRanks('');
+    setEmployeeGender('');
+    setDepartment('');
+    setBenefit('');
   };
 
   return (
@@ -453,12 +493,14 @@ const EmployeesPage = () => {
           type="search"
           placeholder="Tìm kiếm"
           className="employees__search-inp"
+          value={textSearch}
           onChange={e => setTextSearch(e.target.value)}
         />
         <Button
           className="employees__search-btn"
           rightIcon={<PlusOutlined />}
           onClick={() => {
+            setTextSearch('');
             setIsModalOpen(true);
           }}
         >
@@ -472,6 +514,7 @@ const EmployeesPage = () => {
           scroll={{ y: 'calc(100vh - 420px)', x: 'max-content' }}
           rowKey={record => record._id}
           pagination={true}
+          locale={locale}
         />
       </div>
       <Modal
@@ -483,27 +526,54 @@ const EmployeesPage = () => {
         onOk={() => {
           handleAddEmployees();
         }}
-        onCancel={() => setIsModalOpen(false)}
+        onCancel={() => {
+          refreshInputValue();
+          setIsModalOpen(false);
+        }}
       >
         <div className="add_employees_modal">
           <div className="add__employees_left">
             <div className="add__employees-label">Tên:</div>
-            <CustomInput maxLength={50} ref={employeesNameRef} placeholder="Tên nhân viên" />
+            <CustomInput
+              maxLength={50}
+              onChange={e => setEmployeeName(e.target.value)}
+              value={employeeName}
+              placeholder="Tên nhân viên"
+            />
             <div className="add__employees-label">Email:</div>
-            <CustomInput maxLength={50} type="email" ref={employeesEmailRef} placeholder="Email" />
+            <CustomInput
+              maxLength={50}
+              type="email"
+              onChange={e => setEmployeeEmail(e.target.value)}
+              value={employeeEmail}
+              placeholder="Email"
+            />
             <div className="add__employees-label">Điện thoại:</div>
             <CustomInput
               value={number}
               onChange={restrictAlphabets.bind()}
               type="number"
               maxLength={10}
-              ref={employeesPhoneRef}
               placeholder="Điện thoại"
             />
             <div className="add__employees-label">Chức vụ:</div>
-            <CustomInput maxLength={50} ref={employeesPositionRef} placeholder="Chức vụ" />
-            <div className="add__employees-selects">
-              <Select onChange={value => setDepartment(value)} placeholder="Phòng ban" style={{ width: 120 }}>
+            <CustomInput
+              maxLength={50}
+              onChange={e => setEmployeePosition(e.target.value)}
+              value={employeePosition}
+              placeholder="Chức vụ"
+            />
+            <div className="add__employees-selectts">
+              <div className="add__employees-label">Phòng ban:</div>
+              <Select
+                value={department}
+                onChange={value => setDepartment(value)}
+                placeholder="Phòng ban"
+                showSearch
+                optionFilterProp="children"
+                filterOption={(input, option) => (option?.children ?? '').toLowerCase().includes(input.toLowerCase())}
+                notFoundContent={'Không có dữ liệu'}
+              >
                 {departmentList.map((list, idx) => {
                   return (
                     <Option key={idx} value={list._id}>
@@ -512,7 +582,16 @@ const EmployeesPage = () => {
                   );
                 })}
               </Select>
-              <Select onChange={value => setBenefit(value)} placeholder="Quyền lợi" style={{ width: 120 }}>
+              <div className="add__employees-label">Quyền lợi:</div>
+              <Select
+                value={benefit}
+                onChange={value => setBenefit(value)}
+                placeholder="Quyền lợi"
+                showSearch
+                optionFilterProp="children"
+                filterOption={(input, option) => (option?.children ?? '').toLowerCase().includes(input.toLowerCase())}
+                notFoundContent={'Không có dữ liệu'}
+              >
                 {benefitList.map((list, idx) => {
                   return (
                     <Option key={idx} value={list._id}>
@@ -525,7 +604,7 @@ const EmployeesPage = () => {
           </div>
           <div className="add__employees_right">
             <div className="add__employees-label">Giới tính:</div>
-            <Select placeholder="Giới tính" onChange={e => setEmployeeGender(e)}>
+            <Select placeholder="Giới tính" value={employeeGender} onChange={e => setEmployeeGender(e)}>
               <Option key={'male__gender'} value={'nam'}>
                 Nam
               </Option>
@@ -542,11 +621,21 @@ const EmployeesPage = () => {
               disabled
             />
             <div className="add__employees-label">Địa chỉ: </div>
-            <CustomInput maxLength={50} ref={employeesAddressRef} placeholder="Địa chỉ" />
+            <CustomInput
+              maxLength={50}
+              onChange={e => setEmployeeAddress(e.target.value)}
+              value={employeeAddress}
+              placeholder="Địa chỉ"
+            />
             <div className="add__employees-label">Bậc lương: </div>
             <InputNumber type={'number'} defaultValue={salaryRanks} onChange={value => setSalaryRanks(value)} />
             <div className="add__employees-label">Khoa: </div>
-            <CustomInput maxLength={50} ref={employeesFacultyRef} placeholder="Tên khoa" />
+            <CustomInput
+              maxLength={50}
+              onChange={e => setEmployeeFaculty(e.target.value)}
+              value={employeeFaculty}
+              placeholder="Tên khoa"
+            />
           </div>
         </div>
       </Modal>
@@ -626,7 +715,11 @@ const EmployeesPage = () => {
               type={'number'}
             />
             <div className="add__employees-selects">
+              <div className="add__employees-label">Phòng ban:</div>
               <Select
+                showSearch
+                optionFilterProp="children"
+                filterOption={(input, option) => (option?.children ?? '').toLowerCase().includes(input.toLowerCase())}
                 value={selectedEmployee?.departMentId?.[0]?._id}
                 onChange={value => {
                   setSelectedEmployee({
@@ -644,7 +737,11 @@ const EmployeesPage = () => {
                   );
                 })}
               </Select>
+              <div className="add__employees-label">Quyền lợi:</div>
               <Select
+                showSearch
+                optionFilterProp="children"
+                filterOption={(input, option) => (option?.children ?? '').toLowerCase().includes(input.toLowerCase())}
                 value={selectedEmployee?.benefitId?.[0]?._id || selectedEmployee?.benefitId?.[0]}
                 onChange={value => {
                   setSelectedEmployee({

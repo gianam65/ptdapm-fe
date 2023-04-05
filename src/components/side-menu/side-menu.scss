@@ -17,6 +17,10 @@
         .ant-menu-item {
             &:hover {
                 background-color: var(--primary-color) !important;
+                color: black !important;
+            }
+            &.ant-menu-item-selected {
+                color: black;
             }
         }
     }

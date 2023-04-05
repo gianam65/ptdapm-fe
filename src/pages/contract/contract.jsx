@@ -3,7 +3,7 @@ import { Table, Tag, Modal, DatePicker, notification, Tooltip } from 'antd';
 import { EyeOutlined, EditOutlined } from '@ant-design/icons';
 import { useEffect, useState } from 'react';
 import CustomInput from '../../components/custom-input/custom-input';
-import { translateStatus, getAPIHostName } from '../../utils';
+import { translateStatus, getAPIHostName, locale } from '../../utils';
 import { httpGet, httpPut } from '../../services/request';
 import { loadingState } from '../../recoil/store/app';
 import { useSetRecoilState } from 'recoil';
@@ -243,6 +243,7 @@ export default function ContractPage() {
         dataSource={getDataSource()}
         rowKey={record => record._id}
         loading={isLoadingTable}
+        locale={locale}
         scroll={{ y: 'calc(100vh - 320px)', x: 'max-content' }}
       />
       <Modal

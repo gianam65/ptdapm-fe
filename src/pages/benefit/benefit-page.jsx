@@ -4,7 +4,7 @@ import { Table, notification, Modal, Input, InputNumber, Select, Tooltip } from 
 import Button from '../../components/button/button';
 import './benefit-page.scss';
 import { httpGet, httpDelete, httpPost, httpPut } from '../../services/request';
-import { getAPIHostName } from '../../utils';
+import { getAPIHostName, locale } from '../../utils';
 import { useSetRecoilState, useRecoilValue } from 'recoil';
 import { loadingState } from '../../recoil/store/app';
 import CustomInput from '../../components/custom-input/custom-input';
@@ -70,6 +70,7 @@ const BenefitPage = () => {
   }, []);
 
   const openModalUpSertBenefit = item => {
+    setSearchValue('');
     if (item) {
       setUpdateId(item._id);
       setSelectedBenefit(item);
@@ -278,6 +279,7 @@ const BenefitPage = () => {
             <Search
               className="benefit__top-search-input"
               placeholder="Tìm kiếm"
+              value={searchValue}
               onChange={e => setSearchValue(e.target.value)}
             />
           </div>
@@ -300,6 +302,7 @@ const BenefitPage = () => {
           pagination={{ pageSize: 5 }}
           rowKey={record => record._id}
           scroll={{ y: 'calc(100vh - 320px)' }}
+          locale={locale}
         ></Table>
         <Modal
           title=""
@@ -310,6 +313,7 @@ const BenefitPage = () => {
           onCancel={() => {
             setSelectedBenefit({});
             setOpenUpSertBenefit(false);
+            setUpdateId(null);
           }}
           okText={updateId ? 'Sửa' : 'Thêm'}
           cancelText="Huỷ"
