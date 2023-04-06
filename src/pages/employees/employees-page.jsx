@@ -254,7 +254,6 @@ const EmployeesPage = () => {
       });
       return;
     }
-    setPageLoading(true);
     let buildBodyToUpdate = {
       name: selectedEmployee.name,
       email: selectedEmployee.email,
@@ -267,7 +266,28 @@ const EmployeesPage = () => {
       position: selectedEmployee.position,
       faculty: selectedEmployee.faculty
     };
-
+    if (!buildBodyToUpdate.email.includes('@')) {
+      notification.error({
+        title: 'Thất bại',
+        message: 'Email chưa đúng định dạng'
+      });
+      return;
+    }
+    if (buildBodyToUpdate.phoneNumber.toString().length !== 10) {
+      notification.error({
+        title: 'Thất bại',
+        message: 'Số điện thoại phải đủ 10 kí tự'
+      });
+      return;
+    }
+    if (!buildBodyToUpdate.phoneNumber.toString().startsWith('0')) {
+      notification.error({
+        title: 'Thất bại',
+        message: 'Số điện thoại chưa đúng định dạng'
+      });
+      return;
+    }
+    setPageLoading(true);
     httpPut(url, buildBodyToUpdate, accessToken)
       .then(res => {
         if (res.success) {
