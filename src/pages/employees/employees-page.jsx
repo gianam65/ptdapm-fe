@@ -669,7 +669,10 @@ const EmployeesPage = () => {
               maxLength={10}
               type="number"
               value={selectedEmployee.phoneNumber}
-              onChange={e => setSelectedEmployee({ ...selectedEmployee, phoneNumber: e.target.value })}
+              onChange={e => {
+                let phoneNumber = e.target.value.replace(/\D/g, '');
+                setSelectedEmployee({ ...selectedEmployee, phoneNumber: phoneNumber });
+              }}
               placeholder="Điện thoại"
             />
             <div className="add__employees-label">Chức vụ:</div>
@@ -680,9 +683,9 @@ const EmployeesPage = () => {
             />
             <div className="add__employees-label">Ngày bắt đầu:</div>
             <DatePicker
-              value={dayjs(selectedEmployee.startDate)}
-              size={'middle'}
               format="YYYY-MM-DD"
+              value={selectedEmployee.startDate ? dayjs(selectedEmployee.startDate) : null}
+              size={'middle'}
               onChange={(_, dateString) => {
                 setSelectedEmployee({ ...selectedEmployee, startDate: dateString });
               }}

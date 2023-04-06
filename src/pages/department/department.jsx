@@ -94,6 +94,8 @@ export default function DepartmentPage() {
     Modal.confirm({
       title: 'Bạn có muốn xoá phòng ban này không?',
       icon: <ExclamationCircleFilled />,
+      okText:'Xác nhận',
+      cancelText:'Huỷ',
       onOk() {
         setIsLoadingTable(true);
         const url = `${getAPIHostName()}/departments/${idDelete}`;
