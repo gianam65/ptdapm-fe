@@ -3,7 +3,7 @@ import { httpGet, httpPut } from '../../services/request';
 import { getAPIHostName, normalizeDate, getPriorityRole, fallbackToDefaultAvatar, locale } from '../../utils';
 import { useEffect, useState } from 'react';
 import { loadingState } from '../../recoil/store/app';
-import { accessTokenState, accountRoleState } from '../../recoil/store/account';
+import { accessTokenState, accountRoleState, accountIdState } from '../../recoil/store/account';
 import { useSetRecoilState, useRecoilValue } from 'recoil';
 import { Table, Tooltip, Modal, notification } from 'antd';
 import { DoubleRightOutlined } from '@ant-design/icons';
@@ -15,6 +15,7 @@ const SettingsPage = () => {
   const [users, setUsers] = useState([]);
   const [searchValue, setSearchValue] = useState('');
   const setPageLoading = useSetRecoilState(loadingState);
+  const currentUserId = useRecoilValue(accountIdState);
   const setRole = useSetRecoilState(accountRoleState);
   const accessToken = useRecoilValue(accessTokenState);
   const navigate = useNavigate();
@@ -120,8 +121,8 @@ const SettingsPage = () => {
               const updatedIdx = copyListUsers.findIndex(u => u._id === _id);
               copyListUsers.splice(updatedIdx, 1, res.data);
               setUsers(copyListUsers || []);
-              setRole(res.data.role);
-              if (getPriorityRole(res.data.role) !== 'Admin') {
+              if (getPriorityRole(res.data.role) !== 'Admin' && currentUserId === _id) {
+                setRole(res.data.role);
                 navigate('/');
               }
               notification.success({
