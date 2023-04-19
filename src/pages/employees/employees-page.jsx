@@ -1,17 +1,11 @@
 import './employees-page.scss';
 import { Table, notification, Modal, Tooltip, InputNumber, Select, Input, DatePicker } from 'antd';
 import { useEffect, useState, useRef } from 'react';
-import { httpGet, httpPost, httpPut, httpDelete } from '../../services/request';
+import { httpGet, httpPost, httpDelete } from '../../services/request';
 import { getAPIHostName } from '../../utils';
 import { loadingState } from '../../recoil/store/app';
 import { useSetRecoilState, useRecoilValue } from 'recoil';
-import {
-  removeTimeFromDate,
-  randomText,
-  translateStatus,
-  convertDateStringToUnixDateTime,
-  checkIsEmpty
-} from '../../utils/';
+import { removeTimeFromDate, randomText, translateStatus, convertDateStringToUnixDateTime } from '../../utils/';
 import { CSVLink } from 'react-csv';
 import { CloudDownloadOutlined } from '@ant-design/icons';
 import CustomInput from '../../components/custom-input/custom-input';
@@ -19,7 +13,7 @@ import { accessTokenState } from '../../recoil/store/account';
 import { PlusOutlined, EditOutlined, DeleteOutlined, CloudUploadOutlined } from '@ant-design/icons';
 import Button from '../../components/button/button';
 import classNames from 'classnames';
-import dayjs from 'dayjs';
+import moment from 'moment';
 
 const HEADERS = [
   { label: 'Tên nhân viên', key: 'name' },
@@ -38,6 +32,7 @@ const { Option } = Select;
 const EmployeesPage = () => {
   const [departmentList, setDepartmentList] = useState([]);
   const [benefitList, setBenefitList] = useState([]);
+  const [activePage, setActivePage] = useState(1);
   const [listEmployees, setListEmployees] = useState([]);
   const setPageLoading = useSetRecoilState(loadingState);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -51,20 +46,25 @@ const EmployeesPage = () => {
   const employeesPhoneRef = useRef(null);
   const employeesAddressRef = useRef(null);
   const employeesPositionRef = useRef(null);
-  const employeesFacultyRef = useRef(null);
+  const employeesFacultyRef = useRef(null)
+  const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
+  const [code, setCode] = useState('');
+  const [phone, setPhone] = useState('');
+  const [address, setAddress] = useState('');
   const [salaryRanks, setSalaryRanks] = useState(1);
   const [department, setDepartment] = useState('');
   const [benefit, setBenefit] = useState('');
+  const [startDate, setStartDate] = useState();
+  const [position, setPosition] = useState();
   const [id, setID] = useState();
+  const [faculty,setFaculty]= useState('')
   const [textSearch, setTextSearch] = useState('');
-  const [number, setNumber] = useState('');
-  const [selectedEmployee, setSelectedEmployee] = useState({});
+  const [number, setNumber] = useState('')
   useEffect(() => {
-    fetchEmployees();
-    getDepartment();
-    getBenefit();
+    Promise.all([fetchEmployees(activePage), getDepartment(), getBenefit()]);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [textSearch]);
 
   const getBenefit = () => {
     const url = `${getAPIHostName()}/benefits`;
@@ -85,6 +85,8 @@ const EmployeesPage = () => {
         setPageLoading(false);
       });
   };
+
+  console.log(textSearch);
 
   const getDepartment = () => {
     const url = `${getAPIHostName()}/departments`;
@@ -107,7 +109,6 @@ const EmployeesPage = () => {
   };
 
   const handleChangeFile = e => {
-    console.log('e :>> ', e);
     const fileUploaded = e.target.files?.[0];
     if (!fileUploaded) return;
     const url = `${getAPIHostName()}/import_excel`;
@@ -123,32 +124,61 @@ const EmployeesPage = () => {
         } else {
           notification.error({
             title: 'Thất bại',
-            message: 'Thêm nhân viên từ file thất bại'
+            message: res.message || 'Thêm nhân viên từ file thất bại'
           });
         }
       })
       .catch(err => {
         notification.error({
           title: 'Thất bại',
-          message: 'Thêm nhân viên từ file thất bại'
+          message: err || 'Thêm nhân viên từ file thất bại'
         });
       });
   };
 
-  const fetchEmployees = () => {
+  const fetchEmployees = activePage => {
     setPageLoading(true);
-    const url = `${getAPIHostName()}/employees`;
+    const url = `${getAPIHostName()}/employees?text=${textSearch ? textSearch : ''}`;
     httpGet(url)
       .then(res => {
         if (res.success) {
-          const { employeeList } = res.data;
+          const { employeeList, totalEmployee } = res.data;
           setListEmployees(employeeList);
+          setActivePage(activePage);
+          console.log(totalEmployee);
         }
         setPageLoading(false);
       })
       .catch(() => {
         setPageLoading(false);
       });
+  };
+
+  const clearData = () => {
+    employeesNameRef.current.input.value.reset();
+    employeesCodeRef.current.input.value.reset();
+    employeesEmailRef.current.input.value.reset();
+    employeesAddressRef.current.input.value.reset();
+    employeesPhoneRef.current.input.value.reset();
+    employeesPositionRef.current.input.value.reset();
+    employeesFacultyRef.current.input.value.reset();
+    setEmployeeGender('');
+    setSalaryRanks(1);
+    setDepartment('');
+    setBenefit('');
+  };
+
+  const clearDataUpdate = () => {
+    setName('');
+    setEmail('');
+    setPhone('');
+    setPosition('');
+    setStartDate('');
+    setEmployeeGender('');
+    setAddress('');
+    setSalaryRanks('');
+    setDepartment('');
+    setPosition('');
   };
 
   const handleAddEmployees = () => {
@@ -158,27 +188,12 @@ const EmployeesPage = () => {
     const phoneNumber = employeesPhoneRef.current.input.value;
     const address = employeesAddressRef.current.input.value;
     const position = employeesPositionRef.current.input.value;
-    const faculty = employeesFacultyRef.current.input.value;
-    if (
-      checkIsEmpty(name) ||
-      checkIsEmpty(codeEmployee) ||
-      checkIsEmpty(phoneNumber) ||
-      checkIsEmpty(email) ||
-      checkIsEmpty(address) ||
-      checkIsEmpty(position) ||
-      checkIsEmpty(faculty)
-    ) {
-      notification.error({
-        title: 'Thất bại',
-        message: 'Vui lòng điền đầy đủ thông tin'
-      });
-      return;
-    }
+    const faculty = employeesFacultyRef.current.input.value
     setPageLoading(true);
     const url = `${getAPIHostName()}/employees?department=${department}&benefit=${benefit}`;
     httpPost(
       url,
-      { name, codeEmployee, email, phoneNumber, gender: employeeGender, address, salaryRanks, position, faculty },
+      { name, codeEmployee, email, phoneNumber, gender: employeeGender, address, salaryRanks, position,faculty },
       accessToken
     )
       .then(res => {
@@ -189,6 +204,7 @@ const EmployeesPage = () => {
           });
           fetchEmployees();
           setIsModalOpen(false);
+          clearData();
         } else {
           notification.error({
             title: 'Thất bại',
@@ -203,46 +219,35 @@ const EmployeesPage = () => {
   };
 
   const handleOpenUpdateModal = codeEmployee => {
-    setSelectedEmployee(listEmployees.find(e => e.codeEmployee === codeEmployee) || {});
+    setCode(codeEmployee);
     setEditModalOpen(true);
   };
 
+  const getSelectedUser = () => {
+    return listEmployees.find(emp => emp.codeEmployee === code);
+  };
+
   const handleUpdateEmployees = () => {
-    const benefitId = selectedEmployee.benefitId[0]?._id || selectedEmployee.benefitId[0];
-    const departmentId = selectedEmployee.departMentId[0]?._id || selectedEmployee.departMentId[0];
-    let url = `${getAPIHostName()}/employees/${selectedEmployee._id}?`;
-    if (benefitId) url += `&benefit=${benefitId}`;
-    if (departmentId) url += `&department=${departmentId}`;
-    if (
-      checkIsEmpty(selectedEmployee.name) ||
-      checkIsEmpty(selectedEmployee.codeEmployee) ||
-      checkIsEmpty(selectedEmployee.phoneNumber) ||
-      checkIsEmpty(selectedEmployee.email) ||
-      checkIsEmpty(selectedEmployee.address) ||
-      checkIsEmpty(selectedEmployee.position) ||
-      checkIsEmpty(selectedEmployee.faculty)
-    ) {
-      notification.error({
-        title: 'Thất bại',
-        message: 'Vui lòng điền đầy đủ thông tin'
-      });
-      return;
-    }
     setPageLoading(true);
+    const url = `${getAPIHostName()}/employees?department=${
+      department || (getSelectedUser() && getSelectedUser().departMentId[0]?._id)
+    }&benefit=${benefit || (getSelectedUser() && getSelectedUser().benefitId[0])}`;
     let buildBodyToUpdate = {
-      name: selectedEmployee.name,
-      email: selectedEmployee.email,
-      codeEmployee: selectedEmployee.codeEmployee,
-      phoneNumber: selectedEmployee.phoneNumber,
-      gender: selectedEmployee.gender,
-      address: selectedEmployee.address,
-      salaryRank: selectedEmployee.salaryRank,
-      startDate: convertDateStringToUnixDateTime(selectedEmployee.startDate),
-      position: selectedEmployee.position,
-      faculty: selectedEmployee.faculty
+      name: name || (getSelectedUser() && getSelectedUser().name),
+      email: email || (getSelectedUser() && getSelectedUser().email),
+      codeEmployee: code || (getSelectedUser() && getSelectedUser().code),
+      phoneNumber: phone || (getSelectedUser() && getSelectedUser().phoneNumber),
+      gender: employeeGender || (getSelectedUser() && getSelectedUser().gender),
+      address: address || (getSelectedUser() && getSelectedUser().address),
+      salaryRank: salaryRanks || (getSelectedUser() && getSelectedUser().salaryRank),
+      startDate:
+        convertDateStringToUnixDateTime(startDate) ||
+        convertDateStringToUnixDateTime(getSelectedUser() && getSelectedUser().startDate),
+      position: position || (getSelectedUser() && getSelectedUser().position),
+      faculty: faculty || (getSelectedUser() && getSelectedUser().faculty)
     };
 
-    httpPut(url, buildBodyToUpdate, accessToken)
+    httpPost(url, buildBodyToUpdate, accessToken)
       .then(res => {
         if (res.success) {
           notification.success({
@@ -250,6 +255,7 @@ const EmployeesPage = () => {
             message: 'Cập nhật nhân viên thành công'
           });
           setEditModalOpen(false);
+          clearDataUpdate();
           fetchEmployees();
         } else {
           notification.error({
@@ -266,7 +272,8 @@ const EmployeesPage = () => {
 
   const handleDeleteEmployees = () => {
     setPageLoading(true);
-    const url = `${getAPIHostName()}/employees/delete/${id}/${selectedEmployee.contractId}`;
+    const selectedUser = listEmployees.find(employee => employee._id === id);
+    const url = `${getAPIHostName()}/employees/delete/${id}/${selectedUser.contractId}`;
     httpDelete(url, accessToken)
       .then(res => {
         if (res.success) {
@@ -331,6 +338,13 @@ const EmployeesPage = () => {
       width: 100,
       render: salaryRank => <span className="employee__salary">{salaryRank}</span>
     },
+    // {
+    //   title: 'Phòng Ban',
+    //   key: 'department',
+    //   dataIndex: 'department',
+    //   width: 150,
+    //   render: deparment => <span className="employee__salary">{department}</span>
+    // },
     {
       title: 'Chức vụ',
       key: 'position',
@@ -339,10 +353,10 @@ const EmployeesPage = () => {
       render: item => item
     },
     {
-      title: 'Khoa',
-      key: 'faculty',
-      dataIndex: 'faculty',
-      width: 150
+      title:'Khoa',
+      key:'faculty',
+      dataIndex:'faculty',
+      width:150,
     },
     {
       title: 'Ngày làm việc',
@@ -404,11 +418,11 @@ const EmployeesPage = () => {
         phoneNumber: listEmployees[i].phoneNumber,
         address: listEmployees[i].address,
         salaryRank: listEmployees[i].salaryRank,
-        faculty: listEmployees[i].faculty,
+        faculty:listEmployees[i].faculty,
         gender: listEmployees[i].gender,
         codeEmployee: listEmployees[i].codeEmployee,
-        status: translateStatus(listEmployees[i].status),
-        BirthOfDate: removeTimeFromDate(listEmployees[i].startDate)
+        status: listEmployees[i].status,
+        BirthOfDate: removeTimeFromDate(listEmployees[i].BirthOfDate)
       };
 
       data = [...data, record];
@@ -425,13 +439,14 @@ const EmployeesPage = () => {
         item.name?.indexOf(textSearch) >= 0 ||
         item.address?.indexOf(textSearch) >= 0 ||
         item.email?.indexOf(textSearch) >= 0 ||
+        item.phoneNumber?.indexOf(textSearch) >= 0 ||
         item.code?.indexOf(textSearch) >= 0
     );
   };
 
-  const restrictAlphabets = e => {
-    setNumber(e.target.value.replace(/\D/g, ''));
-  };
+  const restrictAlphabets = (e) => {
+    setNumber(e.target.value.replace(/\D/g, ''))
+  }
 
   return (
     <div className="employess__section">
@@ -453,15 +468,9 @@ const EmployeesPage = () => {
           type="search"
           placeholder="Tìm kiếm"
           className="employees__search-inp"
-          onChange={e => setTextSearch(e.target.value)}
+          onSearch={value => setTextSearch(value)}
         />
-        <Button
-          className="employees__search-btn"
-          rightIcon={<PlusOutlined />}
-          onClick={() => {
-            setIsModalOpen(true);
-          }}
-        >
+        <Button className="employees__search-btn" rightIcon={<PlusOutlined />} onClick={() => setIsModalOpen(true)}>
           Thêm nhân viên
         </Button>
       </div>
@@ -492,14 +501,7 @@ const EmployeesPage = () => {
             <div className="add__employees-label">Email:</div>
             <CustomInput maxLength={50} type="email" ref={employeesEmailRef} placeholder="Email" />
             <div className="add__employees-label">Điện thoại:</div>
-            <CustomInput
-              value={number}
-              onChange={restrictAlphabets.bind()}
-              type="number"
-              maxLength={10}
-              ref={employeesPhoneRef}
-              placeholder="Điện thoại"
-            />
+            <CustomInput value={number} onChange={restrictAlphabets.bind()} type="number" maxLength={10} ref={employeesPhoneRef} placeholder="Điện thoại" />
             <div className="add__employees-label">Chức vụ:</div>
             <CustomInput maxLength={50} ref={employeesPositionRef} placeholder="Chức vụ" />
             <div className="add__employees-selects">
@@ -564,47 +566,49 @@ const EmployeesPage = () => {
             <div className="add__employees-label">Tên:</div>
             <CustomInput
               maxLength={50}
-              value={selectedEmployee.name}
-              onChange={e => setSelectedEmployee({ ...selectedEmployee, name: e.target.value })}
+              value={name || (getSelectedUser() && getSelectedUser().name)}
+              onChange={e => setName(e.target.value)}
               placeholder="Tên nhân viên"
             />
             <div className="add__employees-label">Email:</div>
             <CustomInput
               maxLength={50}
-              value={selectedEmployee.email}
-              onChange={e => setSelectedEmployee({ ...selectedEmployee, email: e.target.value })}
+              value={email || (getSelectedUser() && getSelectedUser().email)}
+              onChange={e => setEmail(e.target.value)}
               placeholder="Email"
             />
             <div className="add__employees-label">Điện thoại:</div>
             <CustomInput
               maxLength={10}
               type="number"
-              value={selectedEmployee.phoneNumber}
-              onChange={e => setSelectedEmployee({ ...selectedEmployee, phoneNumber: e.target.value })}
+              value={phone || (getSelectedUser() && getSelectedUser().phoneNumber)}
+              onChange={e => setPhone(e.target.value)}
               placeholder="Điện thoại"
             />
             <div className="add__employees-label">Chức vụ:</div>
             <CustomInput
-              value={selectedEmployee.position}
-              onChange={e => setSelectedEmployee({ ...selectedEmployee, position: e.target.value })}
+              value={position || (getSelectedUser() && getSelectedUser().position)}
+              onChange={e => setPosition(e.target.value)}
               placeholder="Chức vụ"
             />
             <div className="add__employees-label">Ngày bắt đầu:</div>
             <DatePicker
-              value={dayjs(selectedEmployee.startDate)}
+              defaultValue={moment(getSelectedUser() && getSelectedUser().startDate)}
               size={'middle'}
-              format="YYYY-MM-DD"
-              onChange={(_, dateString) => {
-                setSelectedEmployee({ ...selectedEmployee, startDate: dateString });
-              }}
+              format="YYYY-MM-DD HH:mm"
+              // onChange={(_, dateString) => {
+              //   const unixDateTime = convertDateStringToUnixDateTime(dateString);
+              //   setStartDate(unixDateTime);
+              // }}
+              onChange={dateString => setStartDate(dateString)}
             />
           </div>
           <div className="add__employees_right">
             <div className="add__employees-label">Giới tính:</div>
             <Select
               placeholder="Giới tính"
-              value={selectedEmployee.gender}
-              onChange={e => setSelectedEmployee({ ...selectedEmployee, gender: e })}
+              value={employeeGender || (getSelectedUser() && getSelectedUser().gender)}
+              onChange={e => setEmployeeGender(e)}
             >
               <Option key={'male__gender'} value={'nam'}>
                 Nam
@@ -615,26 +619,23 @@ const EmployeesPage = () => {
             </Select>
             <div className="add__employees-label">Địa chỉ: </div>
             <CustomInput
-              value={selectedEmployee.address}
-              onChange={e => setSelectedEmployee({ ...selectedEmployee, address: e.target.value })}
+              value={address || (getSelectedUser() && getSelectedUser().address)}
+              onChange={e => setAddress(e.target.value)}
               placeholder="Địa chỉ"
             />
             <div className="add__employees-label">Bậc lương: </div>
             <InputNumber
-              value={selectedEmployee.salaryRank}
-              onChange={value => setSelectedEmployee({ ...selectedEmployee, salaryRank: value })}
+              value={salaryRanks || (getSelectedUser() && getSelectedUser().salaryRank)}
+              onChange={value => setSalaryRanks(value)}
               type={'number'}
+              defaultValue={salaryRanks}
             />
             <div className="add__employees-selects">
               <Select
-                value={selectedEmployee?.departMentId?.[0]?._id}
-                onChange={value => {
-                  setSelectedEmployee({
-                    ...selectedEmployee,
-                    departMentId: departmentList.filter(dp => dp._id === value)
-                  });
-                }}
+                value={department || (getSelectedUser() && getSelectedUser().departMentId[0]?._id)}
+                onChange={value => setDepartment(value)}
                 placeholder="Phòng ban"
+                style={{ width: 120 }}
               >
                 {departmentList.map((list, idx) => {
                   return (
@@ -645,14 +646,10 @@ const EmployeesPage = () => {
                 })}
               </Select>
               <Select
-                value={selectedEmployee?.benefitId?.[0]?._id || selectedEmployee?.benefitId?.[0]}
-                onChange={value => {
-                  setSelectedEmployee({
-                    ...selectedEmployee,
-                    benefitId: benefitList.filter(bnf => bnf._id === value)
-                  });
-                }}
+                value={benefit || (getSelectedUser() && getSelectedUser()?.benefitId[0])}
+                onChange={value => setBenefit(value)}
                 placeholder="Quyền lợi"
+                style={{ width: 120 }}
               >
                 {benefitList.map((list, idx) => {
                   return (
@@ -666,8 +663,8 @@ const EmployeesPage = () => {
             <div className="add__employees-label">Khoa:</div>
             <CustomInput
               maxLength={50}
-              value={selectedEmployee.faculty}
-              onChange={e => setSelectedEmployee({ ...selectedEmployee, faculty: e.target.value })}
+              value={faculty || (getSelectedUser() && getSelectedUser().faculty)}
+              onChange={e => setFaculty(e.target.value)}
               placeholder="Tên Khoa"
             />
           </div>
