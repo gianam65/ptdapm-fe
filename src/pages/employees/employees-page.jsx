@@ -10,15 +10,9 @@ import {
   randomText,
   translateStatus,
   convertDateStringToUnixDateTime,
-<<<<<<< HEAD
   checkIsEmpty,
   locale
 } from '../../utils/';
-import { removeTimeFromDate, randomText, translateStatus, convertDateStringToUnixDateTime } from '../../utils/';
-=======
-  checkIsEmpty
-} from '../../utils/';
->>>>>>> parent of b9acf48 (#)
 import { CSVLink } from 'react-csv';
 import { CloudDownloadOutlined } from '@ant-design/icons';
 import CustomInput from '../../components/custom-input/custom-input';
@@ -53,11 +47,11 @@ const EmployeesPage = () => {
   const [employeeGender, setEmployeeGender] = useState('nam');
   const accessToken = useRecoilValue(accessTokenState);
   const employeesCodeRef = useRef(null);
-  const employeesEmailRef = useRef(null);
-  const employeesPhoneRef = useRef(null);
-  const employeesAddressRef = useRef(null);
-  const employeesPositionRef = useRef(null);
-  const employeesFacultyRef = useRef(null);
+  const [employeeName, setEmployeeName] = useState('');
+  const [employeeEmail, setEmployeeEmail] = useState('');
+  const [employeeAddress, setEmployeeAddress] = useState('');
+  const [employeePosition, setEmployeePosition] = useState('');
+  const [employeeFaculty, setEmployeeFaculty] = useState('');
   const [salaryRanks, setSalaryRanks] = useState(1);
   const [department, setDepartment] = useState('');
   const [benefit, setBenefit] = useState('');
@@ -113,7 +107,6 @@ const EmployeesPage = () => {
   };
 
   const handleChangeFile = e => {
-    console.log('e :>> ', e);
     const fileUploaded = e.target.files?.[0];
     if (!fileUploaded) return;
     const url = `${getAPIHostName()}/import_excel`;
@@ -160,11 +153,11 @@ const EmployeesPage = () => {
   const handleAddEmployees = () => {
     const name = employeeName;
     const codeEmployee = employeesCodeRef.current.input.value;
-    const email = employeesEmailRef.current.input.value;
-    const phoneNumber = employeesPhoneRef.current.input.value;
-    const address = employeesAddressRef.current.input.value;
-    const position = employeesPositionRef.current.input.value;
-    const faculty = employeesFacultyRef.current.input.value;
+    const email = employeeEmail;
+    const phoneNumber = number;
+    const address = employeeAddress;
+    const position = employeePosition;
+    const faculty = employeeFaculty;
     if (
       checkIsEmpty(name) ||
       checkIsEmpty(codeEmployee) ||
@@ -177,6 +170,27 @@ const EmployeesPage = () => {
       notification.error({
         title: 'Thất bại',
         message: 'Vui lòng điền đầy đủ thông tin'
+      });
+      return;
+    }
+    if (!email.includes('@')) {
+      notification.error({
+        title: 'Thất bại',
+        message: 'Email chưa đúng định dạng'
+      });
+      return;
+    }
+    if (phoneNumber.toString().length !== 10) {
+      notification.error({
+        title: 'Thất bại',
+        message: 'Số điện thoại phải đủ 10 kí tự'
+      });
+      return;
+    }
+    if (!phoneNumber.toString().startsWith('0')) {
+      notification.error({
+        title: 'Thất bại',
+        message: 'Số điện thoại chưa đúng định dạng'
       });
       return;
     }
@@ -224,6 +238,7 @@ const EmployeesPage = () => {
     let url = `${getAPIHostName()}/employees/${selectedEmployee._id}?`;
     if (benefitId) url += `&benefit=${benefitId}`;
     if (departmentId) url += `&department=${departmentId}`;
+    if (url.endsWith('?')) url = url.replace('?', '');
     if (
       checkIsEmpty(selectedEmployee.name) ||
       checkIsEmpty(selectedEmployee.codeEmployee) ||
@@ -239,7 +254,6 @@ const EmployeesPage = () => {
       });
       return;
     }
-    setPageLoading(true);
     let buildBodyToUpdate = {
       name: selectedEmployee.name,
       email: selectedEmployee.email,
@@ -252,7 +266,28 @@ const EmployeesPage = () => {
       position: selectedEmployee.position,
       faculty: selectedEmployee.faculty
     };
-
+    if (!buildBodyToUpdate.email.includes('@')) {
+      notification.error({
+        title: 'Thất bại',
+        message: 'Email chưa đúng định dạng'
+      });
+      return;
+    }
+    if (buildBodyToUpdate.phoneNumber.toString().length !== 10) {
+      notification.error({
+        title: 'Thất bại',
+        message: 'Số điện thoại phải đủ 10 kí tự'
+      });
+      return;
+    }
+    if (!buildBodyToUpdate.phoneNumber.toString().startsWith('0')) {
+      notification.error({
+        title: 'Thất bại',
+        message: 'Số điện thoại chưa đúng định dạng'
+      });
+      return;
+    }
+    setPageLoading(true);
     httpPut(url, buildBodyToUpdate, accessToken)
       .then(res => {
         if (res.success) {
@@ -436,12 +471,26 @@ const EmployeesPage = () => {
         item.name?.indexOf(textSearch) >= 0 ||
         item.address?.indexOf(textSearch) >= 0 ||
         item.email?.indexOf(textSearch) >= 0 ||
-        item.code?.indexOf(textSearch) >= 0
+        item.codeEmployee?.indexOf(textSearch) >= 0
     );
   };
 
   const restrictAlphabets = e => {
     setNumber(e.target.value.replace(/\D/g, ''));
+  };
+
+  const refreshInputValue = () => {
+    setEmployeeName('');
+    setEmployeeEmail('');
+    setEmployeeAddress('');
+    setEmployeeFaculty('');
+    setNumber('');
+    setEmployeePosition('');
+    setEmployeeGender('');
+    setSalaryRanks('');
+    setEmployeeGender('');
+    setDepartment('');
+    setBenefit('');
   };
 
   return (
@@ -464,12 +513,14 @@ const EmployeesPage = () => {
           type="search"
           placeholder="Tìm kiếm"
           className="employees__search-inp"
+          value={textSearch}
           onChange={e => setTextSearch(e.target.value)}
         />
         <Button
           className="employees__search-btn"
           rightIcon={<PlusOutlined />}
           onClick={() => {
+            setTextSearch('');
             setIsModalOpen(true);
           }}
         >
@@ -523,7 +574,6 @@ const EmployeesPage = () => {
               onChange={restrictAlphabets.bind()}
               type="number"
               maxLength={10}
-              ref={employeesPhoneRef}
               placeholder="Điện thoại"
             />
             <div className="add__employees-label">Chức vụ:</div>
@@ -639,7 +689,10 @@ const EmployeesPage = () => {
               maxLength={10}
               type="number"
               value={selectedEmployee.phoneNumber}
-              onChange={e => setSelectedEmployee({ ...selectedEmployee, phoneNumber: e.target.value })}
+              onChange={e => {
+                let phoneNumber = e.target.value.replace(/\D/g, '');
+                setSelectedEmployee({ ...selectedEmployee, phoneNumber: phoneNumber });
+              }}
               placeholder="Điện thoại"
             />
             <div className="add__employees-label">Chức vụ:</div>
@@ -650,9 +703,9 @@ const EmployeesPage = () => {
             />
             <div className="add__employees-label">Ngày bắt đầu:</div>
             <DatePicker
-              value={dayjs(selectedEmployee.startDate)}
-              size={'middle'}
               format="YYYY-MM-DD"
+              value={selectedEmployee.startDate ? dayjs(selectedEmployee.startDate) : null}
+              size={'middle'}
               onChange={(_, dateString) => {
                 setSelectedEmployee({ ...selectedEmployee, startDate: dateString });
               }}
@@ -687,6 +740,9 @@ const EmployeesPage = () => {
             <div className="add__employees-selects">
               <div className="add__employees-label">Phòng ban:</div>
               <Select
+                showSearch
+                optionFilterProp="children"
+                filterOption={(input, option) => (option?.children ?? '').toLowerCase().includes(input.toLowerCase())}
                 value={selectedEmployee?.departMentId?.[0]?._id}
                 onChange={value => {
                   setSelectedEmployee({
@@ -706,6 +762,9 @@ const EmployeesPage = () => {
               </Select>
               <div className="add__employees-label">Quyền lợi:</div>
               <Select
+                showSearch
+                optionFilterProp="children"
+                filterOption={(input, option) => (option?.children ?? '').toLowerCase().includes(input.toLowerCase())}
                 value={selectedEmployee?.benefitId?.[0]?._id || selectedEmployee?.benefitId?.[0]}
                 onChange={value => {
                   setSelectedEmployee({
