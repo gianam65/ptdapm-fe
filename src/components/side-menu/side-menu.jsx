@@ -29,6 +29,7 @@ const SideMenu = () => {
 
   const handleNavigateToAnotherPage = e => {
     const redirectURL = `${e.key}`;
+
     navigation(redirectURL);
   };
 
